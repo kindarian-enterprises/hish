@@ -1,5 +1,5 @@
 
-name: mayr-rag
+name: kindarian-rag
 
 services:
   qdrant:
@@ -56,7 +56,7 @@ services:
     command: ["mcp-server-qdrant"]
     profiles: ["stdio"]  # invoked interactively
 
-  # Indexer for bulk embedding of repo content
+  # Indexer for bulk embedding of framework content
   indexer:
     build:
       context: ../rag/indexer
@@ -65,9 +65,9 @@ services:
       qdrant:
         condition: service_healthy
     env_file:
-      - ../.env.dev-assets
+      - ../.env-framework
     volumes:
-      - ../../:/work:ro  # Mount parent to see mayr-dev-assets/ path
+      - ../../:/work:ro  # Mount parent to see all project directories
 
   indexer-code:
     build:

@@ -1,224 +1,167 @@
-# Kindarian Cursor Context - Development Makefile
-# Provides common commands for RAG knowledge system and project setup
+# Kindarian Cursor Context Framework - Makefile
+# Multi-project development agent framework with shared knowledge
 
-.PHONY: help setup up down clean index test health status logs
+.PHONY: help up down status health test new-context index-repo clean logs
 
 # Default target
 help: ## Show this help message
-	@echo "Kindarian Cursor Context - Available Commands:"
+	@echo "🧠 Kindarian Cursor Context Framework"
+	@echo "====================================="
+	@echo "Multi-project development agent framework with shared knowledge"
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-# ============================================================================
-# RAG SYSTEM MANAGEMENT
-# ============================================================================
-
-setup: ## Set up RAG infrastructure and dependencies
-	@echo "Setting up RAG infrastructure..."
-	@if [ ! -f "compose.rag.yml" ]; then echo "Error: compose.rag.yml not found. Copy RAG infrastructure first."; exit 1; fi
-	@docker-compose -f compose.rag.yml pull
-	@echo "RAG infrastructure ready"
-
-up: ## Start RAG services (Qdrant vector database)
-	@echo "Starting RAG services..."
-	@docker-compose -f compose.rag.yml up -d
-	@echo "Waiting for services to be ready..."
+# Framework Management
+up: ## Start the RAG knowledge system
+	@echo "🚀 Starting Kindarian Cursor Context framework..."
+	docker-compose -f compose.rag.yml up -d
+	@echo "⏳ Waiting for services to be ready..."
 	@sleep 10
-	@$(MAKE) health
+	@make health
 
-down: ## Stop RAG services
-	@echo "Stopping RAG services..."
-	@docker-compose -f compose.rag.yml down
+down: ## Stop the RAG knowledge system
+	@echo "🛑 Stopping framework services..."
+	docker-compose -f compose.rag.yml down
 
-restart: ## Restart RAG services
-	@$(MAKE) down
-	@$(MAKE) up
+status: ## Show service status
+	@echo "📊 Framework Service Status:"
+	docker-compose -f compose.rag.yml ps
 
-clean: ## Stop services and remove volumes (WARNING: deletes all data)
-	@echo "WARNING: This will delete all indexed data!"
-	@read -p "Are you sure? (y/N): " confirm && [ "$$confirm" = "y" ] || exit 1
-	@docker-compose -f compose.rag.yml down -v
-	@docker system prune -f
+health: ## Check service health
+	@echo "🏥 Health Check:"
+	@echo -n "Qdrant: "
+	@curl -s http://localhost:6333/health > /dev/null && echo "✅ Healthy" || echo "❌ Unhealthy"
+	@echo -n "Collections: "
+	@curl -s http://localhost:6333/collections | jq -r '.result.collections[] | .name' 2>/dev/null | wc -l | xargs -I {} echo "{} collections available"
 
-# ============================================================================
-# KNOWLEDGE INDEXING
-# ============================================================================
+logs: ## Show framework logs
+	@echo "📜 Framework Logs:"
+	docker-compose -f compose.rag.yml logs -f
 
-index: ## Index current project codebase
-	@echo "Indexing current project..."
-	@if [ ! -d "rag/indexer" ]; then echo "Error: RAG indexer not found. Copy RAG infrastructure first."; exit 1; fi
-	@cd rag/indexer && python app.py index . --collection project_code --extensions .py .md .txt .js .ts .yml .yaml
+# Project Management
+new-context: ## Create a new project context (interactive)
+	@echo "📝 Creating new project context..."
+	./scripts/new-project-context.sh
 
-index-docs: ## Index documentation only
-	@echo "Indexing documentation..."
-	@cd rag/indexer && python app.py index ./docs --collection project_docs --extensions .md .txt
-
-index-external: ## Index external directory (usage: make index-external DIR=/path/to/dir)
-	@if [ -z "$(DIR)" ]; then echo "Usage: make index-external DIR=/path/to/directory"; exit 1; fi
-	@echo "Indexing external directory: $(DIR)"
-	@cd rag/indexer && python app.py index $(DIR) --collection external_code
-
-reindex: ## Clear and rebuild all indices
-	@echo "Rebuilding all indices..."
-	@cd rag/indexer && python app.py clear-collection project_code
-	@cd rag/indexer && python app.py clear-collection project_docs
-	@$(MAKE) index
-	@$(MAKE) index-docs
-
-# ============================================================================
-# SYSTEM MONITORING
-# ============================================================================
-
-health: ## Check health of RAG services
-	@echo "Checking RAG service health..."
-	@curl -s http://localhost:6333/health || echo "Qdrant not responding"
-	@curl -s http://localhost:6333/collections || echo "Collections endpoint not available"
-
-status: ## Show status of all services
-	@echo "RAG Service Status:"
-	@echo "==================="
-	@docker-compose -f compose.rag.yml ps
-
-logs: ## Show logs from RAG services
-	@docker-compose -f compose.rag.yml logs -f
-
-logs-qdrant: ## Show Qdrant logs only
-	@docker-compose -f compose.rag.yml logs -f qdrant
-
-# ============================================================================
-# DEVELOPMENT UTILITIES
-# ============================================================================
-
-shell-qdrant: ## Open shell in Qdrant container
-	@docker-compose -f compose.rag.yml exec qdrant /bin/bash
-
-backup: ## Backup Qdrant data
-	@echo "Creating backup..."
-	@mkdir -p backups
-	@docker-compose -f compose.rag.yml exec qdrant tar czf /tmp/qdrant-backup-$$(date +%Y%m%d-%H%M%S).tar.gz /qdrant/storage
-	@docker cp $$(docker-compose -f compose.rag.yml ps -q qdrant):/tmp/qdrant-backup-*.tar.gz ./backups/
-	@echo "Backup created in ./backups/"
-
-restore: ## Restore from backup (usage: make restore BACKUP=filename.tar.gz)
-	@if [ -z "$(BACKUP)" ]; then echo "Usage: make restore BACKUP=filename.tar.gz"; exit 1; fi
-	@echo "Restoring from backup: $(BACKUP)"
-	@$(MAKE) down
-	@docker volume rm kindarian-cursor-context_qdrant_storage || true
-	@$(MAKE) up
-	@sleep 5
-	@docker cp ./backups/$(BACKUP) $$(docker-compose -f compose.rag.yml ps -q qdrant):/tmp/restore.tar.gz
-	@docker-compose -f compose.rag.yml exec qdrant tar xzf /tmp/restore.tar.gz -C /
-	@$(MAKE) restart
-
-# ============================================================================
-# PROJECT SETUP
-# ============================================================================
-
-init-project: ## Initialize a new project with templates (usage: make init-project NAME=myproject)
-	@if [ -z "$(NAME)" ]; then echo "Usage: make init-project NAME=myproject"; exit 1; fi
-	@echo "Initializing new project: $(NAME)"
-	@./scripts/setup-new-project.sh
-
-copy-templates: ## Copy templates to current directory
-	@echo "Copying templates to current directory..."
-	@cp templates/persona/dev_agent_persona_template.md ./dev_agent_persona.md
-	@cp templates/context/dev_agent_context_template.md ./dev_agent_context.md
-	@cp templates/prompts/dev_agent_init_prompt_template.md ./dev_agent_init_prompt.md
-	@cp templates/prompts/dev_agent_session_end_prompt_template.md ./dev_agent_session_end_prompt.md
-	@echo "Templates copied. Customize them for your project."
-
-copy-rag: ## Copy RAG infrastructure to current directory
-	@echo "Copying RAG infrastructure..."
-	@cp -r rag ./
-	@cp -r mcp ./
-	@cp compose.rag.yml ./
-	@echo "RAG infrastructure copied. Run 'make setup' to initialize."
-
-# ============================================================================
-# TESTING & VALIDATION
-# ============================================================================
-
-test-connection: ## Test connection to RAG services
-	@echo "Testing RAG service connections..."
-	@curl -f http://localhost:6333/health && echo "✓ Qdrant health check passed" || echo "✗ Qdrant health check failed"
-	@curl -f http://localhost:6333/collections && echo "✓ Qdrant collections endpoint accessible" || echo "✗ Qdrant collections endpoint failed"
-
-test-index: ## Test indexing with sample data
-	@echo "Testing indexing with sample data..."
-	@cd rag/indexer && echo "This is a test document for indexing" > test.txt
-	@cd rag/indexer && python app.py index . --collection test_collection --extensions .txt
-	@cd rag/indexer && rm test.txt
-	@echo "Test indexing completed"
-
-test-search: ## Test search functionality
-	@echo "Testing search functionality..."
-	@cd rag/indexer && python -c "from app import search_documents; print(search_documents('test', 'test_collection', limit=1))"
-
-# ============================================================================
-# MAINTENANCE
-# ============================================================================
-
-update: ## Update RAG infrastructure
-	@echo "Updating RAG infrastructure..."
-	@docker-compose -f compose.rag.yml pull
-	@$(MAKE) restart
-
-optimize: ## Optimize Qdrant database
-	@echo "Optimizing Qdrant database..."
-	@curl -X POST http://localhost:6333/collections/project_code/index
-	@curl -X POST http://localhost:6333/collections/project_docs/index
-
-stats: ## Show database statistics
-	@echo "Qdrant Database Statistics:"
-	@echo "=========================="
-	@curl -s http://localhost:6333/collections | jq '.result.collections[] | {name: .name, points_count: .points_count, vectors_count: .vectors_count}'
-
-# ============================================================================
-# DOCUMENTATION
-# ============================================================================
-
-docs: ## Open documentation in browser
-	@echo "Opening documentation..."
-	@if command -v xdg-open >/dev/null 2>&1; then xdg-open docs/; elif command -v open >/dev/null 2>&1; then open docs/; else echo "Please open docs/ directory manually"; fi
-
-readme: ## Show README
-	@cat README.md
-
-# ============================================================================
-# ENVIRONMENT HELPERS
-# ============================================================================
-
-env-check: ## Check if required environment variables are set
-	@echo "Checking environment configuration..."
-	@echo "QDRANT_HOST: $${QDRANT_HOST:-localhost}"
-	@echo "QDRANT_PORT: $${QDRANT_PORT:-6333}"
-	@echo "EMBEDDING_MODEL: $${EMBEDDING_MODEL:-all-MiniLM-L6-v2}"
-
-env-example: ## Copy environment example files
-	@if [ -f "templates/config/.env.example" ]; then cp templates/config/.env.example .env.example; echo "Environment example copied to .env.example"; fi
-	@if [ -f "templates/config/.env.rag" ]; then cp templates/config/.env.rag .env.rag.example; echo "RAG environment example copied to .env.rag.example"; fi
-
-# ============================================================================
-# QUICK COMMANDS
-# ============================================================================
-
-quick-start: ## Quick start: setup + start services + index current directory
-	@$(MAKE) setup
-	@$(MAKE) up
-	@sleep 15
-	@$(MAKE) index
+list-contexts: ## List all project contexts
+	@echo "📁 Project Contexts:"
+	@find contexts -maxdepth 1 -type d -not -path contexts | sort | while read dir; do \
+		echo "  🎯 $$(basename $$dir) - $$dir"; \
+	done
 	@echo ""
-	@echo "🎉 Quick start complete!"
-	@echo "Your project is now indexed and ready for RAG queries."
+	@echo "💡 Agents discover context automatically - no configuration needed"
+
+# Knowledge Management
+index-repo: ## Index a code repository (requires REPO_PATH and COLLECTION_NAME)
+	@if [ -z "$(REPO_PATH)" ] || [ -z "$(COLLECTION_NAME)" ]; then \
+		echo "❌ Usage: make index-repo REPO_PATH=/path/to/code COLLECTION_NAME=my_project_code"; \
+		exit 1; \
+	fi
+	@echo "🧠 Indexing repository $(REPO_PATH) into collection $(COLLECTION_NAME)..."
+	docker-compose -f compose.rag.yml run --rm indexer python app.py index "$(REPO_PATH)" --collection "$(COLLECTION_NAME)"
+
+collections: ## List all knowledge collections
+	@echo "🗂️  Knowledge Collections:"
+	@curl -s http://localhost:6333/collections | jq -r '.result.collections[] | "  📚 \(.name) - \(.points_count) chunks"' 2>/dev/null || echo "❌ Could not connect to Qdrant"
+
+search: ## Search knowledge base (requires QUERY)
+	@if [ -z "$(QUERY)" ]; then \
+		echo "❌ Usage: make search QUERY=\"your search terms\""; \
+		exit 1; \
+	fi
+	@echo "🔍 Searching for: $(QUERY)"
+	@echo "Results will appear here when MCP tools are available..."
+
+# Development
+test: ## Run framework tests
+	@echo "🧪 Running framework tests..."
+	docker-compose -f compose.rag.yml run --rm indexer-test pytest -v
+
+clean: ## Clean up containers and volumes
+	@echo "🧹 Cleaning up framework..."
+	docker-compose -f compose.rag.yml down -v
+	docker system prune -f
+
+# Maintenance
+update: ## Update framework (git pull + rebuild)
+	@echo "🔄 Updating framework..."
+	git pull
+	docker-compose -f compose.rag.yml build --no-cache
+
+backup: ## Backup knowledge database
+	@echo "💾 Backing up knowledge database..."
+	@BACKUP_FILE="kindarian-knowledge-backup-$$(date +%Y%m%d-%H%M%S).tar.gz"
+	@tar -czf "$$BACKUP_FILE" rag/qdrant_data/ 2>/dev/null || tar -czf "$$BACKUP_FILE" .data/qdrant/ 2>/dev/null || echo "❌ No data directory found"
+	@echo "✅ Backup created: $$BACKUP_FILE"
+
+# Quick Actions
+quick-start: up ## Quick start: launch framework and show next steps
 	@echo ""
-	@echo "Try these commands:"
-	@echo "  make test-search    # Test search functionality"
-	@echo "  make health         # Check service health"
-	@echo "  make stats          # View database statistics"
+	@echo "🎉 Framework is ready! Next steps:"
+	@echo "  1. Configure Cursor MCP integration: make setup-cursor"
+	@echo "  2. Create your first project context: make new-context"
+	@echo "  3. Index your code repository: make index-repo REPO_PATH=/path/to/code COLLECTION_NAME=my_project"
+	@echo "  4. In Cursor: @contexts/your-project/dev_agent_init_prompt.md"
+	@echo ""
+	@echo "📚 Available commands: make help"
 
-dev: ## Development mode: start services and show logs
-	@$(MAKE) up
-	@$(MAKE) logs
+setup-cursor: ## Show Cursor MCP configuration instructions
+	@echo "🔌 Cursor MCP Integration Setup"
+	@echo "=============================="
+	@echo ""
+	@echo "Add this to your Cursor settings.json:"
+	@echo ""
+	@echo '{'
+	@echo '  "mcp": {'
+	@echo '    "servers": {'
+	@echo '      "kindarian-qdrant": {'
+	@echo '        "command": "docker",'
+	@echo '        "args": ['
+	@echo '          "compose", "-f", "$(PWD)/compose.rag.yml",'
+	@echo '          "run", "--rm", "-i", "mcp-qdrant-stdio"'
+	@echo '        ],'
+	@echo '        "env": {'
+	@echo '          "QDRANT_URL": "http://localhost:6333",'
+	@echo '          "COLLECTION_NAME": "default"'
+	@echo '        }'
+	@echo '      }'
+	@echo '    }'
+	@echo '  }'
+	@echo '}'
+	@echo ""
+	@echo "📖 Detailed guide: docs/setup/cursor-mcp-integration.md"
+	@echo "🧪 Test with: qdrant-find \"test query\" in Cursor chat"
 
-stop: ## Alias for 'down'
-	@$(MAKE) down
+# Example workflows
+demo: ## Run a quick demo (requires example repos)
+	@echo "🎭 Demo: Multi-project intelligence"
+	@echo "This would demonstrate cross-project pattern discovery..."
+	@echo "See docs/examples/multi-project-workflow.md for detailed examples"
+
+# Information
+info: ## Show framework information
+	@echo "🧠 Kindarian Cursor Context Framework"
+	@echo "======================================"
+	@echo "Version: Multi-Project Intelligence Edition"
+	@echo "Purpose: Cross-project knowledge sharing for development agents"
+	@echo ""
+	@echo "🏗️  Architecture:"
+	@echo "  • Context Management: kindarian-cursor-context/ (this repo)"
+	@echo "  • Code Repositories: External (indexed by RAG)"
+	@echo "  • Knowledge Base: Qdrant vector database"
+	@echo "  • Agent Interface: Cursor + MCP protocol"
+	@echo ""
+	@echo "📊 Current Status:"
+	@make health
+	@echo ""
+	@echo "📁 Project Contexts:"
+	@make list-contexts
+
+# Development helpers
+mcp: ## Start MCP server for development
+	@echo "🔌 Starting MCP server (stdio mode)..."
+	docker-compose -f compose.rag.yml run --rm -i mcp-qdrant-stdio
+
+fmt: ## Format shell scripts
+	@echo "🎨 Formatting shell scripts..."
+	@find scripts -name "*.sh" -exec shfmt -w {} \; 2>/dev/null || echo "Install shfmt for script formatting"

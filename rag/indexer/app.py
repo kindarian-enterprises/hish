@@ -136,7 +136,7 @@ def index_repo(work_root: str, qdrant_url: str, api_key: str, collection: str,
             for chunk, vec in zip(pieces, embeddings):
                 payload = {
                     "path": rel,
-                    "repo": "mayr-dev-assets", 
+                    "repo": "kindarian-framework", 
                     "document": chunk  # MCP server expects 'document' field
                 }
                 # Use named vector for MCP server compatibility
@@ -171,7 +171,7 @@ def index_repo(work_root: str, qdrant_url: str, api_key: str, collection: str,
     print(f"[green]✓ Indexed[/green] files={total_files} chunks={total_chunks} into collection='{collection}'")
 
 def main():
-    ap = argparse.ArgumentParser(description="Index mayr-dev-assets into Qdrant")
+    ap = argparse.ArgumentParser(description="Index repositories into Qdrant for Kindarian framework")
     ap.add_argument("--workdir", default="/work", help="Mounted repo root")
     ap.add_argument("--recreate", action="store_true", help="Drop & recreate collection first")
     ap.add_argument("--debug", action="store_true", help="Enable debug logging")
@@ -183,12 +183,12 @@ def main():
         logger.setLevel(logging.DEBUG)
         logger.debug("Debug logging enabled")
 
-    logger.info("=== Mayr Dev Assets Indexer ===")
+    logger.info("=== Kindarian Framework Indexer ===")
     logger.info(f"Working directory: {args.workdir}")
 
     qdrant_url = os.getenv("QDRANT_URL", "http://qdrant:6333")
     api_key = os.getenv("QDRANT_API_KEY", "")
-    collection = os.getenv("COLLECTION_NAME", "mayr_dev_assets")
+    collection = os.getenv("COLLECTION_NAME", "kindarian_framework")
     model_name = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
 
     inc = os.getenv("INDEX_INCLUDE", "")

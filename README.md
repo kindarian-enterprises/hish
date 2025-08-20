@@ -1,75 +1,122 @@
 # 🧠 Kindarian Cursor Context
 
-**A comprehensive scaffold and template system for creating knowledge-powered development agents with persistent context management and RAG integration.**
+**A comprehensive framework for managing multiple development agents with shared knowledge and cross-project intelligence.**
 
 ## 🎯 **What Is This?**
 
-Kindarian Cursor Context provides everything you need to transform your Cursor AI assistant from a stateless helper into a persistent, knowledge-driven development partner that:
+Kindarian Cursor Context is a multi-project development agent framework that transforms your entire engineering ecosystem into a knowledge-powered learning machine:
 
-- **Remembers everything** across sessions with structured context management
-- **Learns from your codebase** through semantic search and pattern recognition  
-- **Builds institutional knowledge** by storing solutions and anti-patterns
-- **Follows consistent practices** through customizable persona definitions
-- **Maintains project continuity** with rigorous update protocols
+- **Multi-Project Intelligence**: One framework manages contexts for all your projects
+- **Shared Knowledge Base**: Patterns discovered in one project benefit ALL projects
+- **Cross-Project Learning**: Agents learn from your entire codebase ecosystem
+- **Centralized Context Management**: All project contexts, personas, and knowledge in one place
+- **Institutional Memory**: Persistent learning across teams, projects, and time
+- **Pattern Recognition**: Discover solutions from any project when working on any other project
 
 ## 🚀 **Quick Start**
 
-### **1. Copy Templates to Your Project**
+### **1. Set Up the Framework**
 ```bash
-# Clone this repository
+# Clone the framework (your permanent context management hub)
 git clone [repository-url] kindarian-cursor-context
 cd kindarian-cursor-context
 
-# Copy templates to your project
-cp templates/persona/dev_agent_persona_template.md your-project/dev_agent_persona.md
-cp templates/context/dev_agent_context_template.md your-project/dev_agent_context.md
-cp templates/prompts/dev_agent_init_prompt_template.md your-project/dev_agent_init_prompt.md
-cp templates/prompts/dev_agent_session_end_prompt_template.md your-project/dev_agent_session_end_prompt.md
+# Start the shared knowledge system
+make quick-start
+
+# This will:
+# - Start Qdrant vector database
+# - Build the MCP server
+# - Show you the next steps
 ```
 
-### **2. Customize for Your Project**
+### **2. Create Your First Project Context**
 ```bash
-# Edit the persona to match your tech stack and standards
-vim your-project/dev_agent_persona.md
+# Create a new project context
+./scripts/new-project-context.sh
 
-# Set up your project context and current status
-vim your-project/dev_agent_context.md
-
-# Customize initialization requirements
-vim your-project/dev_agent_init_prompt.md
+# This creates: contexts/your-project-name/
+# ├── dev_agent_persona.md      # Project-specific agent configuration
+# ├── dev_agent_context.md      # Project state and history
+# ├── dev_agent_init_prompt.md  # Initialization protocol
+# └── project_config.yml        # Code repo paths and settings
 ```
 
-### **3. Set Up RAG Knowledge System (Optional)**
+### **3. Index Your Code Repositories**
 ```bash
-# Copy RAG infrastructure
-cp -r rag your-project/
-cp -r mcp your-project/
-cp compose.rag.yml your-project/
-
-# Start the knowledge system
-cd your-project
-docker-compose -f compose.rag.yml up -d
-
-# Index your codebase
+# Index your project's code (stored separately from context)
 cd rag/indexer
-python app.py index /path/to/your/code --collection your_project_code
+python app.py index /path/to/your-project-code --collection your_project_code
+python app.py index /path/to/another-project --collection another_project_code
+
+# All projects share the same knowledge base for cross-project insights!
 ```
 
-### **4. Initialize Your Agent**
-In Cursor, open your project and reference the initialization prompt:
+### **4. Configure Cursor MCP Integration**
+```bash
+# Get the exact configuration for your system
+make setup-cursor
+
+# This shows you the JSON to add to Cursor settings.json
+# Or follow the detailed guide: docs/setup/cursor-mcp-integration.md
 ```
-@dev_agent_init_prompt.md
+
+**Quick MCP Setup**: Add this to your Cursor `settings.json`:
+```json
+{
+  "mcp": {
+    "servers": {
+      "kindarian-qdrant": {
+        "command": "docker",
+        "args": [
+          "compose", "-f", "/absolute/path/to/kindarian-cursor-context/compose.rag.yml", 
+          "run", "--rm", "-i", "mcp-qdrant-stdio"
+        ],
+        "env": {
+          "QDRANT_URL": "http://localhost:6333",
+          "COLLECTION_NAME": "default"
+        }
+      }
+    }
+  }
+}
 ```
+⚠️ **Replace `/absolute/path/to/kindarian-cursor-context/` with your actual path!**
+
+### **5. Initialize Your Agent**
+In Cursor, open the kindarian-cursor-context framework and reference your project:
+```
+@contexts/your-project-name/dev_agent_init_prompt.md
+```
+
+**✅ You should now have access to these tools in Cursor:**
+- `qdrant-find "search query"` - Search patterns across all your projects
+- `qdrant-store "solution description"` - Store new solutions for the ecosystem
+
+**🧪 Test your setup by directing the agent:**
+```
+Research authentication patterns across our projects and propose an approach for this context that leverages our proven solutions.
+```
+
+The agent will automatically:
+- Query knowledge base with `qdrant-find`
+- Analyze patterns across projects
+- Propose solutions combining best practices
+- Store new solutions with `qdrant-store`
 
 ## 📚 **What's Included**
 
 ### **📄 Core Templates**
 ```
-templates/
-├── persona/           # Agent identity, coding standards, tech stack
-├── context/           # Project state, achievements, issues tracking  
-├── prompts/           # Initialization and session management
+contexts/              # Project-specific contexts (personas, contexts, prompts)
+├── example-web-app/   # React/Node.js project context
+├── example-api/       # Go microservices context
+└── shared/            # Cross-project patterns and workflows
+templates/             # Base templates for new projects
+workflows-and-processes/ # Reusable workflows and process documentation
 ```
+
+**No configuration files needed** - agents intelligently discover context and relationships
 
 ### **🔄 Workflow Templates**
 ```
@@ -94,6 +141,8 @@ docs/
 ```
 
 ## 🎭 **Agent Persona System**
+
+**No configuration files needed** - agents intelligently discover context and relationships from directory structure and content.
 
 The persona template lets you define:
 
@@ -176,28 +225,65 @@ qdrant-store "Solution: JWT refresh token rotation - Implemented secure token ma
 4. Train on effective RAG query patterns
 5. Implement knowledge review processes
 
+## 🌟 **Cross-Project Intelligence in Action**
+
+### **Real Example: Authentication Solution Discovery**
+```bash
+# 🎯 Scenario: You're building a new mobile app and need authentication
+
+# 1. Query across ALL your projects for auth patterns
+qdrant-find "JWT refresh token implementations"
+
+# 2. Framework finds solutions from:
+# - Web App: React useAuth hook with automatic refresh
+# - API Service: Go middleware with Redis token blacklist  
+# - Previous Mobile: React Native secure storage patterns
+# - Shared: OAuth2 server configuration
+
+# 3. You adapt the best patterns for your new context
+qdrant-store "Mobile Auth Solution: Combined web useAuth pattern with RN secure storage - Automatic token refresh, biometric fallback, offline support. Context: React Native apps. Performance: <200ms auth check. Files: hooks/useAuth.ts, utils/secureStorage.ts"
+
+# 4. Your solution becomes available to ALL future projects!
+```
+
+### **Example: Performance Pattern Cross-Pollination**
+```bash
+# API team discovers caching strategy
+qdrant-store "Redis Caching Layer: 80% latency reduction with write-through cache - Cache user sessions, API responses, computed values. Context: High-traffic APIs. Implementation: Redis cluster with TTL."
+
+# Mobile team later queries for performance
+qdrant-find "caching strategies for better performance"
+# Discovers the API caching pattern and adapts it for mobile local storage
+
+# Web team benefits too
+qdrant-find "user session optimization patterns"  
+# Finds both API Redis patterns and mobile storage patterns
+```
+
 ## 📈 **Benefits You'll See**
 
 ### **Immediate (Week 1)**
-- **Consistent Context**: Agent remembers project details across sessions
-- **Better Decisions**: Access to documented architectural decisions
-- **Reduced Repetition**: No more explaining the same context repeatedly
+- **Cross-Project Discovery**: Find solutions from ANY project when working on any other
+- **Zero Context Loss**: Agent remembers ALL project details across sessions
+- **Institutional Memory**: Access to patterns from your entire engineering history
 
 ### **Short Term (Month 1)**
-- **Pattern Reuse**: Apply successful solutions from knowledge base
-- **Faster Onboarding**: New team members learn from stored knowledge
-- **Quality Improvement**: Avoid documented anti-patterns
+- **Accelerated Development**: Mobile apps benefit from web patterns, APIs learn from frontend
+- **Quality Multiplication**: Anti-patterns discovered once prevent mistakes everywhere
+- **Pattern Evolution**: Solutions improve through cross-project application and feedback
 
-### **Long Term (Quarter 1)**
-- **Institutional Knowledge**: Persistent organizational learning
-- **Accelerated Development**: Build on proven patterns consistently
-- **Risk Reduction**: Fewer mistakes through historical awareness
+### **Long Term (Quarter 1)**  
+- **Engineering Ecosystem Intelligence**: Your entire codebase becomes a learning system
+- **Compound Knowledge Growth**: Each project makes ALL projects better
+- **Team Velocity Multiplier**: New projects start with accumulated wisdom from all previous projects
 
 ## 🎓 **Learning Resources**
 
 ### **Essential Reading**
-- [`docs/philosophy/knowledge-driven-development.md`](docs/philosophy/knowledge-driven-development.md) - Core philosophy and principles
-- [`docs/integration/rag-mcp-setup-guide.md`](docs/integration/rag-mcp-setup-guide.md) - Technical setup and configuration
+- **[📚 Documentation Hub](docs/README.md)** - **START HERE** - Complete navigation guide
+- **[🎯 Directing Agents](docs/agent-management/directing-agents.md)** - **ESSENTIAL** - How to manage agents effectively
+- **[🗂️ Knowledge Management](docs/knowledge-management/indexing-and-reindexing.md)** - When/why/how to index content
+- **[🔌 Cursor MCP Integration](docs/setup/cursor-mcp-integration.md)** - Technical setup guide
 
 ### **Workflow Examples**
 - [`workflows-and-processes/examples/rag-enhanced-development-workflow.md`](workflows-and-processes/examples/rag-enhanced-development-workflow.md) - Knowledge-first development process
@@ -206,6 +292,12 @@ qdrant-store "Solution: JWT refresh token rotation - Implemented secure token ma
 ### **Template Guides**
 - [`templates/persona/dev_agent_persona_template.md`](templates/persona/dev_agent_persona_template.md) - Complete persona customization guide
 - [`templates/context/dev_agent_context_template.md`](templates/context/dev_agent_context_template.md) - Context management structure and protocols
+
+### **Multi-Project Examples**
+- [`docs/examples/multi-project-workflow.md`](docs/examples/multi-project-workflow.md) - Complete day-in-the-life example of cross-project intelligence
+- [`contexts/example-web-app/`](contexts/example-web-app/) - Example web application context
+- [`contexts/example-api/`](contexts/example-api/) - Example API service context
+- [`contexts/shared/cross_project_patterns.md`](contexts/shared/cross_project_patterns.md) - Shared knowledge patterns across all projects
 
 ## 🤝 **Contributing**
 
