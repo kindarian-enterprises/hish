@@ -1,0 +1,102 @@
+
+name: mayr-rag
+
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    restart: unless-stopped
+    environment:
+      QDRANT__SERVICE__GRPC_PORT: 6334
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ../.data/qdrant:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 5 bash -c 'cat < /dev/null > /dev/tcp/localhost/6333' || exit 1"]
+      interval: 5s
+      timeout: 10s
+      retries: 6
+      start_period: 5s
+
+  # Optional daemonized MCP via SSE (handy for remote/shared use)
+  mcp-qdrant-sse:
+    build:
+      context: ../mcp
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    environment:
+      QDRANT_URL: ${QDRANT_URL}
+      QDRANT_API_KEY: ${QDRANT_API_KEY}
+      COLLECTION_NAME: ${COLLECTION_NAME}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL}
+      EMBEDDING_PROVIDER: fastembed
+    command: ["mcp-server-qdrant", "--transport", "sse", "--host", "0.0.0.0", "--port", "${MCP_SSE_PORT}"]
+    ports:
+      - "${MCP_SSE_PORT}:${MCP_SSE_PORT}"
+    profiles: ["sse"]  # not started by default
+
+  # STDIO MCP: used via `docker compose run -i` (not a daemon)
+  mcp-qdrant-stdio:
+    build:
+      context: ../mcp
+      dockerfile: Dockerfile
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    environment:
+      QDRANT_URL: ${QDRANT_URL}
+      QDRANT_API_KEY: ${QDRANT_API_KEY}
+      COLLECTION_NAME: ${COLLECTION_NAME}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL}
+      EMBEDDING_PROVIDER: fastembed
+    command: ["mcp-server-qdrant"]
+    profiles: ["stdio"]  # invoked interactively
+
+  # Indexer for bulk embedding of repo content
+  indexer:
+    build:
+      context: ../rag/indexer
+      dockerfile: Dockerfile
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    env_file:
+      - ../.env.dev-assets
+    volumes:
+      - ../../:/work:ro  # Mount parent to see mayr-dev-assets/ path
+
+  indexer-code:
+    build:
+      context: ../rag/indexer
+      dockerfile: Dockerfile
+    depends_on:
+      qdrant:
+        condition: service_healthy
+    env_file:
+      - ../.env.code
+    volumes:
+      - ../../:/work:ro  # Mount the entire projects directory
+
+  # Test service for running pytest
+  indexer-test:
+    build:
+      context: ../rag/indexer
+      dockerfile: Dockerfile
+      target: test
+    environment:
+      QDRANT_URL: ${QDRANT_URL}
+      QDRANT_API_KEY: ${QDRANT_API_KEY}
+      COLLECTION_NAME: ${COLLECTION_NAME}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL}
+      INDEX_INCLUDE: ${INDEX_INCLUDE}
+      INDEX_EXCLUDE: ${INDEX_EXCLUDE}
+      CHUNK_MAX_TOKENS: ${CHUNK_MAX_TOKENS}
+      CHUNK_MIN_CHARS: ${CHUNK_MIN_CHARS}
+      CHUNK_OVERLAP_TOKENS: ${CHUNK_OVERLAP_TOKENS}
+    volumes:
+      - ..:/work:ro
+    profiles: ["test"]  # Only for testing
