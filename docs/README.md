@@ -6,6 +6,9 @@
 
 ### **🚀 Getting Started**
 - **[Main README](../README.md)** - Framework overview and quick start
+- **[Getting Started Guide](setup/getting-started.md)** - **⭐ NEW USER START HERE** - 5 minutes to full setup
+- **[Upstream + Main Workflow](setup/upstream-main-workflow.md)** - **⭐ NEW** - Zero-conflict collaboration guide
+- **[Workflow Diagram](setup/workflow-diagram.md)** - **⭐ VISUAL** - See the workflow in action
 - **[Cursor MCP Integration](setup/cursor-mcp-integration.md)** - Essential MCP setup guide
 - **[Environment Setup](setup/environment-setup.md)** - **⭐ ESSENTIAL** - Configure environment variables
 - **[RAG + MCP Setup Guide](integration/rag-mcp-setup-guide.md)** - Technical setup and configuration
@@ -46,10 +49,12 @@
 ## 🎯 **Quick Start Paths**
 
 ### **👤 For New Users**
-1. **[Main README](../README.md)** - Framework overview
-2. **[Directing Agents](agent-management/directing-agents.md)** - Learn agent management
-3. **[Multi-Project Workflow](examples/multi-project-workflow.md)** - See it in action
-4. **[Cursor MCP Integration](setup/cursor-mcp-integration.md)** - Get it working
+1. **[Getting Started Guide](setup/getting-started.md)** - **⭐ START HERE** - 5 minutes to full setup
+2. **[Upstream + Main Workflow](setup/upstream-main-workflow.md)** - **⭐ NEW** - Learn zero-conflict collaboration
+3. **[Main README](../README.md)** - Framework overview
+4. **[Directing Agents](agent-management/directing-agents.md)** - Learn agent management
+5. **[Multi-Project Workflow](examples/multi-project-workflow.md)** - See it in action
+6. **[Cursor MCP Integration](setup/cursor-mcp-integration.md)** - Get it working
 
 ### **🔧 For Technical Setup**
 1. **[Cursor MCP Integration](setup/cursor-mcp-integration.md)** - Essential MCP setup

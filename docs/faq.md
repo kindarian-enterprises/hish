@@ -7,10 +7,10 @@ No. It's optional. Use it only to share large files (models/datasets). Otherwise
 Use the ignored paths listed in `docs/data-management.md` (e.g., `local/`, `overrides/`, `private/`), which match this repo's conventions.
 
 **How do I get updates from the main repo?**  
-Add the upstream remote once, then:
+Since you cloned directly from the main repo, just:
 ```bash
-git fetch upstream
-git merge upstream/main
+git fetch origin
+git merge origin/main
 ```
 
 Or run `./scripts/sync-upstream.sh`.

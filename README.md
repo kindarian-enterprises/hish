@@ -2,6 +2,25 @@
 
 **A comprehensive framework for managing multiple development agents with shared knowledge and cross-project intelligence.**
 
+---
+
+## 🆕 **NEW USER? START HERE! 🆕**
+
+**🎯 This is a completely NEW TOOL - designed to be painless and unobtrusive!**
+
+### **📚 [Getting Started Guide](docs/setup/getting-started.md) - 5 Minutes to Full Setup**
+**Complete step-by-step onboarding with everything you need to know.**
+
+### **🔄 [Upstream + Main Workflow](docs/setup/upstream-main-workflow.md) - Zero-Conflict Collaboration**
+**Seamless team collaboration with automatic updates from the official repo.**
+
+### **❓ [FAQ](docs/faq.md) - Common Questions Answered**
+**Quick answers to get you unstuck fast.**
+
+---
+
+**🚀 Ready to transform your development workflow? Start with the Getting Started Guide above!**
+
 ## 🎯 **What Is This?**
 
 Kindarian Cursor Context is a multi-project development agent framework that transforms your entire engineering ecosystem into a knowledge-powered learning machine:
@@ -13,7 +32,13 @@ Kindarian Cursor Context is a multi-project development agent framework that tra
 - **Institutional Memory**: Persistent learning across teams, projects, and time
 - **Pattern Recognition**: Discover solutions from any project when working on any other project
 
-## 🚀 **Quick Start**
+## 🚀 **Quick Start (5 Minutes to Full Setup)**
+
+**🎯 NEW TOOL ALERT: This is a completely new development workflow - designed to be painless and unobtrusive!**
+
+### **📚 Start Here: [Getting Started Guide](docs/setup/getting-started.md)**
+
+**Complete step-by-step onboarding with screenshots and examples.**
 
 ### **1. Set Up the Framework**
 ```bash
@@ -104,38 +129,50 @@ The agent will automatically:
 - Propose solutions combining best practices
 - Store new solutions with `qdrant-store`
 
-## 🔄 **Quick Start (Upstream + Main)**
+## 🔄 **Simple Collaboration Workflow (NEW!)**
 
-We use a simple Git flow:
+**🚀 Zero merge conflicts with local customization - designed for teams!**
 
-- `upstream` remote → canonical repo (read-only for most users).
-- You work on `main` (or feature branches) in your fork/clone.
-- Local overrides live in ignored folders (see `.gitignore`).
+### **📖 Complete Guide: [Collaboration Workflow](docs/setup/upstream-main-workflow.md)**
 
-### **First-time setup**
+**What this means for you:**
+- **Clone directly** from the main repository
+- **Local overrides** in ignored folders (automatically safe)
+- **Easy updates** from the main repo when you want new features
+
+**Result**: Clean collaboration, no merge conflicts, easy customization.
+
+### **⚡ One-time Setup (2 minutes)**
 ```bash
-git remote -v
-# If you don't see an 'upstream', add it (replace with canonical URL):
-git remote add upstream <CANONICAL_REPO_URL>
+# Clone the repository
+git clone https://github.com/kindarian-enterprises/kindarian-cursor-context.git
+cd kindarian-cursor-context
 
-# Ensure you're on main (or your working branch)
-git checkout main
+# Create local directories for your customizations
+mkdir -p local overrides private tmp
 ```
 
-### **Pull updates from upstream**
-
+### **🔄 Daily Workflow (30 seconds)**
 ```bash
-git fetch upstream
-git merge upstream/main
-# resolve conflicts if any, commit
+# Get updates when you want new features
+git fetch origin
+git merge origin/main
+
+# Work on your changes as normal
+git add . && git commit -m "Your changes"
 ```
 
-### **Keep local overrides separate**
+### **🛡️ Local Customization (Zero Conflicts)**
+```bash
+# Put your machine-specific files here (automatically ignored):
+mkdir local
+cp env.framework local/env.framework.my-team
 
-* Put machine/user-specific files into the ignored paths (see `.gitignore`).
-* This keeps upstream pulls clean and avoids merge conflicts.
+# Edit local/env.framework.my-team with your changes
+# This won't conflict with main repo updates!
+```
 
-See `docs/branching.md` and `docs/data-management.md` for details.
+**🎯 See [Collaboration Workflow Guide](docs/setup/upstream-main-workflow.md) for complete details.**
 
 ## 📚 **What's Included**
 
