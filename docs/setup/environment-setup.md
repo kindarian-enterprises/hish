@@ -8,10 +8,10 @@
 
 The framework requires these exact environment files to function properly:
 
-### **`.env-framework` - Main Configuration**
+### **`env.framework` - Main Configuration**
 **Purpose:** Primary configuration for framework operation and knowledge indexing.
 
-**File location:** `kindarian-cursor-context/.env-framework`
+**File location:** `kindarian-cursor-context/env.framework`
 
 **Required values:**
 ```bash
@@ -50,12 +50,12 @@ CHUNK_OVERLAP_TOKENS=40                # Token overlap between chunks for contex
 MCP_SSE_PORT=8000                      # Port for MCP server (if using SSE mode)
 ```
 
-### **`.env.code` - Code Repository Indexing**
+### **`env.code` - Code Repository Indexing**
 **Purpose:** Configuration for indexing external code repositories and projects.
 
-**File location:** `kindarian-cursor-context/.env.code`
+**File location:** `kindarian-cursor-context/env.code`
 
-**Required filename:** Must be exactly `.env.code`
+**Required filename:** Must be exactly `env.code`
 
 **Note:** The Docker Compose file (`compose.rag.yml`) references this exact filename for the code indexing service.
 
@@ -89,18 +89,18 @@ INDEX_EXCLUDE=**/.git/**,**/node_modules/**,**/__pycache__/**,**/target/**,**/di
 # - Build directories (build/, out/, bin/, obj/)
 ```
 
-### **`.env.example` - Template**
+### **`env.example` - Template**
 **Purpose:** Template file showing all required environment variables with example values.
 
-**File location:** `kindarian-cursor-context/.env.example`
+**File location:** `kindarian-cursor-context/env.example`
 
-**Required filename:** Must be exactly `.env.example`
+**Required filename:** Must be exactly `env.example`
 
 **Note:** This file is referenced by the framework setup scripts and must exist for proper operation.
 
-**Usage:** Copy this file to `.env-framework` and modify values as needed.
+**Usage:** Copy this file to `env.framework` and modify values as needed.
 ```bash
-cp .env.example .env-framework
+cp env.example env.framework
 ```
 
 ## 🎯 **How Environment Variables Are Used**
@@ -148,18 +148,18 @@ cp .env.example .env-framework
 ### **1. Copy Environment Template**
 ```bash
 cd kindarian-cursor-context
-cp .env.example .env-framework
+cp env.example env.framework
 ```
 
 ### **2. Review and Customize**
 ```bash
 # View current settings
-cat .env-framework
+cat env.framework
 
 # Edit with your preferred text editor
-nano .env-framework
+nano env.framework
 # or
-code .env-framework
+code env.framework
 ```
 
 ### **3. Verify Configuration**
@@ -311,14 +311,14 @@ make index-repo REPO_PATH=. COLLECTION_NAME=debug --debug
 ## 📋 **Quick Reference**
 
 **Required files with exact names:**
-1. **`.env-framework`** - Main framework configuration
-2. **`.env.code`** - Code repository indexing (referenced by `compose.rag.yml`)
-3. **`.env.example`** - Template file (referenced by framework scripts)
+1. **`env.framework`** - Main framework configuration
+2. **`env.code`** - Code repository indexing (referenced by `compose.rag.yml`)
+3. **`env.example`** - Template file (referenced by framework scripts)
 
 **Essential files to configure:**
-- **`.env-framework`** - Main framework configuration
-- **`.env.code`** - External code repository indexing
-- **`.env.example`** - Template with all variables
+- **`env.framework`** - Main framework configuration
+- **`env.code`** - External code repository indexing
+- **`env.example`** - Template with all variables
 
 **Key variables to understand:**
 - **`COLLECTION_NAME`** - Where knowledge gets stored
@@ -329,7 +329,7 @@ make index-repo REPO_PATH=. COLLECTION_NAME=debug --debug
 
 **The framework requires exact filenames because:**
 
-1. **Docker Compose references** - `compose.rag.yml` expects `.env-framework` for framework indexing and `.env.code` for code indexing
+1. **Docker Compose references** - `compose.rag.yml` expects `env.framework` for framework indexing and `env.code` for code indexing
 2. **Framework scripts** - Setup and indexing scripts reference specific filenames
 3. **Service configuration** - Different services use different environment files
 4. **Consistency** - Prevents configuration errors and ensures proper operation

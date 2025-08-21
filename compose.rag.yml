@@ -65,7 +65,7 @@ services:
       qdrant:
         condition: service_healthy
     env_file:
-      - ../.env-framework
+      - ../env.framework
     volumes:
       - ../../:/work:ro  # Mount parent to see all project directories
 
@@ -77,7 +77,7 @@ services:
       qdrant:
         condition: service_healthy
     env_file:
-      - ../.env.code
+      - ../env.code
     volumes:
       - ../../:/work:ro  # Mount the entire projects directory
 

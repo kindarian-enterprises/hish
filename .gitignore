@@ -28,9 +28,16 @@ checkpoints/
 
 # Env files / secrets (always safe)
 
+# Hidden env files (always ignored)
 .env
 .env.local
 .env.*.local
+
+# Visible env files (tracked by default, but can be ignored if needed)
+# Uncomment the lines below if you want to ignore these files:
+# env.framework
+# env.code
+# env.example
 
 # OS/editor noise
 
