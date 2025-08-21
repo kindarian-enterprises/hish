@@ -1,312 +1,362 @@
-# 🎯 Directing Development Agents with Kindarian Framework
+# Directing Agents
 
-This guide covers how to effectively direct and manage development agents using the Kindarian Cursor Context framework. **You direct, agents execute and learn.**
+## Overview
 
-## 🧠 **Agent Direction Philosophy**
+This guide explains how to effectively direct and manage development agents within the Kindarian Cursor Context framework.
 
-### **Your Role: Strategic Direction**
-- **Set objectives and priorities** for development work
-- **Request workflow and process documentation** when patterns emerge
-- **Guide knowledge capture** by instructing agents when to store solutions
-- **Provide architectural direction** and quality standards
-- **Manage cross-project learning** by directing agents to discover patterns
-- **Trust agent intelligence** to discover context and relationships automatically
+### **Agent Initialization**
 
-### **Agent Role: Execution and Learning**
-- **Query knowledge base** autonomously using `qdrant-find`
-- **Store solutions** automatically using `qdrant-store` 
-- **Create documentation** when instructed
-- **Apply cross-project patterns** discovered through RAG
-- **Follow project-specific personas** and contexts
-- **Discover context relationships** automatically from directory structure and content
-- **Extract patterns** from code and documentation without configuration
-
-## 🎯 **Common Agent Direction Patterns**
-
-### **Directing Knowledge Discovery**
-
-**❌ Don't do this yourself:**
-```
-qdrant-find "authentication patterns"
-```
-
-**✅ Direct the agent:**
-```
-Before implementing authentication, research existing patterns across our projects and propose an approach that leverages our proven solutions.
-```
-
-**Agent will automatically:**
-- Query knowledge base for relevant patterns
-- Analyze multiple project implementations  
-- Propose solution combining best practices
-- Store the new solution for future projects
-
-### **Requesting Workflow Documentation**
-
-**When to request workflow docs:**
-- Agent repeatedly solves similar problems
-- Complex process emerges that should be standardized
-- Team needs to replicate successful approaches
-- Anti-patterns identified that should be avoided
-
-**How to request:**
-```
-This debugging approach you just used seems valuable. Create a workflow document that captures the methodology so we can use it consistently across projects.
-```
-
-**Agent will:**
-- Create structured workflow documentation
-- Store in appropriate `workflows-and-processes/` location
-- Include decision trees, troubleshooting steps, and examples
-- Make it discoverable for future similar issues
-
-### **Directing Cross-Project Learning**
-
-**For new projects:**
-```
-We're starting a mobile app that needs to integrate with our existing web platform. Research our web app authentication patterns and propose how to adapt them for mobile, considering offline scenarios and biometric auth.
-```
-
-**For problem-solving:**
-```
-This performance issue seems similar to challenges we've solved before. Research our optimization patterns across all projects and propose a solution that applies proven techniques to this context.
-```
-
-**For architecture decisions:**
-```
-Research how we've handled database migrations across our projects. Document the patterns that worked well and the anti-patterns we should avoid, then propose an approach for this project.
-```
-
-## 📚 **Instructing Documentation Creation**
-
-### **Process Documentation Triggers**
-
-**Request process docs when:**
-1. **Repeated Problem Solving**: Agent solves same type of issue multiple times
-2. **Complex Debugging**: Multi-step debugging process proves effective
-3. **Integration Patterns**: Successful integration between systems
-4. **Quality Improvements**: Approaches that significantly improve code quality
-
-**Example instructions:**
-```
-You've now optimized database queries in three different projects using similar approaches. Create a workflow document that captures this optimization methodology so it becomes a standard practice.
-```
-
-### **Architectural Decision Documentation**
-
-**Request when:**
-- Major technology choices are made
-- Trade-offs between approaches are evaluated
-- Patterns emerge that should be standardized
-- Anti-patterns are discovered
-
-**Example:**
-```
-Document this microservice communication pattern as an architectural decision record. Include the problem context, alternatives considered, decision rationale, and implementation guidelines.
-```
-
-### **Anti-Pattern Documentation**
-
-**Request when:**
-- Approaches fail or cause problems
-- Debugging reveals systemic issues
-- Performance problems are traced to design choices
-
-**Example:**
-```
-This caching issue we just debugged represents an anti-pattern. Document it as a "what not to do" guide, including how to recognize the symptoms and the correct approach.
-```
-
-## 🧠 **Intelligent Context Discovery**
-
-### **No Configuration Required**
-The framework eliminates configuration complexity by leveraging agent intelligence:
-
-**Agents automatically discover:**
-- **Project relationships** from directory structure
-- **Technology patterns** from code analysis
-- **Cross-project connections** from content analysis
-- **Knowledge organization** from RAG collections
-- **Workflow patterns** from documentation structure
-
-**Example agent discovery:**
-```
-Agent: "I can see from the contexts/ directory that we have:
-- example-web-app (React/TypeScript frontend)
-- example-api (Go microservices)  
-- shared (cross-project patterns)
-
-The web app context shows JWT authentication patterns, and the API context shows similar security approaches. I can propose a unified authentication strategy that leverages both patterns."
-```
-
-**Your role:** Trust the agent's analysis and provide strategic direction
-**Agent's role:** Discover, analyze, and propose based on intelligent context reading
-
-## 🔄 **Agent Workflow Management**
-
-### **Standard Agent Instructions**
-
-**At project start:**
-```
-Initialize with @contexts/project-name/dev_agent_init_prompt.md. Research existing patterns relevant to [project type/technology] across our ecosystem before starting implementation.
-```
-
-**During development:**
-```
-Before implementing [feature], research similar implementations across our projects. Propose an approach that reuses proven patterns and stores the new solution for future projects.
-```
-
-**After solving complex problems:**
-```
-This solution should be documented and stored. Create appropriate workflow documentation and ensure the pattern is available for future similar challenges.
-```
-
-### **Quality Assurance Directions**
-
-**Code quality:**
-```
-Apply our established coding standards and research quality patterns from similar projects. Ensure this implementation follows proven practices from our knowledge base.
-```
-
-**Testing approach:**
-```
-Research testing strategies from our existing projects and apply the patterns that match this project type. Document any new testing approaches that emerge.
-```
-
-**Performance optimization:**
-```
-Research performance optimization patterns across our projects. Apply proven techniques and document any new optimizations for future use.
-```
-
-## 🎯 **Specific Direction Scenarios**
-
-### **New Feature Development**
+To initialize an agent for a specific project:
 
 ```
-We need to add real-time notifications to this project. Research how we've implemented real-time features across our ecosystem, propose an approach that leverages our proven patterns, and document any new patterns that emerge from this implementation.
+@dev_agent_init_prompt.md
 ```
 
-**Agent will:**
-- Query existing real-time implementations
-- Analyze WebSocket, SSE, and push notification patterns
-- Propose solution combining best practices
-- Implement following proven patterns
-- Store new insights for future projects
+The agent will:
+- Load the universal persona from `dev_agent_persona.md`
+- Load project-specific context from `local/your-project-name/dev_agent_context.md`
+- Be ready to operate with both universal intelligence and project-specific knowledge
 
-### **Debugging Complex Issues**
+### Project Context Discovery
 
-```
-This memory leak is similar to issues we've solved before. Research our debugging methodologies and apply proven diagnostic techniques. Document the debugging process if it reveals new patterns.
-```
+Agents automatically discover:
+- Project boundaries and relationships
+- Technology stacks and patterns
+- Current development status
+- Historical achievements and issues
 
-**Agent will:**
-- Query debugging strategies from knowledge base
-- Apply proven diagnostic techniques
-- Document the debugging process if novel
-- Store solution for similar future issues
+## Directing Agent Behavior
 
-### **Code Quality Improvements**
+### Research and Discovery
 
 ```
-Research code quality patterns from our high-performing projects and apply them systematically to improve this codebase. Document any new quality improvement techniques that emerge.
+Research authentication patterns across our projects and propose an approach for this context that leverages our proven solutions.
 ```
 
-**Agent will:**
-- Analyze quality patterns across projects
-- Apply proven refactoring techniques
-- Implement consistent standards
-- Document new quality improvements
+The agent will:
+- Query the knowledge base with `qdrant-find`
+- Analyze patterns across all indexed projects
+- Propose solutions combining best practices
+- Store new insights with `qdrant-store`
 
-### **Performance Optimization**
+### Implementation Guidance
 
 ```
-Research performance optimization strategies across our projects and apply the most relevant techniques to improve response times. Focus on patterns that have delivered measurable improvements in similar contexts.
+Implement user authentication following these guidelines:
+- Apply the research patterns you discovered
+- Maintain consistency with our established approaches
+- Document any new patterns that emerge
+- Store solutions that could benefit other projects
 ```
 
-**Agent will:**
-- Query performance optimization patterns
-- Analyze successful optimization approaches
-- Apply techniques proven in similar contexts
-- Measure and document improvements
+### Quality Assurance
 
-## 📊 **Managing Agent Learning**
-
-### **Knowledge Quality Direction**
-
-**Encouraging good knowledge capture:**
 ```
-Ensure you're storing detailed context with solutions, including when they apply, what alternatives were considered, and what trade-offs were made.
+Review this implementation against our established quality standards:
+- Apply proven quality practices from similar projects
+- Address any technical debt using proven approaches
+- Ensure consistency with our architectural patterns
+- Document any new quality practices that emerge
 ```
 
-**Improving knowledge organization:**
+## Knowledge Management
+
+### Storing Solutions
+
 ```
-The solutions you're storing should include specific technology context, performance characteristics, and links to related patterns.
+qdrant-store "Solution: JWT refresh token rotation - Implemented secure token management with Redis blacklist. Context: Web API authentication. Performance: <50ms response time. Files: auth/middleware.py, auth/models.py"
 ```
 
-### **Cross-Project Pattern Recognition**
+### Finding Patterns
 
-**Directing pattern discovery:**
 ```
-Look for patterns that could benefit other project types. This authentication approach might be valuable for our mobile projects - ensure the storage includes cross-technology applicability.
-```
-
-**Encouraging abstraction:**
-```
-This solution is specific to React, but the underlying pattern could apply to other frontend frameworks. Store both the specific implementation and the general pattern.
+qdrant-find "authentication implementation patterns"
+qdrant-find "error handling approaches for APIs"
+qdrant-find "testing strategies for [project type]"
 ```
 
-## 🔧 **Agent Performance Management**
+## Cross-Project Intelligence
 
-### **Monitoring Agent Effectiveness**
+### Pattern Discovery
 
-**Indicators of good agent performance:**
-- Proactively queries knowledge before implementing
-- Stores solutions with comprehensive context
-- Creates documentation when patterns emerge
-- Suggests workflow improvements
-- Applies cross-project learnings effectively
+Agents can discover patterns from:
+- All indexed code repositories
+- All project contexts in `local/`
+- Framework documentation and examples
+- Framework examples in `contexts/`
 
-**Course corrections:**
+### Solution Adaptation
+
+When an agent finds a pattern from another project:
+1. **Analyze Context**: Understand when and why the pattern was used
+2. **Adapt for Current Project**: Modify the pattern for current technology and requirements
+3. **Validate Approach**: Ensure the adaptation maintains quality standards
+4. **Store Enhanced Solution**: Contribute the improved pattern back to the knowledge base
+
+## Agent Workflows
+
+### Feature Development
+
 ```
-You're implementing solutions without researching existing patterns first. Always query our knowledge base before starting implementation to leverage proven approaches.
+We need to implement [feature description]. Research how we've built similar features across our projects and propose an approach that:
+- Leverages our proven patterns
+- Considers cross-project compatibility
+- Follows our established quality standards
+- Can be reused in future projects
 ```
 
-### **Improving Agent Knowledge Use**
+### Problem Solving
 
-**If agent isn't finding relevant patterns:**
 ```
-Expand your search terms and try different perspectives. Look for solutions from adjacent problem domains that might apply to this context.
+We're experiencing [problem description]. Research how we've solved similar issues across our projects and propose a debugging strategy that applies our proven diagnostic approaches.
 ```
 
-**If agent isn't storing solutions effectively:**
+### Architecture Decisions
+
 ```
-Include more context about when this solution applies, what alternatives exist, and how it could be adapted for different scenarios.
+We need to make an architectural decision about [topic]. Research our historical approaches and the trade-offs we've considered. Propose a solution that:
+- Builds on our proven patterns
+- Avoids known pitfalls
+- Maintains consistency with our ecosystem
+- Can be applied to similar future decisions
 ```
+
+## Quality Management
+
+### Code Review
+
+```
+Review this codebase against our established quality standards. Research quality patterns from our highest-performing projects and identify specific improvements that would:
+- Apply proven quality practices
+- Address technical debt systematically
+- Improve maintainability and readability
+- Enhance testing coverage and effectiveness
+```
+
+### Performance Optimization
+
+```
+Analyze performance characteristics and research optimization strategies from our other projects. Focus on:
+- Proven optimization techniques from similar contexts
+- Performance patterns that have delivered measurable improvements
+- Monitoring and measurement approaches we've used successfully
+- Common performance pitfalls to avoid
+```
+
+## Best Practices
+
+### Effective Direction
+
+1. **Be Specific**: Provide clear context about what you want the agent to accomplish
+2. **Leverage Knowledge**: Ask the agent to research existing patterns before implementing
+3. **Encourage Storage**: Prompt the agent to store successful solutions for future use
+4. **Cross-Project Thinking**: Encourage the agent to look beyond the current project
+
+### Knowledge Capture
+
+1. **Store Solutions**: Always store successful implementations with `qdrant-store`
+2. **Document Context**: Include when and why a solution works
+3. **Performance Metrics**: Include measurable improvements when possible
+4. **File References**: Reference specific files for implementation details
+
+### Quality Standards
+
+1. **Consistency**: Maintain consistency with established patterns across projects
+2. **Documentation**: Document new patterns and approaches as they emerge
+3. **Validation**: Test solutions against known quality standards
+4. **Evolution**: Allow patterns to evolve based on real-world feedback
+
+## Troubleshooting
+
+### Common Issues
+
+**Agent doesn't find relevant patterns:**
+- Ensure your code repositories are indexed
+- Check that project contexts are properly set up
+- Verify the knowledge base contains relevant content
+
+**Agent suggests inappropriate solutions:**
+- Provide more context about your specific requirements
+- Ask the agent to research similar contexts more thoroughly
+- Guide the agent to focus on relevant technology stacks
+
+**Knowledge isn't being stored:**
+- Ensure the agent has access to `qdrant-store`
+- Check that the MCP integration is working properly
+- Verify the agent is following storage protocols
+
+## Advanced Techniques
+
+### Multi-Project Analysis
+
+```
+Analyze our entire ecosystem for [topic] and identify:
+- Common patterns and their success rates
+- Technology-specific approaches
+- Performance characteristics across projects
+- Opportunities for standardization
+```
+
+### Pattern Evolution
+
+```
+Research how [pattern] has evolved across our projects and identify:
+- Improvements that have been made
+- Contexts where the pattern works best
+- Limitations and alternatives
+- Opportunities for further enhancement
+```
+
+### Knowledge Synthesis
+
+```
+Combine insights from multiple projects to create a comprehensive approach for [topic]:
+- Identify the best elements from each implementation
+- Create a unified solution that addresses all contexts
+- Document when to use each variation
+- Store the synthesized approach for future use
+```
+
+## **Workflow and Process Management**
+
+### **Local Workflows Directory Structure**
+
+The framework creates a `local/workflows-and-processes/` directory that contains:
+- **Workflow files**: Recorded workflows from actual development work
+- **Process documentation**: Best practices and process improvements
+
+**⚠️ IMPORTANT**: Users should NOT manually create or edit workflow files. Instead, agents should manage all workflow documentation.
+
+### **Agent Workflow Management Responsibilities**
+
+#### **1. Workflow Recording**
+When a user completes a task successfully, the agent should:
+
+1. **Analyze the accomplishment**: Understand what was achieved and how
+2. **Document the workflow**: Create a detailed workflow file in `local/workflows-and-processes/`
+3. **Store in knowledge base**: Use `qdrant-store` to make the workflow discoverable
+4. **Update workflow index**: Ensure the workflow is properly categorized and searchable
+
+**Example workflow recording prompt**:
+```
+"Please record this workflow for future reference. We just successfully implemented JWT authentication with refresh tokens, including proper error handling and Redis blacklisting."
+```
+
+#### **2. Workflow Updates**
+When users discover improvements or new learnings, agents should:
+
+1. **Review existing workflows**: Find relevant workflow files
+2. **Incorporate new information**: Update workflows with learnings
+3. **Document improvements**: Add new sections or modify existing content
+4. **Store enhanced knowledge**: Update the knowledge base with improvements
+
+**Example workflow update prompt**:
+```
+"Please update the JWT authentication workflow with what we learned about clock skew issues between services."
+```
+
+### **Workflow File Structure**
+
+#### **Workflow Format**
+```markdown
+# [Workflow Name]
+
+## Purpose
+Brief description of what this workflow accomplishes
+
+## Prerequisites
+- Required tools, dependencies, or setup
+
+## Steps
+1. **Step 1**: Detailed description
+   - Sub-steps if needed
+   - Expected outcomes
+
+2. **Step 2**: Next action
+   - Any decision points
+   - Alternative approaches
+
+## Validation
+- How to verify the workflow succeeded
+- Common failure points and solutions
+
+## Context
+- When to use this workflow
+- Related workflows or patterns
+- Cross-project applicability
+
+## Knowledge Integration
+- How this workflow contributes to the ecosystem
+- Related patterns from other projects
+```
+
+### **Workflow Lifecycle Management**
+
+#### **Discovery Phase**
+- Agents identify workflow opportunities during development
+- Recognize when tasks could benefit from documentation
+- Suggest workflow recording when appropriate
+
+#### **Recording Phase**
+- Document workflows with full context and rationale
+- Include decision points and alternatives considered
+- Store in the workflows directory
+
+#### **Refinement Phase**
+- Update workflows based on new learnings
+- Incorporate feedback from other projects
+- Evolve workflows based on usage patterns
+
+#### **Reuse Phase**
+- Apply workflows to similar future tasks
+- Adapt workflows to new contexts
+- Share workflows across projects
+
+#### **Evolution Phase**
+- Continuously improve workflows based on outcomes
+- Merge similar workflows when appropriate
+- Archive outdated workflows
+
+### **Knowledge Base Integration**
+
+#### **Automatic Indexing**
+- All workflows are automatically indexed in the RAG system
+- Available for cross-project discovery via `qdrant-find`
+- Enhanced with learnings from other projects
+
+#### **Cross-Project Learning**
+- Workflows from one project can benefit others
+- Patterns discovered in one context can be applied elsewhere
+- Knowledge evolves through real-world usage
+
+#### **Quality Assurance**
+- Agents validate workflows against best practices
+- Ensure workflows are complete and actionable
+- Maintain consistency across the ecosystem
+
+### **User Interaction Patterns**
+
+#### **Proactive Workflow Management**
+Agents should proactively:
+- Suggest workflow recording when tasks are completed
+- Identify opportunities for workflow improvement
+- Maintain workflow quality and relevance
+
+#### **Reactive Workflow Support**
+Agents should respond to user requests by:
+- Recording workflows as requested
+- Updating existing workflows with new information
+- Providing workflow guidance and examples
+
+#### **Workflow Discovery**
+Agents should help users:
+- Find relevant workflows for current tasks
+- Understand how workflows can be adapted
+- Discover related patterns from other projects
+- Learn from workflow evolution and improvements
 
 ---
 
-## 🎯 **Quick Reference: Agent Direction Commands**
+**Key Principle**: Agents are responsible for all workflow documentation. Users focus on development work while agents maintain institutional knowledge through structured workflow management.
 
-### **Research & Discovery**
-- "Research existing patterns for [problem/feature] across our projects"
-- "Analyze how we've solved similar challenges in [technology/domain]"
-- "Look for proven approaches to [architectural challenge]"
-
-### **Documentation Creation**
-- "Create workflow documentation for this [process/approach]"
-- "Document this as an architectural decision with rationale"
-- "Capture this debugging methodology as a reusable process"
-
-### **Knowledge Management**
-- "Store this solution with comprehensive context for future use"
-- "Ensure this pattern is documented for cross-project application"
-- "Create anti-pattern documentation for this failed approach"
-
-### **Quality & Standards**
-- "Apply our established patterns and standards to this implementation"
-- "Research quality improvements from our best-performing projects"
-- "Ensure this follows proven practices from similar implementations"
-
----
-
-**Remember: You provide strategic direction, agents handle tactical execution and knowledge management. This creates a compound learning system where each project builds on the accumulated wisdom of all previous work.**
+**Effective agent direction transforms your development workflow from reactive problem-solving to proactive, knowledge-driven engineering. Use these techniques to maximize the value of your cross-project intelligence.**

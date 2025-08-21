@@ -43,8 +43,12 @@
 - **[Example Contexts](../contexts/)** - Sample project contexts
   - **[Web App Example](../contexts/example-web-app/)** - React/Node.js project context
   - **[API Service Example](../contexts/example-api/)** - Go microservices context
-  - **[Shared Patterns](../contexts/shared/)** - Cross-project patterns
+  - **[Framework Examples](../contexts/)** - Example project contexts
 - **[Template Guides](../templates/)** - Base templates for new projects
+
+### **Template Guides**
+- [`templates/context/dev_agent_context_template.md`](../templates/context/dev_agent_context_template.md) - **REQUIRED** - Context management structure and protocols (scaffold for new projects)
+- [`dev_agent_persona.md`](../dev_agent_persona.md) - Universal dev agent persona for all projects
 
 ## 🎯 **Quick Start Paths**
 

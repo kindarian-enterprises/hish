@@ -30,4 +30,4 @@ CMD ["pytest", "-v", "--tb=short"]
 FROM base AS production
 
 # Default command shows help
-CMD ["python", "app.py", "--help"]
+CMD ["python3", "app.py", "--help"]

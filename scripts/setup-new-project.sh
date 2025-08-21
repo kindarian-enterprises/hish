@@ -226,7 +226,7 @@ echo "✅ RAG infrastructure is set up and ready to use.
 Index your codebase:
 \`\`\`bash
 cd rag/indexer
-python app.py index /path/to/your/code --collection ${PROJECT_NAME,,}_code
+python3 app.py index /path/to/your/code --collection ${PROJECT_NAME,,}_code
 \`\`\`
 
 Use knowledge queries in Cursor:

@@ -1,6 +1,76 @@
 # 🧠 Kindarian Cursor Context
 
-**A comprehensive framework for managing multiple development agents with shared knowledge and cross-project intelligence.**
+**A comprehensive prompt and knowledge framework for managing multiple development agents with shared context and cross-project intelligence.**
+
+---
+
+## 🎯 **Why This Framework Exists**
+
+**The Problem**: You're using Cursor with AI models, but they don't know your codebase, your development decisions, your patterns, or your philosophy. Every conversation starts from scratch, and you waste time explaining context that should already be known.
+
+**The Solution**: Kindarian Cursor Context transforms ANY AI model in Cursor into a powerful coding assistant with full knowledge of your development ecosystem. No more dedicated "coding agent" services needed.
+
+### **What This Means for You**
+
+**🧠 Instant Context**: Any AI model you use in Cursor immediately knows your codebase structure, architectural decisions, and development patterns.
+
+**💡 Informed Decisions**: AI assistants understand your dev philosophy, coding standards, and why previous decisions were made.
+
+**🚀 No More Repetition**: Stop explaining your project structure, tech stack, and patterns every time you start a new conversation.
+
+**🎯 Universal Intelligence**: Whether you're using Claude, GPT, or any other model, they all get the same comprehensive context.
+
+### **The Transformation**
+
+**Before**: Every AI conversation feels like starting from scratch. You're constantly explaining your architecture, justifying past decisions, and re-teaching your development philosophy. It's like having a brilliant intern who shows up every day with amnesia.
+
+**After**: Every AI model in Cursor becomes a seasoned member of your development team. They understand your codebase like they've been working on it for years. They know why you chose that authentication pattern, remember the performance issues you solved last month, and can suggest improvements based on your established standards.
+
+**This isn't about managing multiple projects—it's about finally having AI coding assistants that actually understand your work instead of just guessing at it.**
+
+---
+
+## ⚠️ **PREREQUISITES - READ BEFORE STARTING** ⚠️
+
+**🚨 MANDATORY: Your system must meet these requirements before proceeding**
+
+### **Required Software**
+- **Docker**: Version 20.10+ with Docker Compose v2
+  ```bash
+  # Verify installation
+  docker --version
+  docker compose version
+  ```
+- **Git**: Version 2.20+
+  ```bash
+  git --version
+  ```
+- **Make**: GNU Make 3.81+
+  ```bash
+  make --version
+  ```
+
+### **Python Environment (for local development)**
+- **Python**: Version 3.8+ (for local MCP server if not using Docker)
+- **pip**: Latest version
+- **pyenv** (optional): For Python version management
+  ```bash
+  # If using pyenv, ensure it's properly configured
+  pyenv versions
+  python --version
+  ```
+
+### **Network Requirements**
+- **Internet Access**: Required for Docker image pulls and dependencies
+- **Ports**: 6333 (Qdrant), 8000+ (MCP server)
+- **Firewall**: Ensure Docker can bind to required ports
+
+### **Troubleshooting Common Issues**
+- **Docker Permission Errors**: Add user to docker group or use `sudo`
+- **Port Conflicts**: Check if ports 6333, 8000+ are available
+- **Python Version Issues**: Use pyenv or virtual environments for isolation
+
+**✅ All prerequisites met? Continue to Quick Start below!**
 
 ---
 
@@ -60,12 +130,15 @@ make quick-start
 # Create a new project context
 ./scripts/new-project-context.sh
 
-# This creates: contexts/your-project-name/
-# ├── dev_agent_persona.md      # Project-specific agent configuration
+# This creates: local/your-project-name/ (gitignored for local changes)
 # ├── dev_agent_context.md      # Project state and history
-# ├── dev_agent_init_prompt.md  # Initialization protocol
-# └── project_config.yml        # Code repo paths and settings
+# └── README.md                 # Project documentation
 ```
+
+**Note**: The following files are now universal and shared across all projects:
+- **`dev_agent_persona.md`** - Universal dev agent persona (top-level)
+- **`dev_agent_init_prompt.md`** - Universal initialization protocol (top-level)
+- **`dev_agent_session_end_prompt.md`** - Universal session end protocol (top-level)
 
 ### **3. Index Your Code Repositories**
 ```bash
@@ -108,10 +181,15 @@ make setup-cursor
 ⚠️ **Replace `/absolute/path/to/kindarian-cursor-context/` with your actual path!**
 
 ### **5. Initialize Your Agent**
-In Cursor, open the kindarian-cursor-context framework and reference your project:
+In Cursor, open the kindarian-cursor-context framework and reference the universal init prompt:
 ```
-@contexts/your-project-name/dev_agent_init_prompt.md
+@dev_agent_init_prompt.md
 ```
+
+The agent will automatically:
+- Load the universal persona from `dev_agent_persona.md`
+- Load project-specific context from `local/your-project-name/dev_agent_context.md`
+- Be ready to operate with both universal intelligence and project-specific knowledge
 
 **✅ You should now have access to these tools in Cursor:**
 - `qdrant-find "search query"` - Search patterns across all your projects
@@ -182,24 +260,16 @@ cp env.framework local/env.framework.my-team
 
 ## 📚 **What's Included**
 
-### **📄 Core Templates**
-```
-contexts/              # Project-specific contexts (personas, contexts, prompts)
-├── example-web-app/   # React/Node.js project context
-├── example-api/       # Go microservices context
-└── shared/            # Cross-project patterns and workflows
-templates/             # Base templates for new projects
-workflows-and-processes/ # Reusable workflows and process documentation
-```
-
-**No configuration files needed** - agents intelligently discover context and relationships
+### **Core Templates**
+- **`templates/context/dev_agent_context_template.md`** - **REQUIRED** - Scaffold for new project contexts (contains the critical update protocol and comprehensive project tracking structure)
+- **`contexts/`** - Framework examples showing proper context structure (no persona/prompts - those are universal)
 
 ### **🔄 Workflow Templates**
 ```
-workflows-and-processes/
-├── examples/          # RAG-enhanced development workflows
-└── templates/         # Testing, deployment, and process templates
+workflows-and-processes/     # Framework examples and shared patterns (tracked)
 ```
+
+**Note**: User-specific workflows are automatically created in `local/workflows-and-processes/` when the first project context is added. Users ask agents to record and manage workflows rather than writing them manually. The RAG-enhanced development workflow is built into the agent persona.
 
 ### **🧠 RAG Infrastructure**
 ```
@@ -218,31 +288,22 @@ docs/
 
 ## 🎭 **Agent Persona System**
 
+**Universal Intelligence**: The framework provides a single, comprehensive dev agent persona that operates across all projects.
+
 **No configuration files needed** - agents intelligently discover context and relationships from directory structure and content.
 
-The persona template lets you define:
+The universal persona includes:
 
-- **Agent Identity**: Role, expertise areas, technology focus
-- **Coding Standards**: Language-specific patterns, quality requirements
-- **Architectural Philosophy**: Design principles, decision-making frameworks
-- **Anti-Patterns**: What to avoid and why
-- **RAG Integration**: Knowledge discovery and storage workflows
+- **Universal Expertise**: Multi-project intelligence, technology agnostic, development methodologies
+- **Coding Standards**: Language-agnostic patterns, quality requirements, anti-patterns
+- **Architectural Philosophy**: Design principles, decision-making frameworks, quality evolution
+- **RAG Integration**: Knowledge discovery and storage workflows across all projects
 
-### **Example Persona Customization**
-```markdown
-## AGENT IDENTITY & ROLE
-You are **MyProject Dev Agent** - a senior full-stack engineer with expertise in:
-- **React/TypeScript Frontend** (Next.js, TailwindCSS, React Query)
-- **Node.js Backend** (Express, PostgreSQL, Redis)
-- **Cloud Infrastructure** (AWS, Docker, Kubernetes)
-- **Production-Grade Development** (CI/CD, monitoring, security)
-
-## ARCHITECTURAL PHILOSOPHY
-### Reliability-First Design
-- **Fault Tolerance**: Design for failure scenarios
-- **Observability**: Comprehensive logging and monitoring
-- **Security by Design**: Zero-trust architecture principles
-```
+### **Project-Specific Context**
+Each project in `local/` contains:
+- **Project State**: Current status, achievements, issues, and historical tracking
+- **Initialization Protocol**: How to initialize the agent for this specific project
+- **Session Management**: Continuity and knowledge capture protocols
 
 ## 📊 **Context Management System**
 
@@ -278,6 +339,11 @@ qdrant-store "Solution: JWT refresh token rotation - Implemented secure token ma
 - **Decision Context**: Understand why previous choices were made
 - **Performance Insights**: Apply optimization patterns that work
 
+### **Automatic Indexing**
+- **Local Contexts**: All project contexts in `local/` are automatically indexed
+- **Framework Content**: Documentation, workflows, and examples are indexed
+- **Cross-Project Discovery**: Find patterns from any project when working on any other
+
 ## 🛠️ **Setup Workflows**
 
 ### **For New Projects**
@@ -288,14 +354,14 @@ qdrant-store "Solution: JWT refresh token rotation - Implemented secure token ma
 5. Establish context update protocols
 
 ### **For Existing Projects**
-1. Create persona based on current practices
+1. Create context based on current practices
 2. Document current state in context template
 3. Gradually build knowledge base from tribal knowledge
 4. Integrate RAG queries into daily development
 5. Store solutions as they are discovered
 
 ### **For Teams**
-1. Establish shared persona standards
+1. Establish shared context standards
 2. Create team-wide knowledge collections
 3. Set up automated knowledge capture workflows
 4. Train on effective RAG query patterns
@@ -335,80 +401,3 @@ qdrant-find "caching strategies for better performance"
 qdrant-find "user session optimization patterns"  
 # Finds both API Redis patterns and mobile storage patterns
 ```
-
-## 📈 **Benefits You'll See**
-
-### **Immediate (Week 1)**
-- **Cross-Project Discovery**: Find solutions from ANY project when working on any other
-- **Zero Context Loss**: Agent remembers ALL project details across sessions
-- **Institutional Memory**: Access to patterns from your entire engineering history
-
-### **Short Term (Month 1)**
-- **Accelerated Development**: Mobile apps benefit from web patterns, APIs learn from frontend
-- **Quality Multiplication**: Anti-patterns discovered once prevent mistakes everywhere
-- **Pattern Evolution**: Solutions improve through cross-project application and feedback
-
-### **Long Term (Quarter 1)**  
-- **Engineering Ecosystem Intelligence**: Your entire codebase becomes a learning system
-- **Compound Knowledge Growth**: Each project makes ALL projects better
-- **Team Velocity Multiplier**: New projects start with accumulated wisdom from all previous projects
-
-## 🎓 **Learning Resources**
-
-### **Essential Reading**
-- **[📚 Documentation Hub](docs/README.md)** - **START HERE** - Complete navigation guide
-- **[🎯 Directing Agents](docs/agent-management/directing-agents.md)** - **ESSENTIAL** - How to manage agents effectively
-- **[🗂️ Knowledge Management](docs/knowledge-management/indexing-and-reindexing.md)** - When/why/how to index content
-- **[🔌 Cursor MCP Integration](docs/setup/cursor-mcp-integration.md)** - Technical setup guide
-
-### **Workflow Examples**
-- [`workflows-and-processes/examples/rag-enhanced-development-workflow.md`](workflows-and-processes/examples/rag-enhanced-development-workflow.md) - Knowledge-first development process
-- [`workflows-and-processes/examples/testing-workflow-template.md`](workflows-and-processes/examples/testing-workflow-template.md) - RAG-augmented testing strategies
-
-### **Template Guides**
-- [`templates/persona/dev_agent_persona_template.md`](templates/persona/dev_agent_persona_template.md) - Complete persona customization guide
-- [`templates/context/dev_agent_context_template.md`](templates/context/dev_agent_context_template.md) - Context management structure and protocols
-
-### **Multi-Project Examples**
-- [`docs/examples/multi-project-workflow.md`](docs/examples/multi-project-workflow.md) - Complete day-in-the-life example of cross-project intelligence
-- [`contexts/example-web-app/`](contexts/example-web-app/) - Example web application context
-- [`contexts/example-api/`](contexts/example-api/) - Example API service context
-- [`contexts/shared/cross_project_patterns.md`](contexts/shared/cross_project_patterns.md) - Shared knowledge patterns across all projects
-
-## 🤝 **Contributing**
-
-This scaffold is designed to be customized and extended. Common improvements:
-
-- **Domain-Specific Templates**: Add templates for your industry or technology
-- **Workflow Enhancements**: Create new process templates based on your experience  
-- **Integration Patterns**: Develop connections to your specific tools and systems
-- **Knowledge Patterns**: Share effective RAG query patterns that work for your domain
-
-## 🛟 **Support and Community**
-
-### **Getting Help**
-- Review the documentation in `docs/` for comprehensive guides
-- Check workflow examples for practical implementation patterns
-- Use the knowledge system to learn from similar implementations
-
-### **Best Practices**
-- **Start Small**: Begin with core templates and basic context management
-- **Build Habits**: Make knowledge queries and storage part of daily workflow
-- **Measure Impact**: Track time savings and quality improvements
-- **Share Learnings**: Contribute successful patterns back to knowledge base
-
-## 🔮 **What Makes This Different**
-
-Unlike static documentation or one-off prompts, Kindarian Cursor Context provides:
-
-- **Persistent Learning**: Knowledge accumulates across all sessions and projects
-- **Pattern Evolution**: Solutions improve based on real-world validation
-- **Cross-Project Insights**: Learn from the entire organizational codebase
-- **Institutional Memory**: Preserve knowledge beyond individual developers
-- **Proactive Guidance**: Discover relevant patterns before problems occur
-
----
-
-**Transform your development workflow from reactive problem-solving to proactive, knowledge-driven engineering.**
-
-*Start with the templates, add your context, query for patterns, store your solutions, and watch your development velocity accelerate while quality improves.*

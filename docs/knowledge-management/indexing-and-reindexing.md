@@ -7,18 +7,21 @@ This guide covers when, why, and how to index and reindex documentation and code
 ### **Initial Setup Indexing**
 
 **When setting up the framework:**
-1. **Index the framework itself**: Templates, workflows, documentation
-2. **Index existing code repositories**: All your current projects
-3. **Index existing documentation**: READMEs, architecture docs, runbooks
-
 ```bash
-# Index the framework documentation
-make index-repo REPO_PATH=. COLLECTION_NAME=framework_docs
-
-# Index your existing projects
-make index-repo REPO_PATH=/path/to/project-alpha COLLECTION_NAME=project_alpha_code
-make index-repo REPO_PATH=/path/to/project-beta COLLECTION_NAME=project_beta_code
+# Index everything automatically
+make index
 ```
+
+This automatically indexes:
+- Framework documentation (templates, workflows, guides)
+- All local project contexts in `local/`
+- **All project code repositories** (discovered automatically from project contexts)
+
+**How it works:**
+1. When you create a project context with `make new-context`, you provide the path to your code repository
+2. The framework stores this path in `local/your-project/repo_path.txt`
+3. `make index` automatically discovers all these paths and indexes the code
+4. No need to remember or manually specify repository paths!
 
 ### **Regular Reindexing Triggers**
 
@@ -57,36 +60,26 @@ make index-repo REPO_PATH=/path/to/project-beta COLLECTION_NAME=project_beta_cod
 
 ## 🛠️ **How to Index Effectively**
 
-### **Collection Strategy**
+### **Simple Indexing (Recommended)**
 
-**Separate collections by purpose:**
+**For most users, this is all you need:**
 ```bash
-# Framework and documentation
-framework_docs          # This framework's documentation
-shared_patterns         # Cross-project patterns and workflows
-
-# Project-specific collections
-project_alpha_code      # Source code and implementations
-project_alpha_docs      # Project-specific documentation
-project_beta_code       # Another project's code
-project_beta_docs       # Another project's documentation
-
-# Technology-specific collections
-react_patterns          # React/frontend patterns across projects
-api_patterns           # Backend/API patterns across projects
-mobile_patterns        # Mobile development patterns
+# Index everything automatically
+make index
 ```
 
-**Collection naming convention:**
-- `{project_name}_code` - Source code and implementations
-- `{project_name}_docs` - Project documentation
-- `{technology}_patterns` - Technology-specific patterns
-- `framework_docs` - Framework documentation
-- `shared_patterns` - Cross-project patterns
+This command:
+- Indexes framework documentation and templates
+- Indexes all local project contexts in `local/`
+- **Automatically discovers and indexes all project code repositories**
+- Creates searchable collections automatically
+- Requires no knowledge of collection names or paths
 
-**Note:** Collection names are discovered automatically by agents during indexing. No manual configuration needed.
+**The framework remembers where your code is - just run `make index`!**
 
-### **Indexing Commands Reference**
+### **Advanced Indexing (Power Users)**
+
+**For specific use cases, you can still use manual indexing:**
 
 **Framework documentation:**
 ```bash
@@ -106,23 +99,14 @@ make index-repo REPO_PATH=/path/to/project COLLECTION_NAME=project_name_code
 make index-repo REPO_PATH=/path/to/project/docs COLLECTION_NAME=project_name_docs
 ```
 
-**Workflow and process documentation:**
-```bash
-# Index new workflow documentation
-make index-repo REPO_PATH=./workflows-and-processes COLLECTION_NAME=shared_patterns
-```
+### **Collection Strategy**
 
-### **Selective Reindexing**
+**Collections are created automatically:**
+- `framework_docs` - Framework documentation, templates, and local contexts
+- `{project_name}_code` - Source code (when manually indexed)
+- `{project_name}_docs` - Project documentation (when manually indexed)
 
-**When you don't need full reindexing:**
-- Only documentation changed: reindex docs collections
-- Only code changed: reindex code collections
-- New workflow created: reindex shared_patterns collection
-
-**Full reindexing triggers:**
-- Major framework updates
-- Significant architectural changes across projects
-- New project additions to the ecosystem
+**Note:** Collection names are discovered automatically by agents during indexing. No manual configuration needed.
 
 ## 📋 **Indexing Workflows**
 
@@ -133,20 +117,16 @@ make index-repo REPO_PATH=./workflows-and-processes COLLECTION_NAME=shared_patte
 1. **Create project context:**
    ```bash
    make new-context
-   # Follow prompts to create contexts/new-project/
+   # Follow prompts to create local/new-project/
+   # The command will ask for your code repository path
    ```
 
-2. **Index project code:**
+2. **Index everything:**
    ```bash
-   make index-repo REPO_PATH=/path/to/new-project COLLECTION_NAME=new_project_code
+   make index
    ```
 
-3. **Index project documentation:**
-   ```bash
-   make index-repo REPO_PATH=/path/to/new-project/docs COLLECTION_NAME=new_project_docs
-   ```
-
-4. **Agent discovers context automatically:**
+3. **Agent discovers context automatically:**
    The agent will read the context directory structure and understand project relationships without configuration
 
 ### **Weekly Maintenance Reindexing**
@@ -157,34 +137,26 @@ make index-repo REPO_PATH=./workflows-and-processes COLLECTION_NAME=shared_patte
 # 1. Check what's changed
 git log --since="1 week ago" --oneline
 
-# 2. Reindex framework docs if workflows/docs changed
-make index-repo REPO_PATH=. COLLECTION_NAME=framework_docs
+# 2. Index everything (framework + all project code)
+make index
 
-# 3. Reindex active project code
-make index-repo REPO_PATH=/path/to/active-project COLLECTION_NAME=active_project_code
-
-# 4. Reindex shared patterns if new workflows created
-make index-repo REPO_PATH=./workflows-and-processes COLLECTION_NAME=shared_patterns
+# 3. That's it! The framework automatically handles all repositories
 ```
 
 ### **After Major Documentation Updates**
 
 **When significant documentation is created:**
 
-1. **Workflow documentation created:**
-   ```bash
-   make index-repo REPO_PATH=./workflows-and-processes COLLECTION_NAME=shared_patterns
-   ```
+```bash
+# Index everything to capture all changes
+make index
+```
 
-2. **Architecture decisions documented:**
-   ```bash
-   make index-repo REPO_PATH=/path/to/project/docs COLLECTION_NAME=project_name_docs
-   ```
-
-3. **Anti-patterns documented:**
-   ```bash
-   make index-repo REPO_PATH=./workflows-and-processes COLLECTION_NAME=shared_patterns
-   ```
+This will automatically include:
+- New workflow documentation
+- Updated project contexts
+- New architectural decisions
+- Anti-patterns and lessons learned
 
 ## 🔍 **Monitoring Indexing Health**
 
@@ -226,27 +198,27 @@ make health
 make down && make up
 
 # Check disk space for Qdrant data
-du -sh .data/qdrant/
+du -sh rag/qdrant_data/
 ```
 
 **If agents aren't finding recent content:**
 - Verify recent content was actually indexed
-- Check collection names match project configurations
-- Ensure agents are querying appropriate collections
+- Run `make index` to ensure everything is up to date
+- Check that content is in the expected directories
 
 ## 🎯 **Best Practices**
 
 ### **Indexing Frequency**
 
 **High-frequency reindexing (daily/weekly):**
-- Active development projects
-- Frequently updated documentation
-- Workflow and process documentation
+- Use `make index` after significant changes
+- Reindex when adding new project contexts
+- Reindex after creating new workflows
 
 **Medium-frequency reindexing (bi-weekly/monthly):**
-- Stable project codebases
-- Architecture documentation
-- Framework documentation
+- Use `make index` for regular maintenance
+- Reindex stable project codebases
+- Reindex framework documentation
 
 **Low-frequency reindexing (monthly/quarterly):**
 - Legacy project code
@@ -255,27 +227,18 @@ du -sh .data/qdrant/
 
 ### **Collection Management**
 
-**Keep collections focused:**
-- Don't mix code and documentation in same collection
-- Separate by technology when patterns differ significantly
-- Use descriptive, consistent naming conventions
-
-**Monitor collection sizes:**
-- Large collections (>10k chunks) may need splitting
-- Very small collections (<100 chunks) may need combining
-- Balance between specificity and discoverability
-
-**Collection discovery:**
-- Agents automatically discover and organize collections during indexing
+**Collections are managed automatically:**
+- Framework creates appropriate collections
+- Agents discover and organize content
 - No manual collection configuration needed
-- Context relationships are inferred from directory structure and content
+- Context relationships are inferred from directory structure
 
 ### **Automation Opportunities**
 
 **Consider automating:**
-- Weekly reindexing of active projects
+- Weekly `make index` runs
 - Indexing triggered by significant git commits
-- Notification when collections haven't been updated recently
+- Notification when indexing hasn't been run recently
 
 **Manual indexing for:**
 - New project integration
@@ -287,22 +250,17 @@ du -sh .data/qdrant/
 ## 🚀 **Quick Reference Commands**
 
 ```bash
+# Index everything automatically (RECOMMENDED)
+make index
+
 # Check indexing health
 make health
 make collections
 
-# Index new content
+# Advanced: Index specific content manually
 make index-repo REPO_PATH=/path/to/content COLLECTION_NAME=collection_name
-
-# Framework maintenance
-make index-repo REPO_PATH=. COLLECTION_NAME=framework_docs
-make index-repo REPO_PATH=./workflows-and-processes COLLECTION_NAME=shared_patterns
-
-# Project maintenance
-make index-repo REPO_PATH=/path/to/project COLLECTION_NAME=project_code
-make index-repo REPO_PATH=/path/to/project/docs COLLECTION_NAME=project_docs
 ```
 
 ---
 
-**Regular indexing keeps your knowledge fresh and ensures agents have access to your latest wisdom and patterns. Make it part of your development rhythm.**
+**For most users, `make index` is all you need. It automatically discovers and indexes all your project code repositories!**
