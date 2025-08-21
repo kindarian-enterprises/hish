@@ -32,9 +32,12 @@ make quick-start
 
 ---
 
-## 🔄 **Step 2: Keep Your Local Changes Safe (One-time setup)**
+## 🔄 **Step 2: Create Your Working Branch (One-time setup)**
 
 ```bash
+# Create a local branch for your work
+git checkout -b my-team-customization
+
 # Create local directories for your customizations
 mkdir -p local overrides private tmp
 
@@ -43,8 +46,8 @@ mkdir -p local overrides private tmp
 ```
 
 **Why this matters:**
-- Your local changes stay separate from the framework code
-- You can customize without breaking anything
+- Your work is on a separate branch from the main framework
+- You can customize without affecting the main code
 - Easy to get updates from the main repository
 
 ---
@@ -52,12 +55,15 @@ mkdir -p local overrides private tmp
 ## 📥 **Step 3: Get Updates When You Want New Features**
 
 ```bash
-# Get the latest updates from the main repository
+# Use the helper script (easiest option)
+./scripts/sync-upstream.sh
+
+# OR do it manually:
+git checkout main
 git fetch origin
 git merge origin/main
-
-# Or use the helper script
-./scripts/sync-upstream.sh
+git checkout my-team-customization
+git merge main
 ```
 
 **When to do this:**
@@ -159,7 +165,43 @@ Research authentication patterns across our projects and propose an approach for
 
 ---
 
-## 🆘 **Need Help?**
+## 🔍 **Troubleshooting Common Issues**
+
+### **"make: docker-compose: No such file or directory"**
+**Problem:** Your system has Docker Compose v2 (modern) but the framework is configured for v1
+**Solution:** This is already fixed! The framework now uses `docker compose` (v2 syntax)
+
+### **"Permission denied" errors**
+**Problem:** Docker permission issues
+**Solution:**
+```bash
+# Add your user to docker group (one-time setup)
+sudo usermod -aG docker $USER
+# Log out and back in, then test:
+docker run hello-world
+```
+
+### **"No such collection" when querying**
+**Problem:** You haven't indexed any content yet
+**Solution:**
+```bash
+# Index some content first
+make index-repo REPO_PATH=/path/to/your-code COLLECTION_NAME=my_project
+# Then check collections
+make collections
+```
+
+### **Framework won't start**
+**Problem:** Port conflicts or Docker issues
+**Solution:**
+```bash
+# Check what's using port 6333
+sudo lsof -i :6333
+# Stop conflicting services, then:
+make down && make up
+```
+
+## 🆘 **Need More Help?**
 
 - **📚 [Complete Setup Guide](environment-setup.md)** - Detailed configuration
 - **🔄 [Upstream Workflow](upstream-main-workflow.md)** - Collaboration guide  

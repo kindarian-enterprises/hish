@@ -16,13 +16,16 @@
 
 ### **Step 1: Clone the Repository**
 ```bash
-# Clone your fork or the main repo
-git clone https://github.com/your-username/kindarian-cursor-context.git
+# Clone the main repository directly
+git clone https://github.com/kindarian-enterprises/kindarian-cursor-context.git
 cd kindarian-cursor-context
 ```
 
-### **Step 2: Set Up Local Customization (One-time setup)**
+### **Step 2: Create Your Working Branch (One-time setup)**
 ```bash
+# Create a local branch for your work
+git checkout -b my-team-customization
+
 # Create directories for your local customizations
 mkdir -p local overrides private tmp
 
@@ -30,23 +33,23 @@ mkdir -p local overrides private tmp
 # Put your machine-specific files here to avoid conflicts
 
 # Verify your setup
-git remote -v
+git branch
 # Should show:
-# origin    https://github.com/kindarian-enterprises/kindarian-cursor-context.git (fetch)
-# origin    https://github.com/kindarian-enterprises/kindarian-cursor-context.git (push)
+# * my-team-customization
+#   main
 ```
 
 ### **Step 3: Get the Latest Updates**
 ```bash
-# Get updates from the official repo
-git fetch upstream
+# Get updates from the main repository
+git fetch origin
 
 # Merge updates into your main branch
-git merge upstream/main
+git merge origin/main
 
 # If there are conflicts, resolve them and commit
 git add .
-git commit -m "Merge upstream updates"
+git commit -m "Merge origin updates"
 ```
 
 **🎉 That's it! You're now set up for seamless collaboration.**
@@ -58,8 +61,11 @@ git commit -m "Merge upstream updates"
 ### **Getting Updates (When you want the latest features)**
 ```bash
 # Option 1: Manual commands (recommended)
+git checkout main
 git fetch origin
 git merge origin/main
+git checkout my-team-customization
+git merge main
 
 # Option 2: Use the helper script
 ./scripts/sync-upstream.sh
@@ -70,7 +76,7 @@ git merge origin/main
 # Work on your changes as normal
 git add .
 git commit -m "Your changes"
-git push origin main
+git push origin my-team-customization
 ```
 
 ### **Sharing Your Changes**
@@ -113,7 +119,7 @@ cp env.framework local/env.framework.custom
 mkdir local
 cp README.md local/README.md.my-version
 git checkout -- README.md  # Restore original
-git merge upstream/main     # Now it should work!
+git merge origin/main       # Now it should work!
 
 # Your changes are safe in local/README.md.my-version
 ```
@@ -126,7 +132,7 @@ cp local/env.framework.custom env.framework.team
 # Commit and push
 git add env.framework.team
 git commit -m "Add team configuration"
-git push origin main
+git push origin my-team-customization
 ```
 
 ### **You're Not Sure What to Do**
@@ -134,8 +140,8 @@ git push origin main
 # Check what's happening
 git status
 
-# See what changed upstream
-git log upstream/main --oneline -5
+# See what changed in main repository
+git log origin/main --oneline -5
 
 # Get help
 ./scripts/sync-upstream.sh --help
@@ -187,9 +193,8 @@ env.framework  # Don't customize this directly
 
 ### **"Permission denied" on push**
 ```bash
-# You're trying to push to upstream (read-only)
-# Push to origin instead:
-git push origin main
+# Make sure you're pushing to your working branch:
+git push origin my-team-customization
 ```
 
 ### **"Merge conflicts"**

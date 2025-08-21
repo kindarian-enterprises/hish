@@ -22,12 +22,15 @@ class TestEnsureCollection:
     @pytest.mark.integration
     def test_ensure_collection_exists(self, mock_qdrant_client):
         """Test when collection already exists."""
-        # Reset the side_effect and set return_value
+        # Reset the side_effect and set return_value to mock successful collection response
         mock_qdrant_client.get_collection.side_effect = None
-        mock_qdrant_client.get_collection.return_value = {"name": TEST_COLLECTION_NAME}
+        # Mock a collection info object that has vectors_count attribute
+        mock_collection_info = Mock()
+        mock_collection_info.vectors_count = 100
+        mock_qdrant_client.get_collection.return_value = mock_collection_info
         
         # Should not raise exception
-        ensure_collection(mock_qdrant_client, TEST_COLLECTION_NAME, EXPECTED_EMBEDDING_DIMENSION)
+        ensure_collection(mock_qdrant_client, TEST_COLLECTION_NAME, EXPECTED_EMBEDDING_DIMENSION, "sentence-transformers/all-MiniLM-L6-v2")
         
         mock_qdrant_client.get_collection.assert_called_once_with(TEST_COLLECTION_NAME)
         mock_qdrant_client.recreate_collection.assert_not_called()
@@ -37,7 +40,7 @@ class TestEnsureCollection:
         """Test creating new collection when it doesn't exist."""
         mock_qdrant_client.get_collection.side_effect = Exception("Not found")
         
-        ensure_collection(mock_qdrant_client, TEST_COLLECTION_NAME, EXPECTED_EMBEDDING_DIMENSION)
+        ensure_collection(mock_qdrant_client, TEST_COLLECTION_NAME, EXPECTED_EMBEDDING_DIMENSION, "sentence-transformers/all-MiniLM-L6-v2")
         
         mock_qdrant_client.get_collection.assert_called_once_with(TEST_COLLECTION_NAME)
         mock_qdrant_client.recreate_collection.assert_called_once()
@@ -240,8 +243,12 @@ class TestMain:
             
             main()
             
-            # Should recreate collection
+            # Should recreate collection with named vector config
+            from qdrant_client.http.models import VectorParams, Distance
+            expected_vectors_config = {
+                "fast-all-minilm-l6-v2": VectorParams(size=EXPECTED_EMBEDDING_DIMENSION, distance=Distance.COSINE)
+            }
             mock_client.recreate_collection.assert_called_once_with(
                 TEST_COLLECTION_NAME, 
-                vectors_config={"size": EXPECTED_EMBEDDING_DIMENSION, "distance": "Cosine"}
+                vectors_config=expected_vectors_config
             )

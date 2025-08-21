@@ -42,8 +42,8 @@ Kindarian Cursor Context is a multi-project development agent framework that tra
 
 ### **1. Set Up the Framework**
 ```bash
-# Clone the framework (your permanent context management hub)
-git clone [repository-url] kindarian-cursor-context
+# Clone the framework directly from the main repository
+git clone https://github.com/kindarian-enterprises/kindarian-cursor-context.git
 cd kindarian-cursor-context
 
 # Start the shared knowledge system
@@ -70,9 +70,8 @@ make quick-start
 ### **3. Index Your Code Repositories**
 ```bash
 # Index your project's code (stored separately from context)
-cd rag/indexer
-python app.py index /path/to/your-project-code --collection your_project_code
-python app.py index /path/to/another-project --collection another_project_code
+make index-repo REPO_PATH=/path/to/your-project-code COLLECTION_NAME=your_project_code
+make index-repo REPO_PATH=/path/to/another-project COLLECTION_NAME=another_project_code
 
 # All projects share the same knowledge base for cross-project insights!
 ```
@@ -148,6 +147,9 @@ The agent will automatically:
 git clone https://github.com/kindarian-enterprises/kindarian-cursor-context.git
 cd kindarian-cursor-context
 
+# Create your working branch
+git checkout -b my-team-customization
+
 # Create local directories for your customizations
 mkdir -p local overrides private tmp
 ```
@@ -155,11 +157,15 @@ mkdir -p local overrides private tmp
 ### **🔄 Daily Workflow (30 seconds)**
 ```bash
 # Get updates when you want new features
+git checkout main
 git fetch origin
 git merge origin/main
+git checkout my-team-customization
+git merge main
 
 # Work on your changes as normal
 git add . && git commit -m "Your changes"
+git push origin my-team-customization
 ```
 
 ### **🛡️ Local Customization (Zero Conflicts)**

@@ -201,6 +201,7 @@ make health
 **Collections are created automatically during indexing:**
 
 - **`kindarian_framework`** - Framework documentation, contexts, and workflows
+- **`external_code`** - External code repositories (default for env.code)
 - **`{project_name}_code`** - Project source code (e.g., `my_webapp_code`)
 - **`{project_name}_docs`** - Project documentation (e.g., `my_webapp_docs`)
 - **`{technology}_patterns`** - Technology-specific patterns (e.g., `react_patterns`)

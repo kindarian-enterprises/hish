@@ -14,18 +14,18 @@ help: ## Show this help message
 # Framework Management
 up: ## Start the RAG knowledge system
 	@echo "🚀 Starting Kindarian Cursor Context framework..."
-	docker-compose -f compose.rag.yml up -d
+	docker compose -f compose.rag.yml up -d
 	@echo "⏳ Waiting for services to be ready..."
 	@sleep 10
 	@make health
 
 down: ## Stop the RAG knowledge system
 	@echo "🛑 Stopping framework services..."
-	docker-compose -f compose.rag.yml down
+	docker compose -f compose.rag.yml down
 
 status: ## Show service status
 	@echo "📊 Framework Service Status:"
-	docker-compose -f compose.rag.yml ps
+	docker compose -f compose.rag.yml ps
 
 health: ## Check service health
 	@echo "🏥 Health Check:"
@@ -36,7 +36,7 @@ health: ## Check service health
 
 logs: ## Show framework logs
 	@echo "📜 Framework Logs:"
-	docker-compose -f compose.rag.yml logs -f
+	docker compose -f compose.rag.yml logs -f
 
 # Project Management
 new-context: ## Create a new project context (interactive)
@@ -58,7 +58,7 @@ index-repo: ## Index a code repository (requires REPO_PATH and COLLECTION_NAME)
 		exit 1; \
 	fi
 	@echo "🧠 Indexing repository $(REPO_PATH) into collection $(COLLECTION_NAME)..."
-	docker-compose -f compose.rag.yml run --rm indexer python app.py index "$(REPO_PATH)" --collection "$(COLLECTION_NAME)"
+	docker compose -f compose.rag.yml run --rm indexer python app.py index "$(REPO_PATH)" --collection "$(COLLECTION_NAME)"
 
 collections: ## List all knowledge collections
 	@echo "🗂️  Knowledge Collections:"
@@ -75,18 +75,19 @@ search: ## Search knowledge base (requires QUERY)
 # Development
 test: ## Run framework tests
 	@echo "🧪 Running framework tests..."
-	docker-compose -f compose.rag.yml run --rm indexer-test pytest -v
+	@echo "📋 Using env.framework for test configuration..."
+	docker compose -f compose.rag.yml --env-file env.framework run --rm indexer-test pytest -v
 
 clean: ## Clean up containers and volumes
 	@echo "🧹 Cleaning up framework..."
-	docker-compose -f compose.rag.yml down -v
+	docker compose -f compose.rag.yml down -v
 	docker system prune -f
 
 # Maintenance
 update: ## Update framework (git pull + rebuild)
 	@echo "🔄 Updating framework..."
 	git pull
-	docker-compose -f compose.rag.yml build --no-cache
+	docker compose -f compose.rag.yml build --no-cache
 
 backup: ## Backup knowledge database
 	@echo "💾 Backing up knowledge database..."
@@ -160,7 +161,7 @@ info: ## Show framework information
 # Development helpers
 mcp: ## Start MCP server for development
 	@echo "🔌 Starting MCP server (stdio mode)..."
-	docker-compose -f compose.rag.yml run --rm -i mcp-qdrant-stdio
+	docker compose -f compose.rag.yml run --rm -i mcp-qdrant-stdio
 
 fmt: ## Format shell scripts
 	@echo "🎨 Formatting shell scripts..."

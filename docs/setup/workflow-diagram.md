@@ -9,8 +9,8 @@
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Main          │    │   Your Local    │    │   Local        │
-│   Repository    │    │   Working Copy  │    │   Customization│
-│   (origin)      │    │                 │    │   (ignored)    │
+│   Repository    │    │   Working      │    │   Customization│
+│   (origin/main) │    │   Branch       │    │   (ignored)    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
          │                       │                       │
@@ -34,13 +34,23 @@
 
 ### **1. Get Updates (When you want new features)**
 ```bash
+# Switch to main branch
+git checkout main
+
+# Get latest updates
 git fetch origin
 git merge origin/main
+
+# Switch back to your working branch
+git checkout my-team-customization
+
+# Merge updates into your branch
+git merge main
 ```
 
 **What happens:**
-- Fetches latest from main repo
-- Merges into your local branch
+- Gets latest from main repo
+- Merges updates into your working branch
 - No conflicts (your changes are separate)
 
 ### **2. Make Your Changes**
@@ -96,14 +106,18 @@ docs/setup/...    # Don't modify for local needs
 ```bash
 # One-time setup
 git clone https://github.com/kindarian-enterprises/kindarian-cursor-context.git
+git checkout -b my-team-customization
 mkdir -p local overrides private tmp
 
 # Daily updates
+git checkout main
 git fetch origin
 git merge origin/main
+git checkout my-team-customization
+git merge main
 
 # Check status
-git remote -v
+git branch
 git status
 ```
 

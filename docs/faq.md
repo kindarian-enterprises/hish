@@ -7,13 +7,18 @@ No. It's optional. Use it only to share large files (models/datasets). Otherwise
 Use the ignored paths listed in `docs/data-management.md` (e.g., `local/`, `overrides/`, `private/`), which match this repo's conventions.
 
 **How do I get updates from the main repo?**  
-Since you cloned directly from the main repo, just:
+Since you cloned directly from the main repo and work on a separate branch:
 ```bash
+# Use the helper script (recommended)
+./scripts/sync-upstream.sh
+
+# OR manually:
+git checkout main
 git fetch origin
 git merge origin/main
+git checkout my-team-customization
+git merge main
 ```
-
-Or run `./scripts/sync-upstream.sh`.
 
 **I keep getting conflicts on my local tweaks.**
 Move those tweaks into an ignored local folder so they won't collide with upstream updates.

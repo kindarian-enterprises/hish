@@ -22,7 +22,7 @@ services:
   # Optional daemonized MCP via SSE (handy for remote/shared use)
   mcp-qdrant-sse:
     build:
-      context: ../mcp
+      context: ./mcp
       dockerfile: Dockerfile
     restart: unless-stopped
     depends_on:
@@ -42,7 +42,7 @@ services:
   # STDIO MCP: used via `docker compose run -i` (not a daemon)
   mcp-qdrant-stdio:
     build:
-      context: ../mcp
+      context: ./mcp
       dockerfile: Dockerfile
     depends_on:
       qdrant:
@@ -59,32 +59,32 @@ services:
   # Indexer for bulk embedding of framework content
   indexer:
     build:
-      context: ../rag/indexer
+      context: ./rag/indexer
       dockerfile: Dockerfile
     depends_on:
       qdrant:
         condition: service_healthy
     env_file:
-      - ../env.framework
+      - ./env.framework
     volumes:
-      - ../../:/work:ro  # Mount parent to see all project directories
+      - ../:/work:ro  # Mount parent to see all project directories
 
   indexer-code:
     build:
-      context: ../rag/indexer
+      context: ./rag/indexer
       dockerfile: Dockerfile
     depends_on:
       qdrant:
         condition: service_healthy
     env_file:
-      - ../env.code
+      - ./env.code
     volumes:
-      - ../../:/work:ro  # Mount the entire projects directory
+      - ../:/work:ro  # Mount the entire projects directory
 
   # Test service for running pytest
   indexer-test:
     build:
-      context: ../rag/indexer
+      context: ./rag/indexer
       dockerfile: Dockerfile
       target: test
     environment:
@@ -98,5 +98,5 @@ services:
       CHUNK_MIN_CHARS: ${CHUNK_MIN_CHARS}
       CHUNK_OVERLAP_TOKENS: ${CHUNK_OVERLAP_TOKENS}
     volumes:
-      - ..:/work:ro
+      - ./:/work:ro
     profiles: ["test"]  # Only for testing
