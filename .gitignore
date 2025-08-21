@@ -1,0 +1,43 @@
+# Local-only overrides & temp (existing dirs only; do not add if not present)
+
+local/
+overrides/
+private/
+tmp/
+scratch/
+var/
+
+# MCP runtime/local state (only if present)
+
+mcp_data/
+mcp_state/
+mcp_cache/
+
+# User/editor caches (only if present)
+
+.cursor/
+.cache/
+
+# Optional user data (only if present and intended as local)
+
+data/
+artifacts/
+models/
+datasets/
+checkpoints/
+
+# Env files / secrets (always safe)
+
+.env
+.env.local
+.env.*.local
+
+# OS/editor noise
+
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Qdrant data (stored in parent directory)
+# Note: ../.data/qdrant/ is not in this repo, so no need to ignore here

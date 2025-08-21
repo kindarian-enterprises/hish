@@ -104,6 +104,39 @@ The agent will automatically:
 - Propose solutions combining best practices
 - Store new solutions with `qdrant-store`
 
+## 🔄 **Quick Start (Upstream + Main)**
+
+We use a simple Git flow:
+
+- `upstream` remote → canonical repo (read-only for most users).
+- You work on `main` (or feature branches) in your fork/clone.
+- Local overrides live in ignored folders (see `.gitignore`).
+
+### **First-time setup**
+```bash
+git remote -v
+# If you don't see an 'upstream', add it (replace with canonical URL):
+git remote add upstream <CANONICAL_REPO_URL>
+
+# Ensure you're on main (or your working branch)
+git checkout main
+```
+
+### **Pull updates from upstream**
+
+```bash
+git fetch upstream
+git merge upstream/main
+# resolve conflicts if any, commit
+```
+
+### **Keep local overrides separate**
+
+* Put machine/user-specific files into the ignored paths (see `.gitignore`).
+* This keeps upstream pulls clean and avoids merge conflicts.
+
+See `docs/branching.md` and `docs/data-management.md` for details.
+
 ## 📚 **What's Included**
 
 ### **📄 Core Templates**
