@@ -8,7 +8,7 @@ from unittest.mock import Mock, MagicMock
 CHUNK_MAX_TOKENS_TEST = 100
 CHUNK_MIN_CHARS_TEST = 50
 CHUNK_OVERLAP_TOKENS_TEST = 20
-EXPECTED_EMBEDDING_DIMENSION = 384
+EXPECTED_EMBEDDING_DIMENSION = 384  # BGE-small models use 384 dimensions
 BATCH_SIZE_TEST = 2
 TEST_COLLECTION_NAME = "test_collection"
 
@@ -50,6 +50,7 @@ class TestClass:
         return self.value * 2
 '''
 
+
 @pytest.fixture
 def sample_files():
     """Sample files for testing file processing."""
@@ -60,6 +61,7 @@ def sample_files():
         "config.json": '{"setting": "value", "number": 42}',
     }
 
+
 @pytest.fixture
 def mock_qdrant_client():
     """Mock Qdrant client for testing."""
@@ -69,16 +71,19 @@ def mock_qdrant_client():
     client.upsert.return_value = None
     return client
 
+
 @pytest.fixture
 def mock_text_embedding():
     """Mock text embedding model."""
     model = Mock()
     # Return consistent embeddings for testing
+
     def mock_embed(texts):
         return [[0.1] * EXPECTED_EMBEDDING_DIMENSION for _ in texts]
-    
+
     model.embed.side_effect = mock_embed
     return model
+
 
 @pytest.fixture
 def test_environment_vars():
@@ -87,7 +92,7 @@ def test_environment_vars():
         "QDRANT_URL": "http://localhost:6333",
         "QDRANT_API_KEY": "",
         "COLLECTION_NAME": TEST_COLLECTION_NAME,
-        "EMBEDDING_MODEL": "sentence-transformers/all-MiniLM-L6-v2",
+        "EMBEDDING_MODEL": "BAAI/bge-small-en-v1.5",
         "INDEX_INCLUDE": "**/*.md,**/*.py",
         "INDEX_EXCLUDE": "**/.git/**,**/.data/**",
         "CHUNK_MAX_TOKENS": str(CHUNK_MAX_TOKENS_TEST),

@@ -5,12 +5,22 @@
 ## 📁 **What's Here**
 
 ### **`context/dev_agent_context_template.md`** - **REQUIRED TEMPLATE**
-This is the **only template you need** for new project contexts. It contains:
+This is the core template for new project contexts. It contains:
 
 - **Critical Update Protocol** - Mandatory rules for maintaining project continuity
 - **Comprehensive Project Structure** - All sections needed for project tracking
 - **Standardized Format** - Consistent syntax for cross-project intelligence
 - **Protocol Enforcement** - Zero-tolerance rules for data integrity
+
+### **`workflow-indexes/`** - **FRAMEWORK NAVIGATION SYSTEM**
+Internal workflow indexes that initialize on first context creation:
+
+- **`framework-command-index.md`** - 🚨 **ALL framework commands** - MUST reference before operations
+- **`framework-file-index.md`** - File-to-purpose mapping for targeted searches
+- **`session-workflow-enforcement.md`** - Behavioral enforcement rules for agents
+- **`framework-repository-index.md`** - Complete repository structure reference
+
+**Usage**: These are automatically copied to `local/workflow-indexes/` on first context creation and provide the navigation system for agents working with the framework.
 
 ## 🚫 **What's NOT Here (And Why)**
 

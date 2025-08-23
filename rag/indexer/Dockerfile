@@ -29,5 +29,4 @@ CMD ["pytest", "-v", "--tb=short"]
 # Production stage (default)
 FROM base AS production
 
-# Default command shows help
-CMD ["python3", "app.py", "--help"]
+# No default command - let compose or runtime specify

@@ -29,7 +29,7 @@ Add to your Cursor `settings.json`:
   "mcpServers": {
     "qdrant": {
       "type": "stdio",
-      "command": "/absolute/path/to/kindarian-cursor-context/scripts/run-mcp-stdio.sh",
+      "command": "/absolute/path/to/kindarian-cursor-context/scripts/run-mcp-llamaindex.sh",
       "workingDirectory": "/absolute/path/to/kindarian-cursor-context",
       "env": {
         "NO_COLOR": "1"

@@ -20,7 +20,7 @@ mcp_cache/
 
 # Optional user data (only if present and intended as local)
 
-data/
+.data/
 artifacts/
 models/
 datasets/

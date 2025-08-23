@@ -25,14 +25,25 @@
 git clone https://github.com/kindarian-enterprises/kindarian-cursor-context.git
 cd kindarian-cursor-context
 
-# Start the framework
+# Quick setup guide (no Docker startup needed)
 make quick-start
 ```
 
-### **2. Create Your First Project Context**
+### **2. Configure Cursor MCP Integration** 
 ```bash
-./scripts/new-project-context.sh
+make setup-cursor
 ```
+
+Add the provided JSON to your Cursor `settings.json` and restart Cursor.
+
+### **3. Create Your First Project Context**
+```bash
+make new-context
+```
+
+This simplified setup only asks for:
+- Project name
+- Path to your code repository
 
 This creates: `local/your-project-name/` (gitignored for local changes)
 ├── dev_agent_context.md      # Project state and history
@@ -43,15 +54,15 @@ This creates: `local/your-project-name/` (gitignored for local changes)
 - **`dev_agent_init_prompt.md`** - Universal initialization protocol (top-level)
 - **`dev_agent_session_end_prompt.md`** - Universal session end protocol (top-level)
 
-### **3. Configure Cursor MCP Integration**
+### **4. Index Your Repositories**
 ```bash
-make setup-cursor
+make index
 ```
 
-This shows you the exact JSON to add to your Cursor `settings.json`.
+This indexes both framework docs and your project code repositories.
 
-### **4. Test the Integration**
-Restart Cursor and test with:
+### **5. Test the Integration**
+In Cursor, initialize with `@dev_agent_init_prompt.md` and test:
 ```
 qdrant-find "test query"
 ```
@@ -68,11 +79,14 @@ qdrant-find "test query"
 
 ## 🔄 **How It Works**
 
-1. **Framework Setup**: Start the RAG system and MCP server
-2. **Project Contexts**: Create project contexts in `local/` (automatically gitignored)
-3. **Agent Initialization**: Use universal init prompt to load project context
-4. **Workflow Recording**: Ask agents to record workflows as you work
-5. **Knowledge Discovery**: Use RAG tools to find patterns from all projects
+1. **MCP Configuration**: Configure Cursor to connect to the framework
+2. **Project Contexts**: Create project contexts in `local/` (automatically gitignored)  
+3. **Knowledge Indexing**: Index framework docs and project repositories
+4. **Agent Initialization**: Use universal init prompt to load project context
+5. **Workflow Recording**: Ask agents to record workflows as you work
+6. **Knowledge Discovery**: Use RAG tools to find patterns from all projects
+
+**💡 Cursor automatically starts Qdrant when you restart after MCP configuration**
 
 **Note**: The RAG-enhanced development workflow is built into the agent persona, so agents automatically follow knowledge-first development practices. Example contexts in `contexts/` demonstrate proper structure without duplicating universal content.
 

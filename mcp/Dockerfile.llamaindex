@@ -1,0 +1,22 @@
+FROM python:3.11-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv
+RUN pip install --no-cache-dir uv
+
+# Set working directory
+WORKDIR /app
+
+# Pre-download and cache the package for uvx
+RUN uv tool install qdrant-llamaindex-mcp-server
+
+# Set the PATH to include uv tools
+ENV PATH="/root/.local/bin:$PATH"
+
+# Default command
+CMD ["qdrant-llamaindex-mcp-server", "--transport", "stdio"]

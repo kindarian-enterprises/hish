@@ -22,7 +22,7 @@ QDRANT_STORAGE=.data/qdrant            # Local storage path for Qdrant data
 
 # Knowledge Collection Configuration
 COLLECTION_NAME=kindarian_framework    # Default collection name for framework content
-EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2  # Text embedding model
+EMBEDDING_MODEL=BAAI/bge-small-en-v1.5  # Text embedding model
 
 # File Indexing Configuration
 INDEX_INCLUDE=**/*.md,**/*.mdx,**/*.txt,contexts/**/*,docs/**/*,workflows-and-processes/**/*
@@ -42,9 +42,9 @@ INDEX_EXCLUDE=**/.git/**,**/.data/**,**/node_modules/**,**/.venv/**,**/dist/**,*
 # - Python cache files
 
 # Text Chunking Configuration
-CHUNK_MAX_TOKENS=300                   # Maximum tokens per knowledge chunk
-CHUNK_MIN_CHARS=200                    # Minimum characters per chunk
-CHUNK_OVERLAP_TOKENS=40                # Token overlap between chunks for context
+CHUNK_MAX_TOKENS=350                   # Maximum tokens per knowledge chunk
+CHUNK_MIN_CHARS=150                    # Minimum characters per chunk
+CHUNK_OVERLAP_TOKENS=70                # Token overlap between chunks for context
 
 # MCP Server Configuration
 MCP_SSE_PORT=8000                      # Port for MCP server (if using SSE mode)
@@ -135,7 +135,7 @@ cp env.example env.framework
 ### **Embedding Models**
 **`EMBEDDING_MODEL`** controls the AI model used to convert text to vectors:
 
-- **`sentence-transformers/all-MiniLM-L6-v2`** - Fast, good quality (default, 384 dimensions)
+- **`BAAI/bge-small-en-v1.5`** - High quality, good speed (default, 384 dimensions)
 - **`BAAI/bge-small-en-v1.5`** - Higher quality, slower (768 dimensions)
 - **Custom models** - Any sentence-transformers compatible model
 
@@ -188,7 +188,7 @@ make health
 | `QDRANT_API_KEY` | (empty) | Database authentication | If Qdrant has auth enabled |
 | `QDRANT_STORAGE` | `.data/qdrant` | Local data storage path | If you want different storage location |
 | `COLLECTION_NAME` | `kindarian_framework` | Default knowledge collection | For different knowledge domains |
-| `EMBEDDING_MODEL` | `sentence-transformers/all-MiniLM-L6-v2` | AI model for text vectors | For different quality/speed trade-offs |
+| `EMBEDDING_MODEL` | `BAAI/bge-small-en-v1.5` | AI model for text vectors | For different quality/speed trade-offs |
 | `INDEX_INCLUDE` | `**/*.md,contexts/**/*,docs/**/*` | Files to process | To include/exclude specific file types |
 | `INDEX_EXCLUDE` | `**/.git/**,**/.data/**` | Files to ignore | To ignore additional directories |
 | `CHUNK_MAX_TOKENS` | `300` | Maximum chunk size | For different context window sizes |
@@ -283,8 +283,8 @@ CHUNK_MIN_CHARS=300
 **Problem:** Indexing takes hours instead of minutes
 **Solution:** Use smaller embedding model or reduce scope
 ```bash
-# Faster model (384 dimensions)
-EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+# BGE-small model (384 dimensions)
+EMBEDDING_MODEL=BAAI/bge-small-en-v1.5
 
 # Reduce file scope
 INDEX_INCLUDE=**/*.md,contexts/**/*  # Only markdown and contexts

@@ -1,7 +1,7 @@
 # Kindarian Cursor Context Framework - Makefile
 # Multi-project development agent framework with shared knowledge
 
-.PHONY: help up down status health test new-context index-repo clean logs index collections search setup-cursor quick-start update backup info mcp
+.PHONY: help up down status health test new-context index-repo reindex-contexts clean logs index collections search setup-cursor quick-start update backup info mcp optimize-collections
 
 # Default target
 help: ## Show this help message
@@ -60,7 +60,9 @@ list-contexts: ## List all project contexts
 # Knowledge Management
 index: ## Index framework docs and all project code repositories
 	@echo "📚 Indexing framework documentation and local contexts..."
-	make index-repo REPO_PATH=. COLLECTION_NAME=framework_docs
+	@echo "🔍 Using env.framework for framework documentation (focuses on local/, docs/, contexts/)..."
+	@echo "🐳 Container path mapping: $(PWD) → /work"
+	docker compose -f compose.rag.yml --env-file env.framework run --rm -e COLLECTION_NAME="framework_docs" indexer python3 app.py --workdir "/work"
 	@echo "🔍 Discovering project code repositories..."
 	@if [ -d "local" ]; then \
 		for context_dir in local/*/; do \
@@ -80,6 +82,43 @@ index: ## Index framework docs and all project code repositories
 	fi
 	@echo "✅ Indexing complete! Framework and all project code is now searchable."
 
+reindex-contexts: ## Reindex specific contexts (Usage: make reindex-contexts CONTEXTS="context1 context2 context3")
+	@if [ -z "$(CONTEXTS)" ]; then \
+		echo "❌ Usage: make reindex-contexts CONTEXTS=\"context1 context2 context3\""; \
+		echo "📁 Available project contexts:"; \
+		if [ -d "local" ]; then \
+			found_contexts=false; \
+			for context_dir in local/*/; do \
+				if [ -d "$$context_dir" ] && [ -f "$$context_dir/repo_path.txt" ]; then \
+					echo "  - $$(basename "$$context_dir")"; \
+					found_contexts=true; \
+				fi; \
+			done; \
+			if [ "$$found_contexts" = false ]; then \
+				echo "  (no project contexts found)"; \
+			fi; \
+		else \
+			echo "  (no contexts found)"; \
+		fi; \
+		exit 1; \
+	fi
+	@echo "🔄 Reindexing specified contexts: $(CONTEXTS)"
+	@for context_name in $(CONTEXTS); do \
+		context_dir="local/$$context_name"; \
+		if [ -d "$$context_dir" ] && [ -f "$$context_dir/repo_path.txt" ]; then \
+			repo_path=$$(cat "$$context_dir/repo_path.txt" | tr -d '\n'); \
+			if [ -d "$$repo_path" ]; then \
+				echo "📁 Reindexing $$context_name: $$repo_path"; \
+				make index-repo REPO_PATH="$$repo_path" COLLECTION_NAME="$${context_name}_code"; \
+			else \
+				echo "⚠️  Repo path not found for $$context_name: $$repo_path"; \
+			fi; \
+		else \
+			echo "❌ Context '$$context_name' not found or missing repo_path.txt"; \
+		fi; \
+	done
+	@echo "✅ Reindexing complete for: $(CONTEXTS)"
+
 index-repo: ## Index a code repository into the knowledge base
 	@if [ -z "$(REPO_PATH)" ] || [ -z "$(COLLECTION_NAME)" ]; then \
 		echo "❌ Usage: make index-repo REPO_PATH=/path/to/repo COLLECTION_NAME=collection_name"; \
@@ -87,12 +126,26 @@ index-repo: ## Index a code repository into the knowledge base
 	fi
 	@echo "📚 Indexing repository: $(REPO_PATH)"
 	@echo "📁 Collection: $(COLLECTION_NAME)"
-	@echo "🔍 Using env.framework for indexing configuration..."
-	docker compose -f compose.rag.yml --env-file env.framework run --rm indexer python3 app.py index "$(REPO_PATH)" --collection "$(COLLECTION_NAME)"
+	@if [ "$(REPO_PATH)" = "." ]; then \
+		echo "🔍 Using env.framework for framework documentation (focuses on local/ and docs/)..."; \
+		echo "🐳 Container path mapping: $(PWD) → /work"; \
+		docker compose -f compose.rag.yml --env-file env.framework run --rm -e COLLECTION_NAME="$(COLLECTION_NAME)" indexer python3 app.py --workdir "/work"; \
+	else \
+		echo "🔍 Using env.code for external code repository..."; \
+		echo "🐳 Container path mapping: $(REPO_PATH) → /work/$$(basename $(REPO_PATH))"; \
+		docker compose -f compose.rag.yml --env-file env.code run --rm -e COLLECTION_NAME="$(COLLECTION_NAME)" indexer-code python3 app.py --workdir "/work/$$(basename $(REPO_PATH))"; \
+	fi
 
 collections: ## List all knowledge collections
 	@echo "🗂️  Knowledge Collections:"
-	@curl -s http://localhost:6333/collections | jq -r '.result.collections[] | "  📚 \(.name) - \(.points_count) chunks"' 2>/dev/null || echo "❌ Could not connect to Qdrant"
+	@curl -s http://localhost:6333/collections | jq -r '.result.collections[].name' 2>/dev/null | while read collection; do \
+		points=$$(curl -s http://localhost:6333/collections/$$collection | jq -r '.result.points_count' 2>/dev/null || echo "unknown"); \
+		echo "  📚 $$collection - $$points chunks"; \
+	done || echo "❌ Could not connect to Qdrant"
+
+optimize-collections: ## Optimize collections for better search quality (sets ef_search=128)
+	@echo "🚀 Optimizing collections for better search quality..."
+	@./scripts/optimize-collections.sh
 
 search: ## Search knowledge base (requires QUERY)
 	@if [ -z "$(QUERY)" ]; then \
@@ -126,15 +179,18 @@ backup: ## Backup knowledge database
 	@echo "✅ Backup created: $$BACKUP_FILE"
 
 # Quick Actions
-quick-start: up ## Quick start: launch framework and show next steps
+quick-start: ## Quick setup guide - show configuration steps
+	@echo "🚀 Kindarian Cursor Context - Quick Start"
+	@echo "========================================"
 	@echo ""
-	@echo "🎉 Framework is ready! Next steps:"
+	@echo "📋 Setup Steps:"
 	@echo "  1. Configure Cursor MCP integration: make setup-cursor"
 	@echo "  2. Create your first project context: make new-context"
-	@echo "  3. Index your code repositories: make index"
+	@echo "  3. Index everything: make index"
 	@echo "  4. In Cursor: @dev_agent_init_prompt.md"
 	@echo ""
-	@echo "📚 Available commands: make help"
+	@echo "💡 Cursor will auto-start Qdrant when you restart after MCP config"
+	@echo "📚 All commands: make help"
 
 setup-cursor: ## Show Cursor MCP configuration instructions
 	@echo "🔌 Cursor MCP Integration Setup"
@@ -146,7 +202,7 @@ setup-cursor: ## Show Cursor MCP configuration instructions
 	@echo '  "mcpServers": {'
 	@echo '    "qdrant": {'
 	@echo '      "type": "stdio",'
-	@echo '      "command": "$(PWD)/scripts/run-mcp-stdio.sh",'
+	@echo '      "command": "$(PWD)/scripts/run-mcp-llamaindex.sh",'
 	@echo '      "workingDirectory": "$(PWD)",'
 	@echo '      "env": {'
 	@echo '        "NO_COLOR": "1"'
@@ -177,7 +233,7 @@ info: ## Show framework information
 	@echo "📁 Project Contexts:"
 	@make list-contexts
 
-# Development helpers
-mcp: ## Start MCP server for development
+mcp: ## Start MCP server for development  
 	@echo "🔌 Starting MCP server (stdio mode)..."
-	docker compose -f compose.rag.yml --env-file env.framework run --rm -i mcp-qdrant-stdio
+	docker compose -f compose.rag.yml --env-file env.mcp run --rm -i mcp-qdrant-llamaindex
+

@@ -116,19 +116,27 @@ Kindarian Cursor Context is a multi-project development agent framework that tra
 git clone https://github.com/kindarian-enterprises/kindarian-cursor-context.git
 cd kindarian-cursor-context
 
-# Start the shared knowledge system
+# Quick setup guide (shows configuration steps)
 make quick-start
 
 # This will:
-# - Start Qdrant vector database
-# - Build the MCP server
-# - Show you the next steps
+# - Show MCP configuration steps
+# - Explain the setup workflow
+# - No Docker startup needed (Cursor handles that)
 ```
 
-### **2. Create Your First Project Context**
+### **2. Configure Cursor MCP Integration**
 ```bash
-# Create a new project context
-./scripts/new-project-context.sh
+# Get MCP configuration
+make setup-cursor
+
+# Add the provided JSON to Cursor settings.json and restart Cursor
+```
+
+### **3. Create Your First Project Context**
+```bash
+# Create a new project context (simplified setup)
+make new-context
 
 # This creates: local/your-project-name/ (gitignored for local changes)
 # ├── dev_agent_context.md      # Project state and history
@@ -140,7 +148,7 @@ make quick-start
 - **`dev_agent_init_prompt.md`** - Universal initialization protocol (top-level)
 - **`dev_agent_session_end_prompt.md`** - Universal session end protocol (top-level)
 
-### **3. Index Your Code Repositories**
+### **4. Index Your Code Repositories**
 ```bash
 # Index your project's code (stored separately from context)
 make index-repo REPO_PATH=/path/to/your-project-code COLLECTION_NAME=your_project_code
@@ -149,30 +157,25 @@ make index-repo REPO_PATH=/path/to/another-project COLLECTION_NAME=another_proje
 # All projects share the same knowledge base for cross-project insights!
 ```
 
-### **4. Configure Cursor MCP Integration**
+### **5. Test the Integration**
 ```bash
-# Get the exact configuration for your system
-make setup-cursor
+# In Cursor, initialize your agent with:
+# @dev_agent_init_prompt.md
 
-# This shows you the JSON to add to Cursor settings.json
-# Or follow the detailed guide: docs/setup/cursor-mcp-integration.md
+# Test RAG queries:
+# qdrant-find "test query"
 ```
 
 **Quick MCP Setup**: Add this to your Cursor `settings.json`:
 ```json
 {
-  "mcp": {
-    "servers": {
-      "kindarian-qdrant": {
-        "command": "docker",
-        "args": [
-          "compose", "-f", "/absolute/path/to/kindarian-cursor-context/compose.rag.yml", 
-          "run", "--rm", "-i", "mcp-qdrant-stdio"
-        ],
-        "env": {
-          "QDRANT_URL": "http://localhost:6333",
-          "COLLECTION_NAME": "default"
-        }
+  "mcpServers": {
+    "qdrant": {
+      "type": "stdio",
+      "command": "/absolute/path/to/kindarian-cursor-context/scripts/run-mcp-llamaindex.sh",
+      "workingDirectory": "/absolute/path/to/kindarian-cursor-context",
+      "env": {
+        "NO_COLOR": "1"
       }
     }
   }

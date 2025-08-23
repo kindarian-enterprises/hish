@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# Reindex specific project contexts
+# Usage: ./reindex context1 context2 context3
+
+set -e
+
+# Colors for output
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+print_usage() {
+    echo "🔄 Reindex Project Contexts"
+    echo "=========================="
+    echo ""
+    echo "Usage: ./reindex <context1> [context2] [context3] ..."
+    echo ""
+    echo "Examples:"
+    echo "  ./reindex shire                           # Reindex single context"
+    echo "  ./reindex shire platform-backend         # Reindex multiple contexts"
+    echo "  ./reindex all                            # Reindex all contexts"
+    echo ""
+    echo "📁 Available project contexts:"
+    if [ -d "local" ]; then
+        found_contexts=false
+        for context_dir in local/*/; do
+            if [ -d "$context_dir" ] && [ -f "$context_dir/repo_path.txt" ]; then
+                echo "  - $(basename "$context_dir")"
+                found_contexts=true
+            fi
+        done
+        if [ "$found_contexts" = false ]; then
+            echo "  (no project contexts found)"
+        fi
+    else
+        echo "  (no contexts found)"
+    fi
+}
+
+# Check if no arguments provided
+if [ $# -eq 0 ]; then
+    print_usage
+    exit 1
+fi
+
+# Handle special "all" argument
+if [ "$1" = "all" ]; then
+    echo -e "${BLUE}🔄 Reindexing all contexts...${NC}"
+    make index
+    exit 0
+fi
+
+# Handle help flags
+if [ "$1" = "-h" ] || [ "$1" = "--help" ] || [ "$1" = "help" ]; then
+    print_usage
+    exit 0
+fi
+
+# Convert positional arguments to space-separated string
+CONTEXTS="$*"
+
+echo -e "${BLUE}🔄 Reindexing contexts: ${GREEN}$CONTEXTS${NC}"
+echo ""
+
+# Call the Make command with the contexts
+make reindex-contexts CONTEXTS="$CONTEXTS"
