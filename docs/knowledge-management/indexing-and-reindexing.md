@@ -1,6 +1,6 @@
 # 🗂️ Knowledge Indexing and Reindexing Guide
 
-This guide covers when, why, and how to index and reindex documentation and code in the Kindarian Cursor Context framework.
+This guide covers when, why, and how to index and reindex documentation and code in the Hish framework.
 
 ## 🎯 **When to Index/Reindex**
 

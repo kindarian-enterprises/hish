@@ -1,4 +1,4 @@
-t# 🚫 Large File Fix for Kindarian Indexer
+# 🚫 Large File Fix for Hish Indexer
 
 ## **Problem Identified**
 The triton-ui indexing was hanging at exactly **35%** due to massive JSON data files in the mock API directory:

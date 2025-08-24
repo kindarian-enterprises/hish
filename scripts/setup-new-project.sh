@@ -1,5 +1,5 @@
 #!/bin/bash
-# Kindarian Cursor Context - New Project Setup Script
+# Hish Cursor Context - New Project Setup Script
 # This script sets up a new project with customized agent templates
 
 set -e
@@ -28,14 +28,14 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# Check if we're in the kindarian-cursor-context directory
+# Check if we're in the hish directory
 if [[ ! -f "templates/persona/dev_agent_persona_template.md" ]]; then
-    print_error "This script must be run from the kindarian-cursor-context directory"
+    print_error "This script must be run from the hish directory"
     exit 1
 fi
 
 # Get project information
-echo "🚀 Kindarian Cursor Context - New Project Setup"
+echo "🚀 Hish Cursor Context - New Project Setup"
 echo "================================================"
 echo
 
@@ -189,7 +189,7 @@ print_status "Creating setup summary..."
 cat > "$TARGET_DIR/SETUP_SUMMARY.md" << EOF
 # $PROJECT_NAME - Cursor Context Setup Summary
 
-This project has been configured with Kindarian Cursor Context.
+This project has been configured with Hish Cursor Context.
 
 ## Files Created
 - \`dev_agent_persona.md\` - Agent identity, coding standards, tech stack
@@ -235,7 +235,7 @@ qdrant-find \"authentication patterns\"
 qdrant-store \"Solution: JWT implementation with refresh tokens\"
 \`\`\`"
 else
-echo "❌ RAG infrastructure not set up. To add later, copy the rag/, mcp/ directories and compose.rag.yml from kindarian-cursor-context."
+echo "❌ RAG infrastructure not set up. To add later, copy the rag/, mcp/ directories and compose.rag.yml from hish."
 fi)
 
 ## Project Configuration
@@ -244,7 +244,7 @@ fi)
 - **Agent Role**: $AGENT_ROLE
 - **Setup Date**: $(date)
 
-For more information, see the documentation in the kindarian-cursor-context repository.
+For more information, see the documentation in the hish repository.
 EOF
 
 print_success "Setup summary created: $TARGET_DIR/SETUP_SUMMARY.md"

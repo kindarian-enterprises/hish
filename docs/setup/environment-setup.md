@@ -1,4 +1,4 @@
-# 🔧 Environment Setup for Kindarian Framework
+# 🔧 Environment Setup for Hish Framework
 
 **Complete guide to configuring environment variables for the framework.**
 
@@ -11,7 +11,7 @@ The framework requires these exact environment files to function properly:
 ### **`env.framework` - Main Configuration**
 **Purpose:** Primary configuration for framework operation and knowledge indexing.
 
-**File location:** `kindarian-cursor-context/env.framework`
+**File location:** `hish/env.framework`
 
 **Required values:**
 ```bash
@@ -21,7 +21,7 @@ QDRANT_API_KEY=                        # API key if authentication enabled (empt
 QDRANT_STORAGE=.data/qdrant            # Local storage path for Qdrant data
 
 # Knowledge Collection Configuration
-COLLECTION_NAME=kindarian_framework    # Default collection name for framework content
+COLLECTION_NAME=hish_framework    # Default collection name for framework content
 EMBEDDING_MODEL=BAAI/bge-small-en-v1.5  # Text embedding model
 
 # File Indexing Configuration
@@ -53,7 +53,7 @@ MCP_SSE_PORT=8000                      # Port for MCP server (if using SSE mode)
 ### **`env.code` - Code Repository Indexing**
 **Purpose:** Configuration for indexing external code repositories and projects.
 
-**File location:** `kindarian-cursor-context/env.code`
+**File location:** `hish/env.code`
 
 **Required filename:** Must be exactly `env.code`
 
@@ -92,7 +92,7 @@ INDEX_EXCLUDE=**/.git/**,**/node_modules/**,**/__pycache__/**,**/target/**,**/di
 ### **`env.example` - Template**
 **Purpose:** Template file showing all required environment variables with example values.
 
-**File location:** `kindarian-cursor-context/env.example`
+**File location:** `hish/env.example`
 
 **Required filename:** Must be exactly `env.example`
 
@@ -108,7 +108,7 @@ cp env.example env.framework
 ### **Collection Names**
 **`COLLECTION_NAME`** determines where indexed content is stored:
 
-- **`kindarian_framework`** - Framework documentation, contexts, and workflows
+- **`hish_framework`** - Framework documentation, contexts, and workflows
 - **`external_code`** - External code repositories and projects
 - **`{project_name}_code`** - Specific project source code (e.g., `my_webapp_code`)
 - **`{project_name}_docs`** - Specific project documentation (e.g., `my_webapp_docs`)
@@ -147,7 +147,7 @@ cp env.example env.framework
 
 ### **1. Copy Environment Template**
 ```bash
-cd kindarian-cursor-context
+cd hish
 cp env.example env.framework
 ```
 
@@ -187,7 +187,7 @@ make health
 | `QDRANT_URL` | `http://qdrant:6333` | Vector database connection | Only if using external Qdrant |
 | `QDRANT_API_KEY` | (empty) | Database authentication | If Qdrant has auth enabled |
 | `QDRANT_STORAGE` | `.data/qdrant` | Local data storage path | If you want different storage location |
-| `COLLECTION_NAME` | `kindarian_framework` | Default knowledge collection | For different knowledge domains |
+| `COLLECTION_NAME` | `hish_framework` | Default knowledge collection | For different knowledge domains |
 | `EMBEDDING_MODEL` | `BAAI/bge-small-en-v1.5` | AI model for text vectors | For different quality/speed trade-offs |
 | `INDEX_INCLUDE` | `**/*.md,contexts/**/*,docs/**/*` | Files to process | To include/exclude specific file types |
 | `INDEX_EXCLUDE` | `**/.git/**,**/.data/**` | Files to ignore | To ignore additional directories |
@@ -200,7 +200,7 @@ make health
 
 **Collections are created automatically during indexing:**
 
-- **`kindarian_framework`** - Framework documentation, contexts, and workflows
+- **`hish_framework`** - Framework documentation, contexts, and workflows
 - **`external_code`** - External code repositories (default for env.code)
 - **`{project_name}_code`** - Project source code (e.g., `my_webapp_code`)
 - **`{project_name}_docs`** - Project documentation (e.g., `my_webapp_docs`)

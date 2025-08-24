@@ -4,7 +4,7 @@ import pytest
 from typing import Dict, Any, List
 from unittest.mock import Mock, MagicMock
 
-# Test constants following Kindarian framework standards - no magic numbers
+# Test constants following Hish framework standards - no magic numbers
 CHUNK_MAX_TOKENS_TEST = 100
 CHUNK_MIN_CHARS_TEST = 50
 CHUNK_OVERLAP_TOKENS_TEST = 20

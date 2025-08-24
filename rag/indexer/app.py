@@ -285,7 +285,7 @@ def index_repo(work_root: str, qdrant_url: str, api_key: str, collection: str,
 
 def main():
     ap = argparse.ArgumentParser(
-        description="Index repositories into Qdrant for Kindarian framework")
+        description="Index repositories into Qdrant for Hish framework")
     ap.add_argument("--workdir", default="/work", help="Mounted repo root")
     ap.add_argument("--recreate", action="store_true",
                     help="Drop & recreate collection first")
@@ -304,12 +304,12 @@ def main():
         logger.setLevel(logging.DEBUG)
         logger.debug("Debug logging enabled")
 
-    logger.info("=== Kindarian Framework Indexer ===")
+    logger.info("=== Hish Framework Indexer ===")
     logger.info(f"Working directory: {args.workdir}")
 
     qdrant_url = os.getenv("QDRANT_URL", "http://qdrant:6333")
     api_key = os.getenv("QDRANT_API_KEY", "")
-    collection = os.getenv("COLLECTION_NAME", "kindarian_framework")
+    collection = os.getenv("COLLECTION_NAME", "hish_framework")
     model_name = os.getenv(
         "EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5")
 

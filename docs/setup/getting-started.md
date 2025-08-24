@@ -1,4 +1,4 @@
-# 🚀 Getting Started - Kindarian Cursor Context
+# 🚀 Getting Started - Hish
 
 **Complete setup in 5 minutes or less**
 
@@ -22,8 +22,8 @@
 ### **1. Clone and Setup**
 ```bash
 # Clone the framework
-git clone https://github.com/kindarian-enterprises/kindarian-cursor-context.git
-cd kindarian-cursor-context
+git clone https://github.com/kindarian-enterprises/hish.git
+cd hish
 
 # Quick setup guide (no Docker startup needed)
 make quick-start

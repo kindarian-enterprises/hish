@@ -1,4 +1,4 @@
-# 🚀 Threading Optimization for Kindarian Indexer
+# 🚀 Threading Optimization for Hish Indexer
 
 ## **Overview**
 Implemented parallel processing for the repository indexer to significantly speed up vector embedding generation, especially for large repositories like triton-ui.

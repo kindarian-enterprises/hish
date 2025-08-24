@@ -41,7 +41,7 @@ STATUS: COMPLETE|PARTIAL|BLOCKED|IN_PROGRESS|PLANNED|DEFERRED; PRIORITY: CRITICA
 PROJECT_ID: example-api; BUSINESS_MODEL: demonstration-project; TIMELINE: ongoing; TARGETS: framework-examples; CURRENT_PHASE: example-demonstration; DEV_CADENCE: as-needed
 
 ## PHASE_STATUS
-PHASE_1 { NAME: Framework Example Setup; DURATION: ongoing; STATUS: COMPLETE; SYSTEM: kindarian-framework; DELIVERABLES: example-context-structure; DEPS: none }
+PHASE_1 { NAME: Framework Example Setup; DURATION: ongoing; STATUS: COMPLETE; SYSTEM: hish-framework; DELIVERABLES: example-context-structure; DEPS: none }
 
 ## COMPONENT_STATUS
 INFRA_COMPONENTS { docker_setup { STATUS: COMPLETE; PATTERN: containerized-development; FILES: [docker-compose.yml]; COMMANDS: docker compose up } }

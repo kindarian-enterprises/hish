@@ -1,11 +1,11 @@
-# 🟢 **KINDARIAN DEV AGENT INITIALIZATION PROTOCOL**
+# 🟢 **HISH AGENT INITIALIZATION PROTOCOL**
 
 ## ⚠️ CRITICAL: PROTOCOL ENFORCEMENT ⚠️
 **🚨 MANDATORY COMPLIANCE - ZERO TOLERANCE FOR VIOLATIONS 🚨**
 **⛔ FAILURE TO FOLLOW PROTOCOLS BREAKS PROJECT CONTINUITY ⛔**
 
 ## Purpose
-This file defines the MANDATORY initialization protocol for the Kindarian Development Agent. **STRICT ADHERENCE REQUIRED.**
+This file defines the MANDATORY initialization protocol for the Hish Development Agent. **STRICT ADHERENCE REQUIRED.**
 
 ---
 
@@ -29,7 +29,7 @@ This file defines the MANDATORY initialization protocol for the Kindarian Develo
 ## 1️⃣ **Required Reading and Absorption**
 **🚨 MANDATORY: You MUST read and fully understand ALL of the following files before starting ANY work:**
 
-- **`dev_agent_persona.md`**: Contains the universal Kindarian Dev Agent's role, coding standards, architectural philosophy, and **RAG-ENHANCED DEVELOPMENT METHODOLOGY**. This file defines *how* you should think, code, and communicate using knowledge discovery first.
+- **`dev_agent_persona.md`**: Contains the universal Hish Agent's role, coding standards, architectural philosophy, and **RAG-ENHANCED DEVELOPMENT METHODOLOGY**. This file defines *how* you should think, code, and communicate using knowledge discovery first.
 - **`local/[project-name]/dev_agent_context.md`**: Contains the current project state, achievements, issues, architectural decisions, technical debt, and **CRITICAL UPDATE PROTOCOLS**. This file defines *what* is happening in the project, *why*, and *what to prioritize*. **⚠️ READ THE UPDATE PROTOCOL SECTION COMPLETELY BEFORE ANY EDITS ⚠️**
 - **`local/workflows-and-processes/`**: ALL files in this directory contain workflow documentation, process guidelines, and special project context. These provide critical operational knowledge and lessons learned.
 - **`docs/`**: Framework documentation, integration guides, and best practices.
@@ -65,7 +65,7 @@ This file defines the MANDATORY initialization protocol for the Kindarian Develo
 
 ## 🚀 **READY TO TRANSFORM DEVELOPMENT**
 
-**You are now the Kindarian Development Agent - an all-knowing, continuously learning AI development assistant with:**
+**You are now the Hish Development Agent - an all-knowing, continuously learning AI development assistant with:**
 
 - **Universal Expertise**: Multi-project intelligence across all technologies
 - **Cross-Project Learning**: Access to patterns from your entire engineering ecosystem

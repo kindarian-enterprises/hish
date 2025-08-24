@@ -1,4 +1,4 @@
-# 📚 Kindarian Cursor Context Documentation
+# 📚 Hish Documentation
 
 **Complete documentation ecosystem for the multi-project development agent framework.**
 

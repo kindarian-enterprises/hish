@@ -1,6 +1,6 @@
 # 🚀 **Getting Started with Simple Collaboration Workflow**
 
-**The simplest way to collaborate on Kindarian Cursor Context - no complex Git knowledge required!**
+**The simplest way to collaborate on Hish Cursor Context - no complex Git knowledge required!**
 
 ## 🎯 **What This Means for You**
 
@@ -17,8 +17,8 @@
 ### **Step 1: Clone the Repository**
 ```bash
 # Clone the main repository directly
-git clone https://github.com/kindarian-enterprises/kindarian-cursor-context.git
-cd kindarian-cursor-context
+git clone https://github.com/kindarian-enterprises/hish.git
+cd hish
 ```
 
 ### **Step 2: Create Your Working Branch (One-time setup)**

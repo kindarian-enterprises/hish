@@ -1,4 +1,4 @@
-# 🧠 Kindarian Cursor Context
+# 🧠 Hish
 
 **A comprehensive prompt and knowledge framework for managing multiple development agents with shared context and cross-project intelligence.**
 
@@ -8,7 +8,7 @@
 
 **The Problem**: You're using Cursor with AI models, but they don't know your codebase, your development decisions, your patterns, or your philosophy. Every conversation starts from scratch, and you waste time explaining context that should already be known.
 
-**The Solution**: Kindarian Cursor Context transforms ANY AI model in Cursor into a powerful coding assistant with full knowledge of your development ecosystem. No more dedicated "coding agent" services needed.
+**The Solution**: Hish transforms ANY AI model in Cursor into a powerful coding assistant with full knowledge of your development ecosystem. No more dedicated "coding agent" services needed.
 
 ### **What This Means for You**
 
@@ -93,7 +93,7 @@
 
 ## 🎯 **What Is This?**
 
-Kindarian Cursor Context is a multi-project development agent framework that transforms your entire engineering ecosystem into a knowledge-powered learning machine:
+Hish Cursor Context is a multi-project development agent framework that transforms your entire engineering ecosystem into a knowledge-powered learning machine:
 
 - **Multi-Project Intelligence**: One framework manages contexts for all your projects
 - **Shared Knowledge Base**: Patterns discovered in one project benefit ALL projects
@@ -113,8 +113,8 @@ Kindarian Cursor Context is a multi-project development agent framework that tra
 ### **1. Set Up the Framework**
 ```bash
 # Clone the framework directly from the main repository
-git clone https://github.com/kindarian-enterprises/kindarian-cursor-context.git
-cd kindarian-cursor-context
+git clone https://github.com/kindarian-enterprises/hish.git
+cd hish
 
 # Quick setup guide (shows configuration steps)
 make quick-start
@@ -172,8 +172,8 @@ make index-repo REPO_PATH=/path/to/another-project COLLECTION_NAME=another_proje
   "mcpServers": {
     "qdrant": {
       "type": "stdio",
-      "command": "/absolute/path/to/kindarian-cursor-context/scripts/run-mcp-llamaindex.sh",
-      "workingDirectory": "/absolute/path/to/kindarian-cursor-context",
+      "command": "/absolute/path/to/hish/scripts/run-mcp-llamaindex.sh",
+      "workingDirectory": "/absolute/path/to/hish",
       "env": {
         "NO_COLOR": "1"
       }
@@ -181,10 +181,10 @@ make index-repo REPO_PATH=/path/to/another-project COLLECTION_NAME=another_proje
   }
 }
 ```
-⚠️ **Replace `/absolute/path/to/kindarian-cursor-context/` with your actual path!**
+⚠️ **Replace `/absolute/path/to/hish/` with your actual path!**
 
 ### **5. Initialize Your Agent**
-In Cursor, open the kindarian-cursor-context framework and reference the universal init prompt:
+In Cursor, open the hish framework and reference the universal init prompt:
 ```
 @dev_agent_init_prompt.md
 ```
@@ -225,8 +225,8 @@ The agent will automatically:
 ### **⚡ One-time Setup (2 minutes)**
 ```bash
 # Clone the repository
-git clone https://github.com/kindarian-enterprises/kindarian-cursor-context.git
-cd kindarian-cursor-context
+git clone https://github.com/kindarian-enterprises/hish.git
+cd hish
 
 # Create your working branch
 git checkout -b my-team-customization

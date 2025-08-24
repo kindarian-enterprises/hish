@@ -116,8 +116,8 @@ make index-repo REPO_PATH=/path/to/code COLLECTION_NAME=project_code
   "mcpServers": {
     "qdrant": {
       "type": "stdio",
-      "command": "/absolute/path/to/kindarian-cursor-context/scripts/run-mcp-llamaindex.sh",
-      "workingDirectory": "/absolute/path/to/kindarian-cursor-context",
+      "command": "/absolute/path/to/hish/scripts/run-mcp-llamaindex.sh",
+      "workingDirectory": "/absolute/path/to/hish",
       "env": {
         "NO_COLOR": "1"
       }

@@ -29,8 +29,8 @@ Add to your Cursor `settings.json`:
   "mcpServers": {
     "qdrant": {
       "type": "stdio",
-      "command": "/absolute/path/to/kindarian-cursor-context/scripts/run-mcp-llamaindex.sh",
-      "workingDirectory": "/absolute/path/to/kindarian-cursor-context",
+      "command": "/absolute/path/to/hish/scripts/run-mcp-llamaindex.sh",
+      "workingDirectory": "/absolute/path/to/hish",
       "env": {
         "NO_COLOR": "1"
       }
@@ -39,7 +39,7 @@ Add to your Cursor `settings.json`:
 }
 ```
 
-⚠️ **Important**: Replace `/absolute/path/to/kindarian-cursor-context/` with your actual path!
+⚠️ **Important**: Replace `/absolute/path/to/hish/` with your actual path!
 
 ---
 
@@ -140,17 +140,17 @@ You can specify different collections for different contexts:
   "mcpServers": {
     "qdrant-framework": {
       "type": "stdio",
-      "command": "/path/to/kindarian-cursor-context/scripts/run-mcp-stdio.sh",
-      "workingDirectory": "/path/to/kindarian-cursor-context",
+      "command": "/path/to/hish/scripts/run-mcp-stdio.sh",
+      "workingDirectory": "/path/to/hish",
       "env": {
         "NO_COLOR": "1",
-        "COLLECTION_NAME": "kindarian_framework"
+        "COLLECTION_NAME": "hish_framework"
       }
     },
     "qdrant-projects": {
       "type": "stdio",
-      "command": "/path/to/kindarian-cursor-context/scripts/run-mcp-stdio.sh",
-      "workingDirectory": "/path/to/kindarian-cursor-context",
+      "command": "/path/to/hish/scripts/run-mcp-stdio.sh",
+      "workingDirectory": "/path/to/hish",
       "env": {
         "NO_COLOR": "1",
         "COLLECTION_NAME": "project_code"

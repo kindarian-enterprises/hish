@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes common workflows for managing development agents within the Kindarian Cursor Context framework.
+This document describes common workflows for managing development agents within the Hish framework.
 
 ## Creating a New Project Context
 

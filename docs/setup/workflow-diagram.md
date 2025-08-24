@@ -105,7 +105,7 @@ docs/setup/...    # Don't modify for local needs
 
 ```bash
 # One-time setup
-git clone https://github.com/kindarian-enterprises/kindarian-cursor-context.git
+git clone https://github.com/kindarian-enterprises/hish.git
 git checkout -b my-team-customization
 mkdir -p local overrides private tmp
 

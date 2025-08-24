@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide explains how to effectively direct and manage development agents within the Kindarian Cursor Context framework.
+This guide explains how to effectively direct and manage development agents within the Hish framework.
 
 ### **Agent Initialization**
 

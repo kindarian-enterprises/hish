@@ -1,5 +1,5 @@
 #!/bin/bash
-# Kindarian Cursor Context - New Project Context Setup
+# Hish - New Project Context Setup
 # Creates a new project context within the framework (not a separate repository)
 
 set -e
@@ -109,7 +109,7 @@ if [[ ! -d "local/workflow-indexes" ]]; then
     fi
 fi
 
-echo "🚀 Kindarian Cursor Context - New Project Context Setup"
+echo "🚀 Hish - New Project Context Setup"
 echo "========================================================="
 echo "This creates a new project context within the framework."
 echo "Your code repositories remain separate from this context management system."
@@ -201,7 +201,7 @@ print_status "Creating context documentation..."
 cat > "$CONTEXT_DIR/README.md" << EOF
 # $PROJECT_NAME - Development Context
 
-This directory contains the development agent context for **$PROJECT_NAME** within the Kindarian Cursor Context framework.
+This directory contains the development agent context for **$PROJECT_NAME** within the Hish framework.
 
 ## 📁 **Context Structure**
 
@@ -215,7 +215,7 @@ This directory contains the development agent context for **$PROJECT_NAME** with
 
 ## 🚀 **Usage in Cursor**
 
-1. **Open the framework**: Open the \`kindarian-cursor-context\` directory in Cursor
+1. **Open the framework**: Open the \`hish\` directory in Cursor
 2. **Initialize agent**: Reference the universal init prompt: \`@dev_agent_init_prompt.md\`
 3. **Load project context**: The agent will automatically load project-specific context from \`dev_agent_context.md\`
 4. **Cross-project queries**: Use RAG to discover patterns from other projects:
@@ -258,7 +258,7 @@ This context benefits from and contributes to the shared knowledge base:
 
 ---
 
-*This project context is part of the Kindarian Cursor Context framework enabling cross-project knowledge sharing and institutional learning.*
+*This project context is part of the Hish framework enabling cross-project knowledge sharing and institutional learning.*
 EOF
 
 print_success "Context documentation created: $CONTEXT_DIR/README.md"
@@ -283,7 +283,7 @@ print_status "Context Location: $CONTEXT_DIR"
 echo
 print_status "Next steps:"
 echo "  1. Update $CONTEXT_DIR/dev_agent_context.md with current project state"
-echo "  2. In Cursor (with kindarian-cursor-context open): @dev_agent_init_prompt.md"
+echo "  2. In Cursor (with hish open): @dev_agent_init_prompt.md"
 echo "  3. Start using cross-project knowledge queries:"
 echo "     - qdrant-find \"authentication patterns\""
 echo "     - qdrant-find \"testing strategies\""

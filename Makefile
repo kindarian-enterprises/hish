@@ -1,11 +1,11 @@
-# Kindarian Cursor Context Framework - Makefile
+# Hish Cursor Context Framework - Makefile
 # Multi-project development agent framework with shared knowledge
 
 .PHONY: help up down status health test new-context index-repo reindex-contexts clean logs index collections search setup-cursor quick-start update backup info mcp optimize-collections
 
 # Default target
 help: ## Show this help message
-	@echo "🧠 Kindarian Cursor Context Framework"
+	@echo "🧠 Hish Cursor Context Framework"
 	@echo "====================================="
 	@echo "Multi-project development agent framework with shared knowledge"
 	@echo ""
@@ -13,7 +13,7 @@ help: ## Show this help message
 
 # Framework Management
 up: ## Start the RAG knowledge system
-	@echo "🚀 Starting Kindarian Cursor Context framework..."
+	@echo "🚀 Starting Hish Cursor Context framework..."
 	docker compose -f compose.rag.yml --env-file env.framework up -d
 	@echo "⏳ Waiting for services to be ready..."
 	@sleep 10
@@ -174,13 +174,13 @@ update: ## Update framework (git pull + rebuild)
 
 backup: ## Backup knowledge database
 	@echo "💾 Backing up knowledge database..."
-	@BACKUP_FILE="kindarian-knowledge-backup-$$(date +%Y%m%d-%H%M%S).tar.gz"
+	@BACKUP_FILE="hish-knowledge-backup-$$(date +%Y%m%d-%H%M%S).tar.gz"
 	@tar -czf "$$BACKUP_FILE" rag/qdrant_data/ 2>/dev/null || tar -czf "$$BACKUP_FILE" .data/qdrant/ 2>/dev/null || echo "❌ No data directory found"
 	@echo "✅ Backup created: $$BACKUP_FILE"
 
 # Quick Actions
 quick-start: ## Quick setup guide - show configuration steps
-	@echo "🚀 Kindarian Cursor Context - Quick Start"
+	@echo "🚀 Hish Cursor Context - Quick Start"
 	@echo "========================================"
 	@echo ""
 	@echo "📋 Setup Steps:"
@@ -216,13 +216,13 @@ setup-cursor: ## Show Cursor MCP configuration instructions
 
 # Information
 info: ## Show framework information
-	@echo "🧠 Kindarian Cursor Context Framework"
+	@echo "🧠 Hish Cursor Context Framework"
 	@echo "======================================"
 	@echo "Version: Multi-Project Intelligence Edition"
 	@echo "Purpose: Cross-project knowledge sharing for development agents"
 	@echo ""
 	@echo "🏗️  Architecture:"
-	@echo "  • Context Management: kindarian-cursor-context/ (this repo)"
+	@echo "  • Context Management: hish/ (this repo)"
 	@echo "  • Code Repositories: External (indexed by RAG)"
 	@echo "  • Knowledge Base: Qdrant vector database"
 	@echo "  • Agent Interface: Cursor + MCP protocol"

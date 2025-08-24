@@ -1,4 +1,4 @@
-# Kindarian Cursor Context Framework Repository Index
+# Hish Framework Repository Index
 
 ## 🚨 MANDATORY SESSION BEHAVIOR 🚨
 **⚠️ CRITICAL: Use semantic search on these files instead of loading full content ⚠️**
@@ -7,7 +7,7 @@
 
 ## Repository Overview
 
-**Kindarian Cursor Context** is a multi-project development agent framework that transforms engineering ecosystems into knowledge-powered learning machines through RAG-enhanced development workflows.
+**Hish** is a multi-project development agent framework that transforms engineering ecosystems into knowledge-powered learning machines through RAG-enhanced development workflows.
 
 ### Core Concepts
 - **Multi-Project Intelligence**: One framework manages contexts for all projects

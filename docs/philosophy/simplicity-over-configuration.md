@@ -1,6 +1,6 @@
 # 🎯 Simplicity Over Configuration
 
-**The Kindarian Cursor Context framework eliminates configuration complexity by leveraging agent intelligence.**
+**The Hish framework eliminates configuration complexity by leveraging agent intelligence.**
 
 ## 🧠 **Core Philosophy**
 

@@ -1,5 +1,5 @@
 
-name: kindarian-rag
+name: hish-rag
 
 services:
   qdrant:

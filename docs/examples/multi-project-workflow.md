@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document demonstrates a complete day-in-the-life example of using the Kindarian Cursor Context framework for cross-project intelligence and knowledge sharing.
+This document demonstrates a complete day-in-the-life example of using the Hish framework for cross-project intelligence and knowledge sharing.
 
 ## Scenario: Multi-Project Development Day
 
@@ -311,4 +311,4 @@ qdrant-store "Ecosystem Standards: Authentication (JWT + refresh + roles), Perfo
 
 ---
 
-**This workflow demonstrates how the Kindarian Cursor Context framework transforms individual project development into ecosystem-wide intelligence and continuous improvement.**
+**This workflow demonstrates how the Hish framework transforms individual project development into ecosystem-wide intelligence and continuous improvement.**
