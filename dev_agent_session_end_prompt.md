@@ -60,6 +60,12 @@ curl -s http://worldtimeapi.org/api/timezone/UTC
 
 ### **📝 Required Context Updates**
 
+#### **Context File Selection**
+**🚨 CRITICAL: Choose the correct context file based on your work scope:**
+
+- **`local/dev_agent_framework_context.md`**: For framework enhancements (persona updates, workflow changes, architectural patterns, cross-project improvements)
+- **`local/[project-name]/dev_agent_context.md`**: For project-specific work (features, bugs, project architecture, deployment issues)
+
 #### **Achievement Documentation**
 ```markdown
 achievement_YYYY_MM_DD_HH_MM_SS_[description] { 

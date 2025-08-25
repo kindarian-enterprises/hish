@@ -2,53 +2,22 @@
 
 **Complete documentation ecosystem for the multi-project development agent framework.**
 
-## 🧭 **Navigation Guide**
+## 📚 **Essential Documentation**
 
 ### **🚀 Getting Started**
-- **[Main README](../README.md)** - Framework overview and quick start
-- **[Getting Started Guide](setup/getting-started.md)** - **⭐ NEW USER START HERE** - 5 minutes to full setup
-- **[Upstream + Main Workflow](setup/upstream-main-workflow.md)** - **⭐ NEW** - Zero-conflict collaboration guide
-- **[Workflow Diagram](setup/workflow-diagram.md)** - **⭐ VISUAL** - See the workflow in action
-- **[Cursor MCP Integration](setup/cursor-mcp-integration.md)** - Essential MCP setup guide
-- **[Environment Setup](setup/environment-setup.md)** - **⭐ ESSENTIAL** - Configure environment variables
-- **[RAG + MCP Setup Guide](integration/rag-mcp-setup-guide.md)** - Technical setup and configuration
+- **[Getting Started Guide](setup/getting-started.md)** - 5 minutes to full setup
+- **[Cursor MCP Integration](setup/cursor-mcp-integration.md)** - Essential MCP setup
+- **[Environment Setup](setup/environment-setup.md)** - Configure environment variables
+- **[Virtual Environment Guide](setup/virtual-environment-guide.md)** - Host-based indexing setup
 
-### **🎯 Agent Management**
-- **[Directing Agents](agent-management/directing-agents.md)** - **⭐ START HERE** - How to direct and manage development agents
-- **[Agent Workflows](agent-management/agent-workflows.md)** - Common agent management scenarios
-- **[Quality Management](agent-management/quality-management.md)** - Ensuring high-quality agent outputs
+### **🎯 Core Usage**
+- **[Directing Agents](agent-management/directing-agents.md)** - How to manage development agents
+- **[Indexing and Reindexing](knowledge-management/indexing-and-reindexing.md)** - Knowledge management
+- **[Multi-Project Workflow](examples/multi-project-workflow.md)** - Complete example
 
-### **🗂️ Knowledge Management**
-- **[Indexing and Reindexing](knowledge-management/indexing-and-reindexing.md)** - **⭐ ESSENTIAL** - When, why, and how to manage knowledge
-- **[Collection Strategy](knowledge-management/collection-strategy.md)** - Organizing knowledge for maximum effectiveness
-- **[Knowledge Quality](knowledge-management/knowledge-quality.md)** - Maintaining high-quality knowledge base
-
-### **🏗️ Architecture & Philosophy**
-- **[Knowledge-Driven Development](philosophy/knowledge-driven-development.md)** - Core philosophy and principles
-- **[Simplicity Over Configuration](philosophy/simplicity-over-configuration.md)** - **⭐ ESSENTIAL** - Why no config files are needed
-- **[Multi-Project Architecture](architecture/multi-project-architecture.md)** - How the framework scales across projects
-- **[Cross-Project Learning](architecture/cross-project-learning.md)** - Intelligence sharing between projects
-
-### **📖 Examples & Workflows**
-- **[Multi-Project Workflow](examples/multi-project-workflow.md)** - **⭐ COMPREHENSIVE EXAMPLE** - Day-in-the-life example
-- **[RAG-Enhanced Development](../workflows-and-processes/examples/rag-enhanced-development-workflow.md)** - Knowledge-first development process
-- **[Testing Workflow Template](../workflows-and-processes/examples/testing-workflow-template.md)** - RAG-augmented testing strategies
-
-### **🔧 Technical Reference**
-- **[MCP Server Configuration](setup/mcp-server-configuration.md)** - Advanced MCP setup options
-- **[Qdrant Management](technical/qdrant-management.md)** - Vector database administration
-- **[Troubleshooting Guide](technical/troubleshooting.md)** - Common issues and solutions
-
-### **🎭 Templates & Contexts**
-- **[Example Contexts](../contexts/)** - Sample project contexts
-  - **[Web App Example](../contexts/example-web-app/)** - React/Node.js project context
-  - **[API Service Example](../contexts/example-api/)** - Go microservices context
-  - **[Framework Examples](../contexts/)** - Example project contexts
-- **[Template Guides](../templates/)** - Base templates for new projects
-
-### **Template Guides**
-- [`templates/context/dev_agent_context_template.md`](../templates/context/dev_agent_context_template.md) - **REQUIRED** - Context management structure and protocols (scaffold for new projects)
-- [`dev_agent_persona.md`](../dev_agent_persona.md) - Universal dev agent persona for all projects
+### **🏗️ Architecture**
+- **[Knowledge-Driven Development](philosophy/knowledge-driven-development.md)** - Core philosophy
+- **[Simplicity Over Configuration](philosophy/simplicity-over-configuration.md)** - Why no config files needed
 
 ## 🎯 **Quick Start Paths**
 

@@ -60,22 +60,34 @@ This automatically indexes:
 
 ## 🛠️ **How to Index Effectively**
 
-### **Simple Indexing (Recommended)**
+### **🚀 Host-Based Indexing (Recommended)**
 
-**For most users, this is all you need:**
+**For optimal performance (2-4x faster):**
 ```bash
-# Index everything automatically
-make index
+# Full indexing: framework + all project repositories
+make index-host
+
+# Framework documentation only (quick updates)
+make index-framework
 ```
 
-This command:
-- Indexes framework documentation and templates
-- Indexes all local project contexts in `local/`
-- **Automatically discovers and indexes all project code repositories**
-- Creates searchable collections automatically
-- Requires no knowledge of collection names or paths
+**Requirements:** Python 3.12+ virtual environment with dependencies installed:
+```bash
+pip install -r rag/indexer/requirements.txt
+```
 
-**The framework remembers where your code is - just run `make index`!**
+### **🐳 Container-Based Indexing (Fallback)**
+
+**For isolated environments or CI/CD:**
+```bash
+# Full indexing: framework + all project repositories  
+make index
+
+# Advanced: specific repository indexing
+make index-repo REPO_PATH=/path/to/repo COLLECTION_NAME=collection_name
+```
+
+**Benefits:** No local Python setup required, consistent environment
 
 ### **Advanced Indexing (Power Users)**
 

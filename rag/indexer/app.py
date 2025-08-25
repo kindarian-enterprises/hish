@@ -1,9 +1,9 @@
 import os
 import sys
 import argparse
-import json
 import logging
-from typing import Dict, Any, List, Tuple
+import gc
+from typing import List, Tuple
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import Distance, VectorParams, PointStruct
@@ -23,6 +23,184 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger("indexer")
+
+
+def get_directory_size_mb(path: str) -> float:
+    """Get the total size of a directory in MB."""
+    try:
+        total_size = 0
+        for dirpath, dirnames, filenames in os.walk(path):
+            for filename in filenames:
+                filepath = os.path.join(dirpath, filename)
+                try:
+                    total_size += os.path.getsize(filepath)
+                except (OSError, IOError):
+                    continue
+        return total_size / (1024 * 1024)  # Convert to MB
+    except Exception as e:
+        logger.warning(f"Could not calculate directory size for {path}: {e}")
+        return 0.0
+
+
+def should_use_chunking(work_root: str, repo_size_threshold_mb: float) -> bool:
+    """Determine if repository chunking should be used based on size."""
+    repo_size_mb = get_directory_size_mb(work_root)
+    logger.info(f"Repository size: {repo_size_mb:.1f} MB")
+
+    if repo_size_mb > repo_size_threshold_mb:
+        logger.info(
+            f"Repository size ({repo_size_mb:.1f} MB) exceeds threshold ({repo_size_threshold_mb} MB) - enabling chunking strategy")
+        return True
+    else:
+        logger.info(
+            f"Repository size ({repo_size_mb:.1f} MB) is below threshold ({repo_size_threshold_mb} MB) - using standard processing")
+        return False
+
+
+def process_files_in_chunks(files_to_process: List[str], work_root: str, model: TextEmbedding,
+                            chunk_max_tokens: int, chunk_min_chars: int, chunk_overlap: int,
+                            model_name: str, max_file_size_mb: float, collection: str,
+                            client: QdrantClient, batch_size: int, repo_chunk_size: int,
+                            memory_cleanup_interval: int, max_workers: int) -> Tuple[int, int]:
+    """Process files in chunks with memory cleanup between chunks."""
+    total_files = 0
+    total_chunks = 0
+    next_id = 1
+
+    # Initialize detailed progress log file (use /tmp since work_root is read-only)
+    log_file_path = "/tmp/indexing_progress.log"
+    with open(log_file_path, "w", encoding="utf-8") as log_file:
+        log_file.write(f"=== INDEXING STARTED: {collection} ===\n")
+        log_file.write(f"Total files to process: {len(files_to_process)}\n")
+        log_file.write(f"Repository chunk size: {repo_chunk_size}\n")
+        log_file.write(f"Max file size: {max_file_size_mb}MB\n")
+        log_file.write("=" * 50 + "\n")
+        log_file.flush()
+
+    logger.info(f"Detailed progress will be logged to: {log_file_path}")
+
+    # Split files into chunks
+    file_chunks = [files_to_process[i:i + repo_chunk_size]
+                   for i in range(0, len(files_to_process), repo_chunk_size)]
+
+    logger.info(
+        f"Processing {len(files_to_process)} files in {len(file_chunks)} chunks of {repo_chunk_size} files each")
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TaskProgressColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+    ) as progress:
+
+        main_task = progress.add_task(
+            "Processing file chunks...", total=len(file_chunks))
+
+        for chunk_idx, file_chunk in enumerate(file_chunks):
+            logger.info(
+                f"Processing chunk {chunk_idx + 1}/{len(file_chunks)} ({len(file_chunk)} files)")
+
+            # Process this chunk of files
+            batch = []
+            chunk_task = progress.add_task(
+                f"Chunk {chunk_idx + 1}", total=len(file_chunk))
+
+            # Reduce worker count for chunked processing to save memory
+            chunk_workers = min(max_workers, 4)
+
+            with ThreadPoolExecutor(max_workers=chunk_workers) as executor:
+                future_to_file = {
+                    executor.submit(
+                        process_single_file,
+                        rel, work_root, model,
+                        chunk_max_tokens, chunk_min_chars, chunk_overlap,
+                        model_name, max_file_size_mb, collection
+                    ): rel for rel in file_chunk
+                }
+
+                for future in as_completed(future_to_file):
+                    rel = future_to_file[future]
+
+                    # Log the file being processed to a detailed log file
+                    log_file_path = "/tmp/indexing_progress.log"
+                    with open(log_file_path, "a", encoding="utf-8") as log_file:
+                        log_file.write(f"PROCESSING: {rel}\n")
+                        log_file.flush()
+
+                    try:
+                        file_path, points, chunk_count = future.result()
+
+                        # Log successful completion
+                        log_file_path = "/tmp/indexing_progress.log"
+                        with open(log_file_path, "a", encoding="utf-8") as log_file:
+                            log_file.write(
+                                f"COMPLETED: {rel} -> {chunk_count} chunks\n")
+                            log_file.flush()
+
+                        if chunk_count > 0:
+                            # Assign IDs to points
+                            for point in points:
+                                point.id = next_id
+                                next_id += 1
+                                total_chunks += 1
+
+                            # Add to batch
+                            batch.extend(points)
+
+                            # Upsert in batches
+                            if len(batch) >= batch_size:
+                                logger.debug(
+                                    f"Upserting batch of {len(batch)} vectors...")
+                                try:
+                                    client.upsert(
+                                        collection_name=collection, points=batch)
+                                    logger.debug("Batch upserted successfully")
+                                except Exception as e:
+                                    logger.error(
+                                        f"Failed to upsert batch: {e}")
+                                batch.clear()
+
+                        total_files += 1
+                        progress.advance(chunk_task)
+
+                        # Periodic memory cleanup
+                        if total_files % memory_cleanup_interval == 0:
+                            gc.collect()
+                            logger.debug(
+                                f"Memory cleanup after {total_files} files")
+
+                    except Exception as e:
+                        logger.error(f"Failed to process {rel}: {e}")
+
+                        # Log the error to the detailed log file
+                        log_file_path = "/tmp/indexing_progress.log"
+                        with open(log_file_path, "a", encoding="utf-8") as log_file:
+                            log_file.write(f"ERROR: {rel} -> {str(e)}\n")
+                            log_file.flush()
+
+                        progress.advance(chunk_task)
+                        continue
+
+            # Upsert remaining batch for this chunk
+            if batch:
+                logger.info(
+                    f"Upserting final batch of {len(batch)} vectors for chunk {chunk_idx + 1}...")
+                try:
+                    client.upsert(collection_name=collection, points=batch)
+                    logger.info("Chunk batch upserted successfully")
+                except Exception as e:
+                    logger.error(f"Failed to upsert chunk batch: {e}")
+                batch.clear()
+
+            # Force garbage collection between chunks
+            gc.collect()
+            logger.info(
+                f"Completed chunk {chunk_idx + 1}/{len(file_chunks)}, memory cleaned up")
+            progress.advance(main_task)
+            progress.remove_task(chunk_task)
+
+    return total_files, total_chunks
 
 
 def ensure_collection(client: QdrantClient, name: str, dim: int, model_name: str):
@@ -158,7 +336,9 @@ def process_single_file(rel: str, work_root: str, model: TextEmbedding,
 def index_repo(work_root: str, qdrant_url: str, api_key: str, collection: str,
                model_name: str, includes: str, excludes: str,
                chunk_max_tokens: int, chunk_min_chars: int, chunk_overlap: int,
-               max_workers: int = 0, batch_size: int = 256, max_file_size_mb: int = 5):
+               max_workers: int = 0, batch_size: int = 256, max_file_size_mb: int = 5,
+               repo_chunk_size: int = 100, repo_size_threshold_mb: float = 50.0,
+               memory_cleanup_interval: int = 50):
 
     logger.info(f"Starting repository indexing from: {work_root}")
     logger.info(f"Target Qdrant: {qdrant_url}")
@@ -211,72 +391,94 @@ def index_repo(work_root: str, qdrant_url: str, api_key: str, collection: str,
         logger.info(
             f"Auto-detected {max_workers} worker threads for {len(files_to_process)} files")
 
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TaskProgressColumn(),
-        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-    ) as progress:
+    # Determine if we should use chunking strategy based on repository size
+    use_chunking = should_use_chunking(work_root, repo_size_threshold_mb)
 
-        task = progress.add_task(
-            "Processing files...", total=len(files_to_process))
+    if use_chunking:
+        # Use chunking strategy for large repositories
+        total_files, total_chunks = process_files_in_chunks(
+            files_to_process, work_root, model, chunk_max_tokens, chunk_min_chars,
+            chunk_overlap, model_name, max_file_size_mb, collection, client,
+            batch_size, repo_chunk_size, memory_cleanup_interval, max_workers
+        )
+    else:
+        # Use standard processing for smaller repositories
+        total_files = 0
+        total_chunks = 0
+        batch: List[PointStruct] = []
+        next_id = 1
 
-        # Process files in parallel using ThreadPoolExecutor
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            # Submit all files for processing
-            future_to_file = {
-                executor.submit(
-                    process_single_file,
-                    rel, work_root, model,
-                    chunk_max_tokens, chunk_min_chars, chunk_overlap, model_name, max_file_size_mb, collection
-                ): rel for rel in files_to_process
-            }
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TaskProgressColumn(),
+            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        ) as progress:
 
-            # Process completed futures as they finish
-            for future in as_completed(future_to_file):
-                rel = future_to_file[future]
-                try:
-                    file_path, points, chunk_count = future.result()
+            task = progress.add_task(
+                "Processing files...", total=len(files_to_process))
 
-                    if chunk_count > 0:
-                        # Assign IDs to points
-                        for point in points:
-                            point.id = next_id
-                            next_id += 1
-                            total_chunks += 1
+            # Process files in parallel using ThreadPoolExecutor
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                # Submit all files for processing
+                future_to_file = {
+                    executor.submit(
+                        process_single_file,
+                        rel, work_root, model,
+                        chunk_max_tokens, chunk_min_chars, chunk_overlap, model_name, max_file_size_mb, collection
+                    ): rel for rel in files_to_process
+                }
 
-                        # Add to batch
-                        batch.extend(points)
+                # Process completed futures as they finish
+                for future in as_completed(future_to_file):
+                    rel = future_to_file[future]
+                    try:
+                        file_path, points, chunk_count = future.result()
 
-                        # Upsert in reasonable batches
-                        if len(batch) >= batch_size:
-                            logger.debug(
-                                f"Upserting batch of {len(batch)} vectors...")
-                            try:
-                                client.upsert(
-                                    collection_name=collection, points=batch)
-                                logger.debug("Batch upserted successfully")
-                            except Exception as e:
-                                logger.error(f"Failed to upsert batch: {e}")
-                            batch.clear()
+                        if chunk_count > 0:
+                            # Assign IDs to points
+                            for point in points:
+                                point.id = next_id
+                                next_id += 1
+                                total_chunks += 1
 
-                    total_files += 1
-                    progress.advance(task)
+                            # Add to batch
+                            batch.extend(points)
 
-                except Exception as e:
-                    logger.error(f"Failed to process {rel}: {e}")
-                    progress.advance(task)
-                    continue
+                            # Upsert in reasonable batches
+                            if len(batch) >= batch_size:
+                                logger.debug(
+                                    f"Upserting batch of {len(batch)} vectors...")
+                                try:
+                                    client.upsert(
+                                        collection_name=collection, points=batch)
+                                    logger.debug("Batch upserted successfully")
+                                except Exception as e:
+                                    logger.error(
+                                        f"Failed to upsert batch: {e}")
+                                batch.clear()
 
-    # Final batch
-    if batch:
-        logger.info(f"Upserting final batch of {len(batch)} vectors...")
-        try:
-            client.upsert(collection_name=collection, points=batch)
-            logger.info("Final batch upserted successfully")
-        except Exception as e:
-            logger.error(f"Failed to upsert final batch: {e}")
+                        total_files += 1
+                        progress.advance(task)
+
+                        # Periodic memory cleanup for standard processing too
+                        if total_files % memory_cleanup_interval == 0:
+                            gc.collect()
+
+                    except Exception as e:
+                        logger.error(f"Failed to process {rel}: {e}")
+                        progress.advance(task)
+                        continue
+
+        # Final batch
+        if batch:
+            logger.info(f"Upserting final batch of {len(batch)} vectors...")
+            try:
+                client.upsert(collection_name=collection, points=batch)
+                logger.info("Final batch upserted successfully")
+            except Exception as e:
+                logger.error(f"Failed to upsert final batch: {e}")
 
     logger.info(f"Indexing complete!")
     print(
@@ -322,6 +524,11 @@ def main():
     batch_size = int(os.getenv("BATCH_SIZE", "256"))
     max_file_size_mb = int(os.getenv("MAX_FILE_SIZE_MB", "5"))
 
+    # Repository chunking parameters
+    repo_chunk_size = int(os.getenv("REPO_CHUNK_SIZE", "100"))
+    repo_size_threshold_mb = float(os.getenv("REPO_SIZE_THRESHOLD_MB", "50.0"))
+    memory_cleanup_interval = int(os.getenv("MEMORY_CLEANUP_INTERVAL", "50"))
+
     if args.recreate:
         logger.info(
             "Recreate flag detected - will drop and recreate collection")
@@ -350,7 +557,10 @@ def main():
             chunk_overlap=chunk_overlap,
             max_workers=args.workers or max_workers,
             batch_size=args.batch_size or batch_size,
-            max_file_size_mb=max_file_size_mb
+            max_file_size_mb=max_file_size_mb,
+            repo_chunk_size=repo_chunk_size,
+            repo_size_threshold_mb=repo_size_threshold_mb,
+            memory_cleanup_interval=memory_cleanup_interval
         )
         logger.info("=== Indexing completed successfully! ===")
     except Exception as e:

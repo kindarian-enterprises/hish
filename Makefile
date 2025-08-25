@@ -58,7 +58,7 @@ list-contexts: ## List all project contexts
 	@echo "💡 Agents discover context automatically - no configuration needed"
 
 # Knowledge Management
-index: ## Index framework docs and all project code repositories
+index: ## Index framework docs and all project code repositories (container-based)
 	@echo "📚 Indexing framework documentation and local contexts..."
 	@echo "🔍 Using env.framework for framework documentation (focuses on local/, docs/, contexts/)..."
 	@echo "🐳 Container path mapping: $(PWD) → /work"
@@ -81,6 +81,35 @@ index: ## Index framework docs and all project code repositories
 		echo "ℹ️  No local contexts found. Create one with make new-context"; \
 	fi
 	@echo "✅ Indexing complete! Framework and all project code is now searchable."
+
+index-host: ## Index framework docs and all project code repositories (host-based, faster)
+	@echo "🚀 Host-based indexing for improved performance..."
+	@echo "📚 Indexing framework documentation..."
+	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file env.framework --collection framework_docs
+	@echo "🔍 Discovering and indexing project code repositories..."
+	@if [ -d "local" ]; then \
+		for context_dir in local/*/; do \
+			if [ -d "$$context_dir" ] && [ -f "$$context_dir/repo_path.txt" ]; then \
+				repo_path=$$(cat "$$context_dir/repo_path.txt" | tr -d '\n'); \
+				context_name=$$(basename "$$context_dir"); \
+				if [ -d "$$repo_path" ]; then \
+					echo "📁 Host-indexing $$context_name code: $$repo_path"; \
+					python3 scripts/host-indexer.py --work-dir "$$repo_path" --env-file env.code --collection "$${context_name}_code"; \
+				else \
+					echo "⚠️  Repo path not found for $$context_name: $$repo_path"; \
+				fi; \
+			fi; \
+		done; \
+	else \
+		echo "ℹ️  No local contexts found. Create one with make new-context"; \
+	fi
+	@echo "✅ Host-based indexing complete! Framework and all project code is now searchable."
+
+index-framework: ## Index framework docs only (fast reindexing for framework changes)
+	@echo "📚 Indexing framework documentation only..."
+	@echo "🚀 Using host-based indexing for optimal performance..."
+	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file env.framework --collection framework_docs
+	@echo "✅ Framework documentation indexing complete!"
 
 reindex-contexts: ## Reindex specific contexts (Usage: make reindex-contexts CONTEXTS="context1 context2 context3")
 	@if [ -z "$(CONTEXTS)" ]; then \
@@ -186,8 +215,13 @@ quick-start: ## Quick setup guide - show configuration steps
 	@echo "📋 Setup Steps:"
 	@echo "  1. Configure Cursor MCP integration: make setup-cursor"
 	@echo "  2. Create your first project context: make new-context"
-	@echo "  3. Index everything: make index"
+	@echo "  3. Index everything: make index-host (faster) or make index (container-based)"
 	@echo "  4. In Cursor: @dev_agent_init_prompt.md"
+	@echo ""
+	@echo "🚀 Performance Options:"
+	@echo "  • make index-host      - Host-based indexing (faster, recommended)"
+	@echo "  • make index           - Container-based indexing (original method)"
+	@echo "  • make index-framework - Framework docs only (quick updates)"
 	@echo ""
 	@echo "💡 Cursor will auto-start Qdrant when you restart after MCP config"
 	@echo "📚 All commands: make help"

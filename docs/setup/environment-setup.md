@@ -145,13 +145,58 @@ cp env.example env.framework
 
 ## 🚀 **Step-by-Step Setup**
 
-### **1. Copy Environment Template**
+### **1. Set Up Python Virtual Environment (Recommended for Host-Based Indexing)**
+
+**🚀 NEW: Host-based indexing provides 2-4x better performance than container-based indexing**
+
+**Option 1: Using virtualenvwrapper (Recommended)**
+```bash
+# Install virtualenvwrapper (if not already installed)
+pip install virtualenvwrapper
+
+# Add to your shell profile (.bashrc, .zshrc, etc.)
+export WORKON_HOME=$HOME/.virtualenvs
+source /usr/local/bin/virtualenvwrapper.sh
+
+# Reload your shell or source the profile
+source ~/.bashrc  # or ~/.zshrc
+
+# Create virtual environment for hish indexing
+mkvirtualenv hish-indexing --python=python3.12
+
+# Activate the environment (for future sessions)
+workon hish-indexing
+```
+
+**Option 2: Using standard venv**
+```bash
+cd hish
+
+# Create virtual environment
+python3 -m venv .venv
+
+# Activate virtual environment
+source .venv/bin/activate  # Linux/macOS
+# or
+.venv\Scripts\activate     # Windows
+
+# Verify Python version (should be 3.12+)
+python --version
+```
+
+**Benefits of virtual environment setup:**
+- **Isolated dependencies** - No conflicts with system Python packages
+- **Faster indexing** - Host-based execution eliminates container overhead  
+- **Better performance** - Direct filesystem access and optimal memory usage
+- **Manual dependency control** - Install only what you need when you need it
+
+### **2. Copy Environment Template**
 ```bash
 cd hish
 cp env.example env.framework
 ```
 
-### **2. Review and Customize**
+### **3. Review and Customize**
 ```bash
 # View current settings
 cat env.framework
@@ -162,23 +207,79 @@ nano env.framework
 code env.framework
 ```
 
-### **3. Verify Configuration**
+### **4. Verify Configuration**
 ```bash
+# Start framework services (Qdrant vector database)
+make up
+
 # Check if services can start
 make health
 
-# Test indexing with a small collection
+# Test host-based indexing (recommended)
+make index-framework
+
+# OR: Test container-based indexing (fallback)
 make index-repo REPO_PATH=. COLLECTION_NAME=test_collection
 ```
 
-### **4. Start Framework**
+### **5. Start Framework and Index Content**
 ```bash
-# Launch all services
+# Launch all services (Qdrant vector database)
 make up
 
 # Check service status
 make health
+
+# Index framework documentation and all project repositories (host-based, fastest)
+make index-host
+
+# OR: Index only framework documentation (quick updates)
+make index-framework
+
+# OR: Use container-based indexing (slower, but more isolated)
+make index
 ```
+
+## 🚀 **Host-Based vs Container-Based Indexing**
+
+### **Host-Based Indexing (Recommended)**
+```bash
+# Full indexing: framework + all project repositories
+make index-host
+
+# Framework documentation only (quick updates)  
+make index-framework
+```
+
+**Benefits:**
+- **2-4x faster** indexing performance
+- Better memory utilization for large repositories
+- No Docker volume mount overhead
+- Direct filesystem access
+
+**Requirements:**
+- Python 3.12+ with virtual environment
+- Manual dependency installation: `pip install -r rag/indexer/requirements.txt`
+
+### **Container-Based Indexing (Fallback)**
+```bash
+# Full indexing: framework + all project repositories
+make index
+
+# Manual repository indexing
+make index-repo REPO_PATH=/path/to/repo COLLECTION_NAME=collection_name
+```
+
+**Benefits:**
+- Consistent, isolated environment
+- No local Python setup required
+- Good for CI/CD pipelines
+- Useful for debugging indexing issues
+
+**Drawbacks:**
+- Slower due to container overhead
+- Volume mount performance penalties
+- Higher memory usage
 
 ## 🔍 **Complete Environment Variables Reference**
 

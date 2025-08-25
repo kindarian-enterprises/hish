@@ -30,7 +30,8 @@ This file defines the MANDATORY initialization protocol for the Hish Development
 **🚨 MANDATORY: You MUST read and fully understand ALL of the following files before starting ANY work:**
 
 - **`dev_agent_persona.md`**: Contains the universal Hish Agent's role, coding standards, architectural philosophy, and **RAG-ENHANCED DEVELOPMENT METHODOLOGY**. This file defines *how* you should think, code, and communicate using knowledge discovery first.
-- **`local/[project-name]/dev_agent_context.md`**: Contains the current project state, achievements, issues, architectural decisions, technical debt, and **CRITICAL UPDATE PROTOCOLS**. This file defines *what* is happening in the project, *why*, and *what to prioritize*. **⚠️ READ THE UPDATE PROTOCOL SECTION COMPLETELY BEFORE ANY EDITS ⚠️**
+- **`local/dev_agent_framework_context.md`** (FRAMEWORK WORK): Contains framework state, achievements, architectural decisions for hish framework itself. **REQUIRED for framework modifications, persona updates, workflow changes, or cross-project pattern work.**
+- **`local/[project-name]/dev_agent_context.md`** (PROJECT WORK): Contains the current project state, achievements, issues, architectural decisions, technical debt, and **CRITICAL UPDATE PROTOCOLS**. This file defines *what* is happening in the project, *why*, and *what to prioritize*. **⚠️ READ THE UPDATE PROTOCOL SECTION COMPLETELY BEFORE ANY EDITS ⚠️**
 - **`local/workflows-and-processes/`**: ALL files in this directory contain workflow documentation, process guidelines, and special project context. These provide critical operational knowledge and lessons learned.
 - **`docs/`**: Framework documentation, integration guides, and best practices.
 

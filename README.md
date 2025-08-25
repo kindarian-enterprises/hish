@@ -51,7 +51,7 @@
   ```
 
 ### **Python Environment (for local development)**
-- **Python**: Version 3.8+ (for local MCP server if not using Docker)
+- **Python**: Version 3.12+ (required for host-based indexing, 3.8+ for MCP server only)
 - **pip**: Latest version
 - **pyenv** (optional): For Python version management
   ```bash
@@ -59,6 +59,51 @@
   pyenv versions
   python --version
   ```
+
+### **Virtual Environment Setup (Recommended for Host-Based Indexing)**
+**🚀 NEW: Host-based indexing provides significantly better performance than container-based indexing**
+
+For optimal performance with the new host-based indexing system, set up a Python virtual environment:
+
+**Option 1: Using virtualenvwrapper (Recommended)**
+```bash
+# Install virtualenvwrapper (if not already installed)
+pip install virtualenvwrapper
+
+# Add to your shell profile (.bashrc, .zshrc, etc.)
+export WORKON_HOME=$HOME/.virtualenvs
+source /usr/local/bin/virtualenvwrapper.sh
+
+# Create and activate virtual environment
+mkvirtualenv hish-indexing
+workon hish-indexing
+
+# Install dependencies manually in your virtual environment
+pip install -r rag/indexer/requirements.txt
+```
+
+**Option 2: Using standard venv**
+```bash
+# Create virtual environment
+python3 -m venv .venv
+
+# Activate (Linux/macOS)
+source .venv/bin/activate
+
+# Activate (Windows)
+.venv\Scripts\activate
+
+# Install dependencies manually in your virtual environment
+pip install -r rag/indexer/requirements.txt
+```
+
+**✅ Benefits of host-based indexing:**
+- **2-4x faster** indexing performance
+- Better memory utilization for large repositories
+- No Docker volume mount overhead
+- Direct filesystem access
+
+**Note:** Install dependencies manually in your virtual environment: `pip install -r rag/indexer/requirements.txt`
 
 ### **Network Requirements**
 - **Internet Access**: Required for Docker image pulls and dependencies
@@ -150,9 +195,17 @@ make new-context
 
 ### **4. Index Your Code Repositories**
 ```bash
-# Index your project's code (stored separately from context)
+# 🚀 NEW: Host-based indexing (faster, recommended)
+make index-host
+
+# OR: Container-based indexing (original method)
+make index
+
+# OR: Framework documentation only (quick updates)
+make index-framework
+
+# Advanced: Index specific repositories manually
 make index-repo REPO_PATH=/path/to/your-project-code COLLECTION_NAME=your_project_code
-make index-repo REPO_PATH=/path/to/another-project COLLECTION_NAME=another_project_code
 
 # All projects share the same knowledge base for cross-project insights!
 ```

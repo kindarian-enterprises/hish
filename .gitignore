@@ -39,6 +39,24 @@ checkpoints/
 # env.code
 # env.example
 
+# Python virtual environments and cache
+
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
 # OS/editor noise
 
 .DS_Store

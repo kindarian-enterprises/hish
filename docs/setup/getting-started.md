@@ -56,6 +56,10 @@ This creates: `local/your-project-name/` (gitignored for local changes)
 
 ### **4. Index Your Repositories**
 ```bash
+# Host-based (faster, recommended)
+make index-host
+
+# OR: Container-based (fallback)
 make index
 ```
 
@@ -110,9 +114,8 @@ qdrant-find "test query"
 ## 🎉 **You're Ready!**
 
 **Next steps:**
-1. **Index your code**: `make index-repo REPO_PATH=/path/to/code COLLECTION_NAME=my_project`
-2. **Initialize agent**: In Cursor, use `@dev_agent_init_prompt.md`
-3. **Start querying**: Use `qdrant-find "your search terms"`
-4. **Record workflows**: Ask agents to document your processes
+1. **Initialize agent**: In Cursor, use `@dev_agent_init_prompt.md`
+2. **Start querying**: Use `qdrant-find "your search terms"`
+3. **Record workflows**: Ask agents to document your processes
 
 **Welcome to cross-project intelligence! 🧠✨**
