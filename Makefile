@@ -253,5 +253,5 @@ info: ## Show framework information
 
 mcp: ## Start MCP server for development  
 	@echo "🔌 Starting MCP server (stdio mode)..."
-	docker compose -f deploy/compose.rag.yml --env-file config/env.mcp run --rm -i mcp-qdrant-llamaindex
+	docker compose -f ./deploy/compose.rag.yml run --rm -i mcp-qdrant-llamaindex
 

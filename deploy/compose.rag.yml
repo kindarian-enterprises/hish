@@ -11,7 +11,7 @@ services:
       - "6333:6333"
       - "6334:6334"
     volumes:
-      - ./.data/qdrant:/qdrant/storage
+      - ../.data/qdrant:/qdrant/storage
     healthcheck:
       test: ["CMD-SHELL", "timeout 5 bash -c 'cat < /dev/null > /dev/tcp/localhost/6333' || exit 1"]
       interval: 5s
@@ -28,7 +28,7 @@ services:
       qdrant:
         condition: service_healthy
     env_file:
-      - ./env.mcp
+      - ../config/env.mcp
     environment:
       - QDRANT_READ_ONLY=false
     command: ["qdrant-llamaindex-mcp-server", "--transport", "stdio"]

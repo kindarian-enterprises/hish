@@ -15,4 +15,4 @@ docker compose -f deploy/compose.rag.yml --env-file config/env.mcp up -d qdrant
 sleep 5
 
 # Run LlamaIndex MCP server in STDIO mode
-exec docker compose -f deploy/compose.rag.yml --env-file config/env.mcp run --rm -i mcp-qdrant-llamaindex
+exec docker compose -f deploy/compose.rag.yml run --rm -i mcp-qdrant-llamaindex
