@@ -209,11 +209,10 @@ make logs
 
 **If indexing fails:**
 ```bash
-# Check service health
-make health
+# Check service connectivity in Cursor
 
 # Restart services if needed
-make down && make up
+Restart Cursor MCP integration
 
 # Check disk space for Qdrant data
 du -sh rag/qdrant_data/
@@ -272,7 +271,7 @@ du -sh rag/qdrant_data/
 make index
 
 # Check indexing health
-make health
+# Check MCP connection status in Cursor
 make collections
 
 # Advanced: Index specific content manually

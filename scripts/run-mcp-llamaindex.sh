@@ -9,10 +9,10 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_DIR"
 
 # Ensure Qdrant is up
-docker compose -f compose.rag.yml --env-file env.mcp up -d qdrant
+docker compose -f deploy/compose.rag.yml --env-file config/env.mcp up -d qdrant
 
 # Wait for Qdrant to be ready
 sleep 5
 
 # Run LlamaIndex MCP server in STDIO mode
-exec docker compose -f compose.rag.yml --env-file env.mcp run --rm -i mcp-qdrant-llamaindex
+exec docker compose -f deploy/compose.rag.yml --env-file config/env.mcp run --rm -i mcp-qdrant-llamaindex

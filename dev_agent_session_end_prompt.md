@@ -225,6 +225,13 @@ qdrant-store "Solution: JWT refresh token rotation with Redis blacklist - Contex
 - [ ] What documentation needs to be reviewed?
 - [ ] What tools or approaches should be validated?
 
+### **🎯 Methodology Evolution**
+- [ ] **Store development insights to hish_framework collection**:
+  ```bash
+  # Example: Store discovered methodology improvements
+  qdrant-store "Development Insight: [Approach] proved effective for [Context] - [Specific benefits and evidence]. Framework Evolution: [How this could improve agent guidance]." hish_framework
+  ```
+
 ### **🔄 Continuity Preparation**
 - [ ] Ensure all context updates are complete
 - [ ] Verify knowledge storage was successful
@@ -270,6 +277,7 @@ qdrant-store "Solution: JWT refresh token rotation with Redis blacklist - Contex
 - Patterns have evolved through real-world application
 - Cross-project learning has accelerated development
 - Institutional knowledge has grown and improved
+- **Agent methodology has evolved**: Style and philosophy insights stored to `hish_framework` collection
 
 ---
 

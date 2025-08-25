@@ -109,6 +109,19 @@ if [[ ! -d "local/workflow-indexes" ]]; then
     fi
 fi
 
+# Copy style and philosophy directives (first time only, for entire local ecosystem)
+if [[ ! -d "local/style-and-philosophy" ]]; then
+    mkdir -p "local/style-and-philosophy"
+    
+    # Copy agent directive templates
+    if [[ -d "templates/style-and-philosophy" ]]; then
+        cp templates/style-and-philosophy/* local/style-and-philosophy/
+        print_success "Initialized agent style and philosophy directives from templates"
+    else
+        print_warning "Agent directive templates not found in templates/style-and-philosophy/"
+    fi
+fi
+
 # Initialize framework context file (first time only, for entire local ecosystem)
 if [[ ! -f "local/dev_agent_framework_context.md" ]]; then
     # Copy framework context template

@@ -1,38 +1,20 @@
-# 🧠 Hish
+# Hish
 
-**A comprehensive prompt and knowledge framework for managing multiple development agents with shared context and cross-project intelligence.**
+Context management framework for AI coding assistants in Cursor. Provides persistent memory and cross-project knowledge sharing via RAG + MCP integration.
 
----
+## Problem
 
-## 🎯 **Why This Framework Exists**
+AI models in Cursor lack context about your codebase, architecture decisions, and development patterns. Each conversation starts from zero knowledge.
 
-**The Problem**: You're using Cursor with AI models, but they don't know your codebase, your development decisions, your patterns, or your philosophy. Every conversation starts from scratch, and you waste time explaining context that should already be known.
+## Solution
 
-**The Solution**: Hish transforms ANY AI model in Cursor into a powerful coding assistant with full knowledge of your development ecosystem. No more dedicated "coding agent" services needed.
-
-### **What This Means for You**
-
-**🧠 Instant Context**: Any AI model you use in Cursor immediately knows your codebase structure, architectural decisions, and development patterns.
-
-**💡 Informed Decisions**: AI assistants understand your dev philosophy, coding standards, and why previous decisions were made.
-
-**🚀 No More Repetition**: Stop explaining your project structure, tech stack, and patterns every time you start a new conversation.
-
-**🎯 Universal Intelligence**: Whether you're using Claude, GPT, or any other model, they all get the same comprehensive context.
-
-### **The Transformation**
-
-**Before**: Every AI conversation feels like starting from scratch. You're constantly explaining your architecture, justifying past decisions, and re-teaching your development philosophy. It's like having a brilliant intern who shows up every day with amnesia.
-
-**After**: Every AI model in Cursor becomes a seasoned member of your development team. They understand your codebase like they've been working on it for years. They know why you chose that authentication pattern, remember the performance issues you solved last month, and can suggest improvements based on your established standards.
-
-**This isn't about managing multiple projects—it's about finally having AI coding assistants that actually understand your work instead of just guessing at it.**
+- **Persistent Context**: AI models access your codebase structure, patterns, and decisions via vector search
+- **Cross-Project Knowledge**: Solutions from one project inform work on others
+- **Zero Configuration**: Automatic context discovery and indexing
 
 ---
 
-## ⚠️ **PREREQUISITES - READ BEFORE STARTING** ⚠️
-
-**🚨 MANDATORY: Your system must meet these requirements before proceeding**
+## Prerequisites
 
 ### **Required Software**
 - **Docker**: Version 20.10+ with Docker Compose v2
@@ -50,20 +32,9 @@
   make --version
   ```
 
-### **Python Environment (for local development)**
-- **Python**: Version 3.12+ (required for host-based indexing, 3.8+ for MCP server only)
-- **pip**: Latest version
-- **pyenv** (optional): For Python version management
-  ```bash
-  # If using pyenv, ensure it's properly configured
-  pyenv versions
-  python --version
-  ```
-
-### **Virtual Environment Setup (Required for Indexing)**
-**🚀 Host-based indexing provides optimal performance and is the only supported indexing method**
-
-For indexing functionality, you must set up a Python virtual environment:
+### Python Environment
+- **Python**: 3.8+ (3.12+ recommended for indexing performance)
+- **Virtual Environment**: Required for indexing
 
 **Option 1: Using virtualenvwrapper (Recommended)**
 ```bash
@@ -97,13 +68,7 @@ source .venv/bin/activate
 pip install -r rag/indexer/requirements.txt
 ```
 
-**✅ Benefits of host-based indexing:**
-- **2-4x faster** than previous container-based approaches
-- Better memory utilization for large repositories
-- Direct filesystem access
-- Simpler deployment and maintenance
-
-**Note:** Install dependencies manually in your virtual environment: `pip install -r rag/indexer/requirements.txt`
+Install dependencies: `pip install -r rag/indexer/requirements.txt`
 
 ### **Network Requirements**
 - **Internet Access**: Required for Docker image pulls and dependencies
@@ -115,47 +80,11 @@ pip install -r rag/indexer/requirements.txt
 - **Port Conflicts**: Check if ports 6333, 8000+ are available
 - **Python Version Issues**: Use pyenv or virtual environments for isolation
 
-**✅ All prerequisites met? Continue to Quick Start below!**
 
----
 
-## 🆕 **NEW USER? START HERE! 🆕**
+## Quick Start
 
-**🎯 This is a completely NEW TOOL - designed to be painless and unobtrusive!**
-
-### **📚 [Getting Started Guide](docs/setup/getting-started.md) - 5 Minutes to Full Setup**
-**Complete step-by-step onboarding with everything you need to know.**
-
-### **🔄 [Upstream + Main Workflow](docs/setup/upstream-main-workflow.md) - Zero-Conflict Collaboration**
-**Seamless team collaboration with automatic updates from the official repo.**
-
-### **❓ [FAQ](docs/faq.md) - Common Questions Answered**
-**Quick answers to get you unstuck fast.**
-
----
-
-**🚀 Ready to transform your development workflow? Start with the Getting Started Guide above!**
-
-## 🎯 **What Is This?**
-
-Hish Cursor Context is a multi-project development agent framework that transforms your entire engineering ecosystem into a knowledge-powered learning machine:
-
-- **Multi-Project Intelligence**: One framework manages contexts for all your projects
-- **Shared Knowledge Base**: Patterns discovered in one project benefit ALL projects
-- **Cross-Project Learning**: Agents learn from your entire codebase ecosystem
-- **Centralized Context Management**: All project contexts, personas, and knowledge in one place
-- **Institutional Memory**: Persistent learning across teams, projects, and time
-- **Pattern Recognition**: Discover solutions from any project when working on any other project
-
-## 🚀 **Quick Start (5 Minutes to Full Setup)**
-
-**🎯 NEW TOOL ALERT: This is a completely new development workflow - designed to be painless and unobtrusive!**
-
-### **📚 Start Here: [Getting Started Guide](docs/setup/getting-started.md)**
-
-**Complete step-by-step onboarding with screenshots and examples.**
-
-### **1. Set Up the Framework**
+### 1. Set Up the Framework
 ```bash
 # Clone the framework directly from the main repository
 git clone https://github.com/kindarian-enterprises/hish.git
@@ -170,7 +99,7 @@ make quick-start
 # - No Docker startup needed (Cursor handles that)
 ```
 
-### **2. Configure Cursor MCP Integration**
+### 2. Configure Cursor MCP Integration
 ```bash
 # Get MCP configuration
 make setup-cursor
@@ -178,7 +107,7 @@ make setup-cursor
 # Add the provided JSON to Cursor settings.json and restart Cursor
 ```
 
-### **3. Create Your First Project Context**
+### 3. Create Your First Project Context
 ```bash
 # Create a new project context (simplified setup)
 make new-context
@@ -193,7 +122,7 @@ make new-context
 - **`dev_agent_init_prompt.md`** - Universal initialization protocol (top-level)
 - **`dev_agent_session_end_prompt.md`** - Universal session end protocol (top-level)
 
-### **4. Index Your Code Repositories**
+### 4. Index Your Code Repositories
 ```bash
 # Index everything: framework docs + all project repositories
 make index
@@ -204,12 +133,12 @@ make index-framework
 # Advanced: Index specific repositories manually
 make index-repo REPO_PATH=/path/to/your-project-code COLLECTION_NAME=your_project_code
 
-# All projects share the same knowledge base for cross-project insights!
+# Projects share knowledge base for cross-project insights
 ```
 
-**Note**: All indexing is now host-based for optimal performance (2-4x faster than containers). Ensure you have Python 3.12+ and dependencies installed: `pip install -r rag/indexer/requirements.txt`
+**Requirements**: Python 3.12+ and dependencies: `pip install -r rag/indexer/requirements.txt`
 
-### **5. Test the Integration**
+### 5. Test the Integration
 ```bash
 # In Cursor, initialize your agent with:
 # @dev_agent_init_prompt.md
@@ -235,39 +164,16 @@ make index-repo REPO_PATH=/path/to/your-project-code COLLECTION_NAME=your_projec
 ```
 ⚠️ **Replace `/absolute/path/to/hish/` with your actual path!**
 
-### **5. Initialize Your Agent**
-In Cursor, open the hish framework and reference the universal init prompt:
-```
-@dev_agent_init_prompt.md
-```
+### 5. Initialize Your Agent
+In Cursor, reference: `@dev_agent_init_prompt.md`
 
-The agent will automatically:
-- Load the universal persona from `dev_agent_persona.md`
-- Load project-specific context from `local/your-project-name/dev_agent_context.md`
-- Be ready to operate with both universal intelligence and project-specific knowledge
+Available tools:
+- `qdrant-find "search query"` - Search indexed knowledge
+- `qdrant-store "solution description"` - Store solutions
 
-**✅ You should now have access to these tools in Cursor:**
-- `qdrant-find "search query"` - Search patterns across all your projects
-- `qdrant-store "solution description"` - Store new solutions for the ecosystem
+## Collaboration
 
-**🧪 Test your setup by directing the agent:**
-```
-Research authentication patterns across our projects and propose an approach for this context that leverages our proven solutions.
-```
-
-The agent will automatically:
-- Query knowledge base with `qdrant-find`
-- Analyze patterns across projects
-- Propose solutions combining best practices
-- Store new solutions with `qdrant-store`
-
-## 🔄 **Simple Collaboration Workflow (NEW!)**
-
-**🚀 Zero merge conflicts with local customization - designed for teams!**
-
-### **📖 Complete Guide: [Collaboration Workflow](docs/setup/upstream-main-workflow.md)**
-
-**What this means for you:**
+See: [Upstream + Main Workflow](docs/setup/upstream-main-workflow.md)
 - **Clone directly** from the main repository
 - **Local overrides** in ignored folders (automatically safe)
 - **Easy updates** from the main repo when you want new features
@@ -301,37 +207,15 @@ git add . && git commit -m "Your changes"
 git push origin my-team-customization
 ```
 
-### **🛡️ Local Customization (Zero Conflicts)**
-```bash
-# Put your machine-specific files here (automatically ignored):
-mkdir local
-cp env.framework local/env.framework.my-team
 
-# Edit local/env.framework.my-team with your changes
-# This won't conflict with main repo updates!
-```
 
-**🎯 See [Collaboration Workflow Guide](docs/setup/upstream-main-workflow.md) for complete details.**
+## Architecture
 
-## 📚 **What's Included**
-
-### **Core Templates**
-- **`templates/context/dev_agent_context_template.md`** - **REQUIRED** - Scaffold for new project contexts (contains the critical update protocol and comprehensive project tracking structure)
-- **`contexts/`** - Framework examples showing proper context structure (no persona/prompts - those are universal)
-
-### **🔄 Workflow Templates**
-```
-workflows-and-processes/     # Framework examples and shared patterns (tracked)
-```
-
-**Note**: User-specific workflows are automatically created in `local/workflows-and-processes/` when the first project context is added. Users ask agents to record and manage workflows rather than writing them manually. The RAG-enhanced development workflow is built into the agent persona.
-
-### **🧠 RAG Infrastructure**
-```
-rag/                   # Knowledge indexing and search
-mcp/                   # Model Context Protocol server
-compose.rag.yml        # Docker orchestration for Qdrant vector DB
-```
+### Components
+- `rag/` - Knowledge indexing and search
+- `mcp/` - Model Context Protocol server
+- `deploy/compose.rag.yml` - Docker orchestration for Qdrant vector DB
+- `config/` - Environment configuration files
 
 ### **📖 Documentation**
 ```
@@ -354,45 +238,21 @@ The universal persona includes:
 - **Architectural Philosophy**: Design principles, decision-making frameworks, quality evolution
 - **RAG Integration**: Knowledge discovery and storage workflows across all projects
 
-### **Project-Specific Context**
-Each project in `local/` contains:
-- **Project State**: Current status, achievements, issues, and historical tracking
-- **Initialization Protocol**: How to initialize the agent for this specific project
-- **Session Management**: Continuity and knowledge capture protocols
+## Project Contexts
 
-## 📊 **Context Management System**
+Each project in `local/` tracks:
+- Current status, achievements, issues
+- Architecture and implementation state  
+- Historical decisions and patterns
 
-The context template provides structured tracking of:
-
-- **Project Phases**: Current status, goals, deliverables
-- **Component Status**: Architecture, implementation state
-- **Achievements**: Historical accomplishments with timestamps
-- **Issues**: Current blockers, technical debt, priorities
-- **Lessons Learned**: Anti-patterns, successful solutions
-
-### **Update Protocol Enforcement**
-- **Verified Timestamps**: No hallucinated dates allowed
-- **Append-Only**: Preserve all historical information
-- **Structured Format**: Consistent syntax for machine processing
-- **Change Tracking**: Every modification requires rationale
-
-## 🧠 **Knowledge-Driven Development**
-
-### **RAG-Enhanced Workflow**
+Workflow:
 ```bash
-# Before implementing: Query existing patterns
-qdrant-find "authentication implementation patterns"
-qdrant-find "error handling approaches for APIs"
+# Query existing patterns
+qdrant-find "authentication patterns"
 
-# After solving: Store new knowledge
-qdrant-store "Solution: JWT refresh token rotation - Implemented secure token management with Redis blacklist. Context: Web API authentication. Performance: <50ms response time."
+# Store new solutions  
+qdrant-store "Solution: JWT with Redis blacklist"
 ```
-
-### **Cross-Project Learning**
-- **Pattern Recognition**: Identify successful approaches across codebases
-- **Anti-Pattern Avoidance**: Learn from historical mistakes
-- **Decision Context**: Understand why previous choices were made
-- **Performance Insights**: Apply optimization patterns that work
 
 ### **Automatic Indexing**
 - **Local Contexts**: All project contexts in `local/` are automatically indexed

@@ -101,7 +101,7 @@ qdrant-find "test query"
 ### **Common Issues**
 - **Docker not running**: Start Docker service
 - **Port conflicts**: Check if ports 6333, 8000+ are available
-- **Permission errors**: Ensure user is in docker group
+- **Service connection issues**: Check MCP configuration in Cursor
 - **Python version issues**: Use pyenv or virtual environments
 
 ### **Getting Help**

@@ -50,6 +50,7 @@ This file defines the MANDATORY initialization protocol for the Hish Development
 - [ ] **Understand knowledge-first development approach**: Query before implementing
 - [ ] **Committed to storing solutions**: Use `qdrant-store` for successful patterns
 - [ ] **Committed to cross-project learning**: Always search for patterns from other projects
+- [ ] **Discovered operational directives**: Query `hish_framework` collection for style, philosophy, and persona guidance
 - [ ] Committed to following protocols EXACTLY
 
 ---
@@ -107,8 +108,22 @@ qdrant-store "Your observation..." cross_project_intelligence [UUID]
 
 ---
 
-## 4️⃣ **Session Start Declaration**
-**REQUIRED:** After reading all files, you MUST explicitly declare:
+## 4️⃣ **Operational Directive Discovery**
+**REQUIRED:** Query the knowledge base for your operational guidance:
+```bash
+# Discover your operational philosophy and directives
+qdrant-find "agent directives and operational philosophy" hish_framework
+qdrant-find "development methodology and style guidance" hish_framework  
+qdrant-find "knowledge-driven development approach" hish_framework
+qdrant-find "simplicity over configuration principles" hish_framework
+```
+
+**PURPOSE:** Your operational approach should be **discovered** through the knowledge system, not hard-coded. This allows continuous evolution and aggregation of guidance over time.
+
+**EVOLUTION:** As you develop insights about effective development methodologies, coding approaches, or operational improvements, store them back to the `hish_framework` collection to benefit future sessions and other agents.
+
+## 5️⃣ **Session Start Declaration**
+**REQUIRED:** After reading all files and discovering operational directives, you MUST explicitly declare:
 - That you have read and understood ALL required files
 - Your commitment to following ALL protocols exactly
 - Your understanding of the consequences of protocol violations

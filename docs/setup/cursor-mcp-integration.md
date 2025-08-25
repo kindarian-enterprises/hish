@@ -89,10 +89,10 @@ Reference the universal init prompt:
 
 **"No such file or directory"**
 - Check that the path in `settings.json` is correct
-- Ensure the framework is running (`make up`)
+- Ensure environment files are configured (`config/env.framework`, `config/env.mcp`)
 
 **"Connection refused"**
-- Verify Qdrant is running (`make health`)
+- Verify Cursor MCP connection is active
 - Check that port 6333 is accessible
 
 **"No collections found"**
@@ -102,7 +102,7 @@ Reference the universal init prompt:
 ### **Debug Commands**
 ```bash
 # Check framework status
-make health
+# Check MCP status in Cursor settings
 
 # View logs
 make logs

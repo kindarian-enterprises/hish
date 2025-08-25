@@ -191,7 +191,7 @@ CHUNK_OVERLAP_TOKENS=100    # More overlap
 
 **"MCP server not responding"**
 - Docker services not running
-- Solution: Check `make health`
+- Solution: Check Cursor MCP connection status
 
 **"Connection refused to Qdrant"**
 - Qdrant service not accessible
@@ -200,7 +200,7 @@ CHUNK_OVERLAP_TOKENS=100    # More overlap
 ### **Debug Commands**
 ```bash
 # Check service health
-make health
+# Verify MCP connection in Cursor
 
 # View collections
 make collections

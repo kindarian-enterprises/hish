@@ -451,6 +451,9 @@ qdrant-store "Anti-pattern: Storing JWT secrets in code - Failed because secrets
 
 # STEP 3: Store configuration insights
 qdrant-store "Configuration: JWT expiration times - Access tokens: 15min, Refresh: 7 days. Context: Balance security vs UX. Dependencies: Redis for token blacklisting. Validated in: Production load testing."
+
+# STEP 4: Store methodology insights (to hish_framework collection)
+qdrant-store "Development Methodology: TDD approach improved code quality by 40% - Red-Green-Refactor cycle with comprehensive test coverage. Context: API development. Evidence: Reduced bug reports, faster feature delivery. Framework Evolution: Consider emphasizing TDD in agent directives." hish_framework
 ```
 
 ### **🔍 ERROR RESOLUTION WORKFLOW**

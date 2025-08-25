@@ -14,18 +14,18 @@ help: ## Show this help message
 # Framework Management
 up: ## Start the RAG knowledge system
 	@echo "🚀 Starting Hish Cursor Context framework..."
-	docker compose -f compose.rag.yml --env-file env.framework up -d
+	docker compose -f deploy/compose.rag.yml --env-file config/env.framework up -d
 	@echo "⏳ Waiting for services to be ready..."
 	@sleep 10
 	@make health
 
 down: ## Stop the RAG knowledge system
 	@echo "🛑 Stopping framework services..."
-	docker compose -f compose.rag.yml --env-file env.framework down
+	docker compose -f deploy/compose.rag.yml --env-file config/env.framework down
 
 status: ## Show service status
 	@echo "📊 Framework Service Status:"
-	docker compose -f compose.rag.yml --env-file env.framework ps
+	docker compose -f deploy/compose.rag.yml --env-file config/env.framework ps
 
 health: ## Check service health
 	@echo "🏥 Health Check:"
@@ -36,7 +36,7 @@ health: ## Check service health
 
 logs: ## Show framework logs
 	@echo "📜 Framework Logs:"
-	docker compose -f compose.rag.yml --env-file env.framework logs -f
+	docker compose -f deploy/compose.rag.yml --env-file config/env.framework logs -f
 
 # Project Management
 new-context: ## Create a new project context (interactive)
@@ -61,7 +61,7 @@ list-contexts: ## List all project contexts
 index: ## Index framework docs and all project code repositories (host-based)
 	@echo "🚀 Host-based indexing for improved performance..."
 	@echo "📚 Indexing framework documentation..."
-	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file env.framework --collection framework_docs
+	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file config/env.framework --collection framework_docs
 	@echo "🔍 Discovering and indexing project code repositories..."
 	@if [ -d "local" ]; then \
 		for context_dir in local/*/; do \
@@ -70,7 +70,7 @@ index: ## Index framework docs and all project code repositories (host-based)
 				context_name=$$(basename "$$context_dir"); \
 				if [ -d "$$repo_path" ]; then \
 					echo "📁 Host-indexing $$context_name code: $$repo_path"; \
-					python3 scripts/host-indexer.py --work-dir "$$repo_path" --env-file env.code --collection "$${context_name}_code"; \
+					python3 scripts/host-indexer.py --work-dir "$$repo_path" --env-file config/env.code --collection "$${context_name}_code"; \
 				else \
 					echo "⚠️  Repo path not found for $$context_name: $$repo_path"; \
 				fi; \
@@ -83,7 +83,7 @@ index: ## Index framework docs and all project code repositories (host-based)
 
 index-framework: ## Index framework docs only (fast reindexing for framework changes)
 	@echo "📚 Indexing framework documentation only..."
-	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file env.framework --collection hish_framework
+	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file config/env.framework --collection hish_framework
 	@echo "✅ Framework documentation indexing complete!"
 
 setup-intelligence: ## Setup cross-project intelligence collection
@@ -136,11 +136,11 @@ index-repo: ## Index a specific code repository into the knowledge base (host-ba
 	@echo "📚 Host-based indexing of repository: $(REPO_PATH)"
 	@echo "📁 Collection: $(COLLECTION_NAME)"
 	@if [ "$(REPO_PATH)" = "." ]; then \
-		echo "🔍 Using env.framework for framework documentation..."; \
-		python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file env.framework --collection "$(COLLECTION_NAME)"; \
+		echo "🔍 Using config/env.framework for framework documentation..."; \
+		python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file config/env.framework --collection "$(COLLECTION_NAME)"; \
 	else \
-		echo "🔍 Using env.code for external code repository..."; \
-		python3 scripts/host-indexer.py --work-dir "$(REPO_PATH)" --env-file env.code --collection "$(COLLECTION_NAME)"; \
+		echo "🔍 Using config/env.code for external code repository..."; \
+		python3 scripts/host-indexer.py --work-dir "$(REPO_PATH)" --env-file config/env.code --collection "$(COLLECTION_NAME)"; \
 	fi
 
 collections: ## List all knowledge collections
@@ -170,14 +170,14 @@ test: ## Run framework tests (host-based)
 
 clean: ## Clean up containers and volumes
 	@echo "🧹 Cleaning up framework..."
-	docker compose -f compose.rag.yml --env-file env.framework down -v
+	docker compose -f deploy/compose.rag.yml --env-file config/env.framework down -v
 	docker system prune -f
 
 # Maintenance
 update: ## Update framework (git pull + rebuild)
 	@echo "🔄 Updating framework..."
 	git pull
-	docker compose -f compose.rag.yml --env-file env.framework build --no-cache
+	docker compose -f deploy/compose.rag.yml --env-file config/env.framework build --no-cache
 
 backup: ## Backup knowledge database
 	@echo "💾 Backing up knowledge database..."
@@ -253,5 +253,5 @@ info: ## Show framework information
 
 mcp: ## Start MCP server for development  
 	@echo "🔌 Starting MCP server (stdio mode)..."
-	docker compose -f compose.rag.yml --env-file env.mcp run --rm -i mcp-qdrant-llamaindex
+	docker compose -f deploy/compose.rag.yml --env-file config/env.mcp run --rm -i mcp-qdrant-llamaindex
 
