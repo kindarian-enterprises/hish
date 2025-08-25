@@ -60,10 +60,10 @@
   python --version
   ```
 
-### **Virtual Environment Setup (Recommended for Host-Based Indexing)**
-**🚀 NEW: Host-based indexing provides significantly better performance than container-based indexing**
+### **Virtual Environment Setup (Required for Indexing)**
+**🚀 Host-based indexing provides optimal performance and is the only supported indexing method**
 
-For optimal performance with the new host-based indexing system, set up a Python virtual environment:
+For indexing functionality, you must set up a Python virtual environment:
 
 **Option 1: Using virtualenvwrapper (Recommended)**
 ```bash
@@ -98,10 +98,10 @@ pip install -r rag/indexer/requirements.txt
 ```
 
 **✅ Benefits of host-based indexing:**
-- **2-4x faster** indexing performance
+- **2-4x faster** than previous container-based approaches
 - Better memory utilization for large repositories
-- No Docker volume mount overhead
 - Direct filesystem access
+- Simpler deployment and maintenance
 
 **Note:** Install dependencies manually in your virtual environment: `pip install -r rag/indexer/requirements.txt`
 
@@ -195,10 +195,7 @@ make new-context
 
 ### **4. Index Your Code Repositories**
 ```bash
-# 🚀 NEW: Host-based indexing (faster, recommended)
-make index-host
-
-# OR: Container-based indexing (original method)
+# Index everything: framework docs + all project repositories
 make index
 
 # OR: Framework documentation only (quick updates)
@@ -209,6 +206,8 @@ make index-repo REPO_PATH=/path/to/your-project-code COLLECTION_NAME=your_projec
 
 # All projects share the same knowledge base for cross-project insights!
 ```
+
+**Note**: All indexing is now host-based for optimal performance (2-4x faster than containers). Ensure you have Python 3.12+ and dependencies installed: `pip install -r rag/indexer/requirements.txt`
 
 ### **5. Test the Integration**
 ```bash

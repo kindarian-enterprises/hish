@@ -13,9 +13,19 @@ make index
 ```
 
 This automatically indexes:
-- Framework documentation (templates, workflows, guides)
+- **Framework documentation** (templates, workflows, guides) → `hish_framework` collection
 - All local project contexts in `local/`
 - **All project code repositories** (discovered automatically from project contexts)
+
+**🧠 Cross-Project Intelligence:** Use `cross_project_intelligence` collection for dynamic observations and patterns. 
+
+**⚠️ IMPORTANT:** Intelligence collection requires UUIDs for storage:
+```bash
+python3 -c "import uuid; print(uuid.uuid4())"  # Generate UUID first
+qdrant-store "your observation..." cross_project_intelligence [UUID]
+```
+
+See [Cross-Project Intelligence Architecture](cross-project-intelligence-architecture.md) for details.
 
 **How it works:**
 1. When you create a project context with `make new-context`, you provide the path to your code repository
@@ -60,15 +70,18 @@ This automatically indexes:
 
 ## 🛠️ **How to Index Effectively**
 
-### **🚀 Host-Based Indexing (Recommended)**
+### **🚀 Host-Based Indexing**
 
-**For optimal performance (2-4x faster):**
+**All indexing is now host-based for optimal performance:**
 ```bash
 # Full indexing: framework + all project repositories
-make index-host
+make index
 
 # Framework documentation only (quick updates)
 make index-framework
+
+# Specific repository indexing
+make index-repo REPO_PATH=/path/to/repo COLLECTION_NAME=collection_name
 ```
 
 **Requirements:** Python 3.12+ virtual environment with dependencies installed:
@@ -76,45 +89,38 @@ make index-framework
 pip install -r rag/indexer/requirements.txt
 ```
 
-### **🐳 Container-Based Indexing (Fallback)**
+**Benefits:**
+- **2-4x faster** than container-based approaches
+- Better memory utilization for large repositories
+- Direct filesystem access
+- No Docker volume mount overhead
 
-**For isolated environments or CI/CD:**
+### **Setup Requirements**
+
+**One-time virtual environment setup:**
 ```bash
-# Full indexing: framework + all project repositories  
-make index
+# Using virtualenvwrapper (recommended)
+mkvirtualenv hish-indexing --python=python3.12
+pip install -r rag/indexer/requirements.txt
 
-# Advanced: specific repository indexing
-make index-repo REPO_PATH=/path/to/repo COLLECTION_NAME=collection_name
+# Or using standard venv
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r rag/indexer/requirements.txt
 ```
 
-**Benefits:** No local Python setup required, consistent environment
-
-### **Advanced Indexing (Power Users)**
-
-**For specific use cases, you can still use manual indexing:**
-
-**Framework documentation:**
+**Daily usage:**
 ```bash
-# Index framework docs (workflows, guides, templates)
-make index-repo REPO_PATH=. COLLECTION_NAME=framework_docs
-```
-
-**Project code repositories:**
-```bash
-# Index source code for pattern discovery
-make index-repo REPO_PATH=/path/to/project COLLECTION_NAME=project_name_code
-```
-
-**Project documentation:**
-```bash
-# Index READMEs, docs/, architecture documentation
-make index-repo REPO_PATH=/path/to/project/docs COLLECTION_NAME=project_name_docs
+workon hish-indexing  # or: source .venv/bin/activate
+make index-framework  # Quick framework updates
+make index           # Full indexing when needed
 ```
 
 ### **Collection Strategy**
 
 **Collections are created automatically:**
-- `framework_docs` - Framework documentation, templates, and local contexts
+- `hish_framework` - Framework documentation, templates, and local contexts
+- `cross_project_intelligence` - Dynamic observations, patterns, and relationships
 - `{project_name}_code` - Source code (when manually indexed)
 - `{project_name}_docs` - Project documentation (when manually indexed)
 

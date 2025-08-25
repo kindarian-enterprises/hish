@@ -11,6 +11,7 @@ CHUNK_OVERLAP_TOKENS_TEST = 20
 EXPECTED_EMBEDDING_DIMENSION = 384  # BGE-small models use 384 dimensions
 BATCH_SIZE_TEST = 2
 TEST_COLLECTION_NAME = "test_collection"
+TEST_MODEL_NAME = "BAAI/bge-small-en-v1.5"  # Default embedding model for tests
 
 # Sample test data
 SAMPLE_MARKDOWN_TEXT = """# Test Document
@@ -92,7 +93,7 @@ def test_environment_vars():
         "QDRANT_URL": "http://localhost:6333",
         "QDRANT_API_KEY": "",
         "COLLECTION_NAME": TEST_COLLECTION_NAME,
-        "EMBEDDING_MODEL": "BAAI/bge-small-en-v1.5",
+        "EMBEDDING_MODEL": TEST_MODEL_NAME,
         "INDEX_INCLUDE": "**/*.md,**/*.py",
         "INDEX_EXCLUDE": "**/.git/**,**/.data/**",
         "CHUNK_MAX_TOKENS": str(CHUNK_MAX_TOKENS_TEST),

@@ -58,31 +58,7 @@ list-contexts: ## List all project contexts
 	@echo "💡 Agents discover context automatically - no configuration needed"
 
 # Knowledge Management
-index: ## Index framework docs and all project code repositories (container-based)
-	@echo "📚 Indexing framework documentation and local contexts..."
-	@echo "🔍 Using env.framework for framework documentation (focuses on local/, docs/, contexts/)..."
-	@echo "🐳 Container path mapping: $(PWD) → /work"
-	docker compose -f compose.rag.yml --env-file env.framework run --rm -e COLLECTION_NAME="framework_docs" indexer python3 app.py --workdir "/work"
-	@echo "🔍 Discovering project code repositories..."
-	@if [ -d "local" ]; then \
-		for context_dir in local/*/; do \
-			if [ -d "$$context_dir" ] && [ -f "$$context_dir/repo_path.txt" ]; then \
-				repo_path=$$(cat "$$context_dir/repo_path.txt" | tr -d '\n'); \
-				context_name=$$(basename "$$context_dir"); \
-				if [ -d "$$repo_path" ]; then \
-					echo "📁 Indexing $$context_name code: $$repo_path"; \
-					make index-repo REPO_PATH="$$repo_path" COLLECTION_NAME="$${context_name}_code"; \
-				else \
-					echo "⚠️  Repo path not found for $$context_name: $$repo_path"; \
-				fi; \
-			fi; \
-		done; \
-	else \
-		echo "ℹ️  No local contexts found. Create one with make new-context"; \
-	fi
-	@echo "✅ Indexing complete! Framework and all project code is now searchable."
-
-index-host: ## Index framework docs and all project code repositories (host-based, faster)
+index: ## Index framework docs and all project code repositories (host-based)
 	@echo "🚀 Host-based indexing for improved performance..."
 	@echo "📚 Indexing framework documentation..."
 	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file env.framework --collection framework_docs
@@ -103,13 +79,17 @@ index-host: ## Index framework docs and all project code repositories (host-base
 	else \
 		echo "ℹ️  No local contexts found. Create one with make new-context"; \
 	fi
-	@echo "✅ Host-based indexing complete! Framework and all project code is now searchable."
+	@echo "✅ Indexing complete! Framework and all project code is now searchable."
 
 index-framework: ## Index framework docs only (fast reindexing for framework changes)
 	@echo "📚 Indexing framework documentation only..."
-	@echo "🚀 Using host-based indexing for optimal performance..."
-	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file env.framework --collection framework_docs
+	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file env.framework --collection hish_framework
 	@echo "✅ Framework documentation indexing complete!"
+
+setup-intelligence: ## Setup cross-project intelligence collection
+	@echo "🧠 Setting up cross-project intelligence collection..."
+	@python3 scripts/intelligence-collection-setup.py
+	@echo "✅ Intelligence collection setup complete!"
 
 reindex-contexts: ## Reindex specific contexts (Usage: make reindex-contexts CONTEXTS="context1 context2 context3")
 	@if [ -z "$(CONTEXTS)" ]; then \
@@ -148,21 +128,19 @@ reindex-contexts: ## Reindex specific contexts (Usage: make reindex-contexts CON
 	done
 	@echo "✅ Reindexing complete for: $(CONTEXTS)"
 
-index-repo: ## Index a code repository into the knowledge base
+index-repo: ## Index a specific code repository into the knowledge base (host-based)
 	@if [ -z "$(REPO_PATH)" ] || [ -z "$(COLLECTION_NAME)" ]; then \
 		echo "❌ Usage: make index-repo REPO_PATH=/path/to/repo COLLECTION_NAME=collection_name"; \
 		exit 1; \
 	fi
-	@echo "📚 Indexing repository: $(REPO_PATH)"
+	@echo "📚 Host-based indexing of repository: $(REPO_PATH)"
 	@echo "📁 Collection: $(COLLECTION_NAME)"
 	@if [ "$(REPO_PATH)" = "." ]; then \
-		echo "🔍 Using env.framework for framework documentation (focuses on local/ and docs/)..."; \
-		echo "🐳 Container path mapping: $(PWD) → /work"; \
-		docker compose -f compose.rag.yml --env-file env.framework run --rm -e COLLECTION_NAME="$(COLLECTION_NAME)" indexer python3 app.py --workdir "/work"; \
+		echo "🔍 Using env.framework for framework documentation..."; \
+		python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file env.framework --collection "$(COLLECTION_NAME)"; \
 	else \
 		echo "🔍 Using env.code for external code repository..."; \
-		echo "🐳 Container path mapping: $(REPO_PATH) → /work/$$(basename $(REPO_PATH))"; \
-		docker compose -f compose.rag.yml --env-file env.code run --rm -e COLLECTION_NAME="$(COLLECTION_NAME)" indexer-code python3 app.py --workdir "/work/$$(basename $(REPO_PATH))"; \
+		python3 scripts/host-indexer.py --work-dir "$(REPO_PATH)" --env-file env.code --collection "$(COLLECTION_NAME)"; \
 	fi
 
 collections: ## List all knowledge collections
@@ -185,10 +163,10 @@ search: ## Search knowledge base (requires QUERY)
 	@echo "Results will appear here when MCP tools are available..."
 
 # Development
-test: ## Run framework tests
+test: ## Run framework tests (host-based)
 	@echo "🧪 Running framework tests..."
-	@echo "📋 Using env.framework for test configuration..."
-	docker compose -f compose.rag.yml --env-file env.framework run --rm indexer-test pytest -v
+	@echo "📋 Using host-based testing environment..."
+	cd rag/indexer && python -m pytest tests/ -v
 
 clean: ## Clean up containers and volumes
 	@echo "🧹 Cleaning up framework..."
@@ -214,14 +192,20 @@ quick-start: ## Quick setup guide - show configuration steps
 	@echo ""
 	@echo "📋 Setup Steps:"
 	@echo "  1. Configure Cursor MCP integration: make setup-cursor"
-	@echo "  2. Create your first project context: make new-context"
-	@echo "  3. Index everything: make index-host (faster) or make index (container-based)"
-	@echo "  4. In Cursor: @dev_agent_init_prompt.md"
+	@echo "  2. Set up Python virtual environment: see docs/setup/virtual-environment-guide.md"
+	@echo "  3. Create your first project context: make new-context"
+	@echo "  4. Setup intelligence collection: make setup-intelligence"
+	@echo "  5. Index everything: make index"
+	@echo "  6. In Cursor: @dev_agent_init_prompt.md"
 	@echo ""
-	@echo "🚀 Performance Options:"
-	@echo "  • make index-host      - Host-based indexing (faster, recommended)"
-	@echo "  • make index           - Container-based indexing (original method)"
+	@echo "🧠 Knowledge Architecture:"
+	@echo "  • hish_framework - Static docs, guides, project contexts"
+	@echo "  • cross_project_intelligence - Dynamic observations, patterns"
+	@echo ""
+	@echo "🚀 Indexing Options:"
+	@echo "  • make index           - Full indexing (framework + all projects)"
 	@echo "  • make index-framework - Framework docs only (quick updates)"
+	@echo "  • make index-repo      - Specific repository indexing"
 	@echo ""
 	@echo "💡 Cursor will auto-start Qdrant when you restart after MCP config"
 	@echo "📚 All commands: make help"

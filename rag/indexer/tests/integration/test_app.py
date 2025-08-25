@@ -9,6 +9,7 @@ from app import ensure_collection, embedder, guess_dim, index_repo, main
 from tests.conftest import (
     EXPECTED_EMBEDDING_DIMENSION,
     TEST_COLLECTION_NAME,
+    TEST_MODEL_NAME,
     CHUNK_MAX_TOKENS_TEST,
     CHUNK_MIN_CHARS_TEST,
     CHUNK_OVERLAP_TOKENS_TEST,
@@ -251,10 +252,10 @@ class TestMain:
 
             main()
 
-            # Should recreate collection with single vector config
+            # Should recreate collection with named vector config for MCP compatibility
             from qdrant_client.http.models import VectorParams, Distance
-            expected_vectors_config = VectorParams(
-                size=EXPECTED_EMBEDDING_DIMENSION, distance=Distance.COSINE)
+            expected_vectors_config = {TEST_MODEL_NAME: VectorParams(
+                size=EXPECTED_EMBEDDING_DIMENSION, distance=Distance.COSINE)}
             mock_client.recreate_collection.assert_called_once_with(
                 TEST_COLLECTION_NAME,
                 vectors_config=expected_vectors_config

@@ -39,14 +39,32 @@ make list-contexts
 
 ### Knowledge Management
 ```bash
-# Index everything (framework docs + all project repos)
+# Index everything (framework docs + all project repos) - host-based
 make index
 
-# Index specific repository
+# Index framework documentation only (quick updates)
+make index-framework
+
+# Setup cross-project intelligence collection
+make setup-intelligence
+
+# Index specific repository - host-based
 make index-repo REPO_PATH=/path/to/repo COLLECTION_NAME=repo_name_code
 
 # Reindex specific contexts
 make reindex-contexts CONTEXTS="context1 context2"
+```
+
+### Cross-Project Intelligence Storage
+```bash
+# Generate UUID for intelligence collection storage
+python3 -c "import uuid; print(uuid.uuid4())"
+
+# Store cross-project observations (requires UUID)
+qdrant-store "Pattern observation with evidence..." cross_project_intelligence [UUID]
+
+# Search intelligence collection
+qdrant-find "query about patterns" cross_project_intelligence
 ```
 
 ### Framework Operations

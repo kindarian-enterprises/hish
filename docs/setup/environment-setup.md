@@ -215,11 +215,8 @@ make up
 # Check if services can start
 make health
 
-# Test host-based indexing (recommended)
+# Test indexing
 make index-framework
-
-# OR: Test container-based indexing (fallback)
-make index-repo REPO_PATH=. COLLECTION_NAME=test_collection
 ```
 
 ### **5. Start Framework and Index Content**
@@ -230,56 +227,46 @@ make up
 # Check service status
 make health
 
-# Index framework documentation and all project repositories (host-based, fastest)
-make index-host
+# Setup cross-project intelligence collection
+make setup-intelligence
+
+# Index framework documentation and all project repositories
+make index
 
 # OR: Index only framework documentation (quick updates)
 make index-framework
-
-# OR: Use container-based indexing (slower, but more isolated)
-make index
 ```
 
-## 🚀 **Host-Based vs Container-Based Indexing**
+## 🚀 **Host-Based Indexing**
 
-### **Host-Based Indexing (Recommended)**
+**All indexing is now host-based for optimal performance:**
 ```bash
 # Full indexing: framework + all project repositories
-make index-host
+make index
 
 # Framework documentation only (quick updates)  
 make index-framework
+
+# Specific repository indexing
+make index-repo REPO_PATH=/path/to/repo COLLECTION_NAME=collection_name
 ```
 
 **Benefits:**
 - **2-4x faster** indexing performance
 - Better memory utilization for large repositories
-- No Docker volume mount overhead
 - Direct filesystem access
+- Lower memory usage
+- No Docker volume mount overhead
 
 **Requirements:**
 - Python 3.12+ with virtual environment
-- Manual dependency installation: `pip install -r rag/indexer/requirements.txt`
+- Dependencies: `pip install -r rag/indexer/requirements.txt`
 
-### **Container-Based Indexing (Fallback)**
-```bash
-# Full indexing: framework + all project repositories
-make index
-
-# Manual repository indexing
-make index-repo REPO_PATH=/path/to/repo COLLECTION_NAME=collection_name
-```
-
-**Benefits:**
-- Consistent, isolated environment
-- No local Python setup required
-- Good for CI/CD pipelines
-- Useful for debugging indexing issues
-
-**Drawbacks:**
-- Slower due to container overhead
-- Volume mount performance penalties
-- Higher memory usage
+**Why Host-Based Only:**
+- Container-based indexing had significant performance penalties
+- Volume mount overhead slowed large repository processing
+- Host-based approach provides consistent, fast results
+- Simpler maintenance with fewer moving parts
 
 ## 🔍 **Complete Environment Variables Reference**
 

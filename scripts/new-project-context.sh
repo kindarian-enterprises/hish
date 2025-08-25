@@ -109,6 +109,17 @@ if [[ ! -d "local/workflow-indexes" ]]; then
     fi
 fi
 
+# Initialize framework context file (first time only, for entire local ecosystem)
+if [[ ! -f "local/dev_agent_framework_context.md" ]]; then
+    # Copy framework context template
+    if [[ -f "templates/context/dev_agent_framework_context_template.md" ]]; then
+        cp "templates/context/dev_agent_framework_context_template.md" "local/dev_agent_framework_context.md"
+        print_success "Initialized framework context from template"
+    else
+        print_warning "Framework context template not found in templates/context/"
+    fi
+fi
+
 echo "🚀 Hish - New Project Context Setup"
 echo "========================================================="
 echo "This creates a new project context within the framework."
@@ -268,11 +279,13 @@ echo
 read -p "Do you want to index all repositories now? (y/N): " INDEX_CODE
 
 if [[ "$INDEX_CODE" =~ ^[Yy]$ ]]; then
-    print_status "Indexing framework docs and all project repositories..."
+    print_status "Indexing framework docs and all project repositories (host-based)..."
     if make index; then
         print_success "All repositories indexed successfully"
     else
-        print_warning "Indexing failed. You can run it manually later with: make index"
+        print_warning "Indexing failed. Make sure you have Python dependencies installed."
+        print_warning "See docs/setup/virtual-environment-guide.md for setup instructions."
+        print_warning "You can run indexing manually later with: make index"
     fi
 fi
 

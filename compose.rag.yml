@@ -36,47 +36,8 @@ services:
 
 
 
-  # Indexer for bulk embedding of framework content
-  indexer:
-    build:
-      context: ./rag/indexer
-      dockerfile: Dockerfile
-    depends_on:
-      qdrant:
-        condition: service_healthy
-    env_file:
-      - ./env.framework
-    volumes:
-      - .:/work:ro  # Mount only current repository for framework indexing
-
-  indexer-code:
-    build:
-      context: ./rag/indexer
-      dockerfile: Dockerfile
-    depends_on:
-      qdrant:
-        condition: service_healthy
-    env_file:
-      - ./env.code
-    volumes:
-      - ../:/work:ro  # Mount the entire projects directory
-
-  # Test service for running pytest
-  indexer-test:
-    build:
-      context: ./rag/indexer
-      dockerfile: Dockerfile
-      target: test
-    environment:
-      QDRANT_URL: ${QDRANT_URL}
-      QDRANT_API_KEY: ${QDRANT_API_KEY}
-      COLLECTION_NAME: ${COLLECTION_NAME}
-      EMBEDDING_MODEL: ${EMBEDDING_MODEL}
-      INDEX_INCLUDE: ${INDEX_INCLUDE}
-      INDEX_EXCLUDE: ${INDEX_EXCLUDE}
-      CHUNK_MAX_TOKENS: ${CHUNK_MAX_TOKENS}
-      CHUNK_MIN_CHARS: ${CHUNK_MIN_CHARS}
-      CHUNK_OVERLAP_TOKENS: ${CHUNK_OVERLAP_TOKENS}
-    volumes:
-      - ./:/work:ro
-    profiles: ["test"]  # Only for testing
+  # Note: Indexing is now done host-based for better performance
+  # Container-based indexing services have been removed in favor of host-based indexing
+  # Use 'make index' or 'python3 scripts/host-indexer.py' for indexing
+  # 
+  # For testing, use: cd rag/indexer && python -m pytest tests/ -v
