@@ -1,6 +1,6 @@
 # Knowledge Indexing Guide
 
-When to index and reindex your code for optimal agent intelligence.
+When and how to index your code so agents can access current information.
 
 ## When to Index
 
@@ -15,10 +15,11 @@ Indexes framework docs, project contexts, and all discovered code repositories.
 
 ## When to Reindex
 
-**Regular reindexing (weekly/bi-weekly):**
+**Regular reindexing:**
 - After major code changes
-- When agents seem to miss recent solutions
+- When you want agents to know about recent work
 - After significant refactoring
+- Weekly or bi-weekly maintenance
 
 **Event-driven reindexing:**
 - New project added
@@ -36,6 +37,13 @@ pip install -r rag/indexer/requirements.txt
 ```bash
 make index-framework  # Quick framework updates
 make index           # Full reindexing (all projects)
+```
+
+**Reindex specific projects:**
+```bash
+./reindex shire                    # Single project
+./reindex shire platform-backend  # Multiple projects
+./reindex all                      # All projects (same as make index)
 ```
 
 **Manual project indexing:**
@@ -74,10 +82,10 @@ make collections  # View all collections
 make health      # Check framework status
 ```
 
-**Agents missing recent solutions?** → Run `make index`
+**Agents not finding recent code?** → Run `make index`
 
 **Indexing fails?** → Check Cursor MCP connection and restart if needed
 
-That's it! The framework handles complexity automatically - just run `make index` when you want agents to know about recent changes.
+The framework handles complexity automatically - just run `make index` when you want agents to access recent changes.
 
 

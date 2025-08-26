@@ -1,10 +1,10 @@
-# 🐍 Virtual Environment Setup for Host-Based Indexing
+# Virtual Environment Setup for Host-Based Indexing
 
-Host-based indexing provides **2-4x better performance** than container-based indexing but requires Python dependencies in a virtual environment.
+Host-based indexing provides better performance than container-based indexing by eliminating container I/O overhead.
 
-## 🚀 **Quick Setup (Recommended)**
+## Quick Setup (Recommended)
 
-### **virtualenvwrapper (Best Option)**
+### virtualenvwrapper (Best Option)
 
 ```bash
 # One-time setup
@@ -29,7 +29,7 @@ make index-framework  # Quick updates
 deactivate
 ```
 
-### **Standard venv (Alternative)**
+### Standard venv (Alternative)
 
 ```bash
 # One-time setup
@@ -49,21 +49,17 @@ make index-framework
 deactivate
 ```
 
-## 📊 **Performance Benefits**
+## Performance Benefits
 
-| Repository Size | Container | Host-Based | Improvement |
-|-----------------|-----------|------------|-------------|
-| Small (<10MB)   | 30s       | 15s        | 2x faster   |
-| Medium (50MB)   | 2-3 min   | 1 min      | 2-3x faster |
-| Large (200MB+)  | 10-15 min | 3-5 min    | 3-4x faster |
+Host-based indexing eliminates Docker container overhead, resulting in faster indexing. Performance improvement varies by repository size and system configuration.
 
-## 🔧 **Dependencies**
+## Dependencies
 
 Install manually: `pip install -r rag/indexer/requirements.txt`
 
 Includes: qdrant-client, fastembed, torch, transformers, sentence-transformers, rich, pathspec
 
-## 🚨 **Troubleshooting**
+## Troubleshooting
 
 **Environment issues:**
 ```bash
@@ -78,7 +74,7 @@ pip install --upgrade pip
 pip install -r rag/indexer/requirements.txt
 ```
 
-## 💡 **Tips**
+## Tips
 
 **Auto-activation alias:**
 ```bash

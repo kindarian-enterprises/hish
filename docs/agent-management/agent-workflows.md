@@ -32,8 +32,8 @@ The script creates a project context in `local/your-project-name/` with:
 
 ### Cross-Project Knowledge
 - All project contexts are automatically indexed for knowledge discovery
-- Use `qdrant-find` to discover patterns from other projects
-- Use `qdrant-store` to contribute solutions back to the knowledge base
+- Agents automatically discover patterns from other projects when you ask
+- Agents automatically store solutions in the knowledge base for future reference
 
 ## Agent Initialization
 

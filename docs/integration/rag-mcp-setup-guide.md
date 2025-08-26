@@ -1,13 +1,14 @@
-# RAG + MCP Integration Setup Guide
+# Technical Architecture Overview
 
-## 🎯 **Overview**
-This guide covers the technical details of RAG (Retrieval Augmented Generation) with MCP (Model Context Protocol) integration.
+## Purpose
 
-**⚠️ For basic setup, use the [Getting Started Guide](../setup/getting-started.md) instead.**
+This document explains the technical decisions behind Hish's RAG + MCP architecture.
 
-This guide is for advanced users who need to understand the technical architecture and customize the setup.
+**For setup instructions, use the [Getting Started Guide](../setup/getting-started.md) - `make quick-setup` handles all configuration automatically.**
 
-## 🏗️ **Current Architecture**
+This document is for developers who want to understand why we chose specific technologies and how they work together.
+
+## Architecture Components
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -19,20 +20,53 @@ This guide is for advanced users who need to understand the technical architectu
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-**Key Components:**
-- **Single MCP Server**: `qdrant-llamaindex-mcp-server` handles all operations
-- **BGE Embeddings**: `BAAI/bge-small-en-v1.5` for superior semantic search
-- **Named Vectors**: Collections use named vectors for MCP compatibility
-- **Docker Orchestration**: All services managed via `compose.rag.yml`
+## Technology Decisions
 
-## 📋 **Prerequisites**
+### Qdrant Vector Database
 
-### **System Requirements**
+**Chosen over**: Pinecone, Weaviate, Chroma, FAISS
+
+**Reasons**:
+- **Self-hosted**: No API costs or rate limits for development
+- **Named vectors**: MCP protocol requires collection naming, Qdrant supports this natively
+- **Docker native**: Simple deployment in development environments
+- **Rust performance**: Fast similarity search with reasonable memory usage
+- **Open source**: No vendor lock-in concerns
+
+**Trade-offs**: More setup complexity than managed services, but acceptable since `make quick-setup` automates this.
+
+### BGE Embeddings (BAAI/bge-small-en-v1.5)
+
+**Chosen over**: OpenAI embeddings, Sentence Transformers, other BGE models
+
+**Reasons**:
+- **No API dependency**: Works offline, no rate limits or costs
+- **Code-optimized**: BGE models perform well on code and technical documentation
+- **Size vs. quality**: 384 dimensions balance quality with storage/memory requirements
+- **Proven performance**: Consistent results across different content types
+
+**Trade-offs**: Slightly lower quality than larger models, but sufficient for code search use cases.
+
+### Model Context Protocol (MCP)
+
+**Chosen over**: Direct API integration, RAG frameworks, custom solutions
+
+**Reasons**:
+- **Cursor native**: Direct integration with Cursor IDE without additional configuration
+- **Standardized**: Protocol standard emerging across AI development tools
+- **Tool-based**: Clean separation between LLM and knowledge base operations
+- **Simple interface**: `qdrant-find` and `qdrant-store` commands are intuitive
+
+**Trade-offs**: Newer protocol with less ecosystem maturity, but good enough for our use case.
+
+## Prerequisites
+
+### System Requirements
 - Docker and Docker Compose v2 installed
 - Python 3.8+ available
 - Git for repository management
-- At least 4GB RAM for Qdrant vector database
-- ~10GB disk space for embeddings and indices
+- Sufficient RAM for Docker containers (varies by codebase size)
+- Disk space for vector indices (scales with indexed content)
 
 ### **Project Requirements**
 - A codebase or documentation repository to index
@@ -70,36 +104,38 @@ CHUNK_OVERLAP_TOKENS=70
 - **Embeddings**: 384-dimensional vectors from BGE-small model
 - **Distance**: Cosine similarity for semantic matching
 
-## 🚀 **Docker Services**
+## Docker Services
 
-### **Service Architecture**
+### Service Architecture
 ```yaml
 # compose.rag.yml structure
 services:
   qdrant:                    # Vector database
-  indexer:                   # Code indexing service
   mcp-qdrant-llamaindex:     # MCP server
 ```
 
-### **Network Configuration**
+**Note**: Indexing runs on the host system (not containerized) for better performance.
+
+### Network Configuration
 - **Qdrant**: Port 6333 (HTTP API)
 - **MCP Server**: STDIO communication with Cursor
-- **Internal Network**: Docker Compose networking
+- **Indexing**: Host-based Python scripts
 
-## 🔍 **Indexing Process**
+## Indexing Process
 
-### **Framework Documentation**
+### Framework Documentation
 ```bash
-# Uses env.framework
+# Index framework and all project repositories
 make index
-# Indexes: docs/, local/, README.md, persona files
+
+# Framework-only reindexing for quick updates
+make index-framework
 ```
 
-### **External Code Repositories**
+### External Code Repositories
 ```bash
-# Uses env.code
+# Index specific code repository
 make index-repo REPO_PATH=/path/to/code COLLECTION_NAME=project_code
-# Indexes: source code, documentation, configuration files
 ```
 
 ### **Chunking Strategy**

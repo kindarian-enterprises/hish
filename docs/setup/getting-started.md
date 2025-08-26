@@ -49,8 +49,18 @@ This loads the agent with your project context and cross-project knowledge. From
 
 **Common issues:**
 - Docker not running → Start Docker service
-- Port conflicts → Check ports 6333, 8000+ are available  
+- Port conflicts → Check ports 6333 are available  
 - MCP connection issues → Verify Cursor settings.json configuration
-- Python issues → Use virtual environments
+- Python issues → Use virtual environments (see [Virtual Environment Guide](virtual-environment-guide.md))
 
-**Documentation:** [Setup guides](.), [Agent management](../agent-management/), [Integration help](../integration/)
+**MCP-specific issues:**
+- "No such file or directory" → Check that the path in Cursor settings.json is correct
+- "Connection refused" → Verify Cursor MCP connection is active, check port 6333 accessibility
+- "No collections found" → Index content first with `make index`
+
+**Debug commands:**
+- `make health` - Check framework status
+- `make collections` - List indexed collections  
+- `make logs` - View framework logs
+
+**Documentation:** [Agent management](../agent-management/), [Technical architecture](../integration/)

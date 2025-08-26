@@ -1,7 +1,7 @@
 # Hish Cursor Context Framework - Makefile
 # Multi-project development agent framework with shared knowledge
 
-.PHONY: help up down status health test new-context index-repo reindex-contexts clean logs index collections search setup-cursor quick-start update backup info mcp optimize-collections
+.PHONY: help health test new-context list-contexts index-repo reindex-contexts clean logs index collections setup-cursor quick-start backup mcp optimize-collections index-framework setup-intelligence
 
 # Default target
 help: ## Show this help message
@@ -12,20 +12,6 @@ help: ## Show this help message
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 # Framework Management
-up: ## Start the RAG knowledge system
-	@echo "🚀 Starting Hish Cursor Context framework..."
-	docker compose -f deploy/compose.rag.yml --env-file config/env.framework up -d
-	@echo "⏳ Waiting for services to be ready..."
-	@sleep 10
-	@make health
-
-down: ## Stop the RAG knowledge system
-	@echo "🛑 Stopping framework services..."
-	docker compose -f deploy/compose.rag.yml --env-file config/env.framework down
-
-status: ## Show service status
-	@echo "📊 Framework Service Status:"
-	docker compose -f deploy/compose.rag.yml --env-file config/env.framework ps
 
 health: ## Check service health
 	@echo "🏥 Health Check:"
@@ -56,6 +42,8 @@ list-contexts: ## List all project contexts
 	done
 	@echo ""
 	@echo "💡 Agents discover context automatically - no configuration needed"
+
+
 
 # Knowledge Management
 index: ## Index framework docs and all project code repositories (host-based)
@@ -154,13 +142,7 @@ optimize-collections: ## Optimize collections for better search quality (sets ef
 	@echo "🚀 Optimizing collections for better search quality..."
 	@./scripts/optimize-collections.sh
 
-search: ## Search knowledge base (requires QUERY)
-	@if [ -z "$(QUERY)" ]; then \
-		echo "❌ Usage: make search QUERY=\"your search terms\""; \
-		exit 1; \
-	fi
-	@echo "🔍 Searching for: $(QUERY)"
-	@echo "Results will appear here when MCP tools are available..."
+
 
 # Development
 test: ## Run framework tests (host-based)
@@ -174,10 +156,6 @@ clean: ## Clean up containers and volumes
 	docker system prune -f
 
 # Maintenance
-update: ## Update framework (git pull + rebuild)
-	@echo "🔄 Updating framework..."
-	git pull
-	docker compose -f deploy/compose.rag.yml --env-file config/env.framework build --no-cache
 
 backup: ## Backup knowledge database
 	@echo "💾 Backing up knowledge database..."
@@ -185,7 +163,6 @@ backup: ## Backup knowledge database
 	@tar -czf "$$BACKUP_FILE" rag/qdrant_data/ 2>/dev/null || tar -czf "$$BACKUP_FILE" .data/qdrant/ 2>/dev/null || echo "❌ No data directory found"
 	@echo "✅ Backup created: $$BACKUP_FILE"
 
-# Quick Actions
 quick-start: ## Quick setup guide - show configuration steps
 	@echo "🚀 Hish Cursor Context - Quick Start"
 	@echo "========================================"
@@ -207,7 +184,7 @@ quick-start: ## Quick setup guide - show configuration steps
 	@echo "  • make index-framework - Framework docs only (quick updates)"
 	@echo "  • make index-repo      - Specific repository indexing"
 	@echo ""
-	@echo "💡 Cursor will auto-start Qdrant when you restart after MCP config"
+	@echo "💡 Cursor will auto-start services when you restart after MCP config"
 	@echo "📚 All commands: make help"
 
 setup-cursor: ## Show Cursor MCP configuration instructions
@@ -229,27 +206,10 @@ setup-cursor: ## Show Cursor MCP configuration instructions
 	@echo '  }'
 	@echo '}'
 	@echo ""
-	@echo "📖 Detailed guide: docs/setup/cursor-mcp-integration.md"
+	@echo "📖 Detailed guide: docs/setup/getting-started.md"
 	@echo "🧪 Test with: qdrant-find \"test query\" in Cursor chat"
 
-# Information
-info: ## Show framework information
-	@echo "🧠 Hish Cursor Context Framework"
-	@echo "======================================"
-	@echo "Version: Multi-Project Intelligence Edition"
-	@echo "Purpose: Cross-project knowledge sharing for development agents"
-	@echo ""
-	@echo "🏗️  Architecture:"
-	@echo "  • Context Management: hish/ (this repo)"
-	@echo "  • Code Repositories: External (indexed by RAG)"
-	@echo "  • Knowledge Base: Qdrant vector database"
-	@echo "  • Agent Interface: Cursor + MCP protocol"
-	@echo ""
-	@echo "📊 Current Status:"
-	@make health
-	@echo ""
-	@echo "📁 Project Contexts:"
-	@make list-contexts
+
 
 mcp: ## Start MCP server for development  
 	@echo "🔌 Starting MCP server (stdio mode)..."
