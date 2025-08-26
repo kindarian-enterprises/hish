@@ -6,9 +6,9 @@ This document describes common workflows for managing development agents within 
 
 ## Creating a New Project Context
 
-### 1. Run the Setup Script
+### 1. Create Project Context
 ```bash
-./scripts/new-project-context.sh
+make new-context
 ```
 
 ### 2. Customize the Context
@@ -21,8 +21,8 @@ The script creates a project context in `local/your-project-name/` with:
 - **`dev_agent_init_prompt.md`** - Universal initialization protocol (top-level)
 - **`dev_agent_session_end_prompt.md`** - Universal session end protocol (top-level)
 
-### 3. Edit Project-Specific Details
-Edit the context files to reflect your project's specific needs, technology stack, and current state.
+### 3. Let Agents Manage Context
+**Important**: Context files in `local/` are managed by agents. Direct editing can disrupt framework behavior. Instead, use agent workflows to update project context through proper protocols.
 
 ## Managing Multiple Projects
 
@@ -51,27 +51,77 @@ Reference the universal init prompt:
 ## Knowledge Management
 
 ### Storing Solutions
-```bash
-qdrant-store "Solution: [description] - Context: [when this applies] - Implementation: [approach] - Performance: [metrics]"
+Ask agents to store solutions in the knowledge base:
+```
+"Please store this JWT implementation for future reference, including the Redis blacklist approach and performance characteristics."
 ```
 
 ### Finding Patterns
-```bash
-qdrant-find "authentication patterns across projects"
-qdrant-find "testing strategies for [project type]"
-qdrant-find "performance optimization approaches"
+Ask agents to research existing patterns:
+```
+"Research authentication patterns across our projects before we implement this new service."
+"What testing strategies have worked well for similar components?"
 ```
 
-## Workflow Integration
+**Behind the scenes**: Agents use `qdrant-store` and `qdrant-find` automatically. You don't need to run these commands manually.
 
-### Daily Development
-1. Initialize agent with project context
-2. Query knowledge base before implementing new features
-3. Store successful solutions for future projects
-4. Update project context with achievements and lessons learned
+## Daily Development Examples
 
-### Team Collaboration
-1. Share knowledge through the centralized knowledge base
-2. Learn from patterns discovered by other team members
-3. Contribute solutions that benefit the entire organization
-4. Maintain consistent quality standards across all projects
+### Starting a New Feature
+```
+You: "I need to add user authentication to this React app"
+
+Agent: "I found JWT implementations across your projects. Your API backend uses 
+Express with Redis token blacklisting, and your mobile app has a useAuth hook 
+with automatic refresh. Should I adapt these patterns for React?"
+
+You: "Yes, use the useAuth hook approach but integrate with our Express backend"
+
+Agent: [Implements solution] "I've created the useAuth hook and integrated it 
+with your existing JWT backend. I'll store this React+Express auth pattern 
+for future projects."
+```
+
+### Debugging Issues
+```
+You: "The API is returning 500 errors intermittently"
+
+Agent: "I found similar debugging workflows from your other services. Let me check 
+error patterns... I see you've used structured logging and APM tooling before. 
+Should I add the same monitoring setup here?"
+
+You: "Good idea, and check if we've seen this specific error pattern before"
+
+Agent: "Found it! ProjectB had identical symptoms - Redis connection pooling issue. 
+Here's the fix that worked..."
+```
+
+### Code Review and Quality
+```
+You: "Review this authentication middleware for security issues"
+
+Agent: "Comparing against your security patterns from other projects... I notice 
+this is missing rate limiting that you implemented in ProjectA, and the token 
+validation differs from your proven approach in ProjectC. Here are the specific 
+improvements..."
+
+You: "Apply those security patterns and document the rationale"
+
+Agent: [Makes improvements] "Applied security patterns and stored this 
+middleware template for future authentication implementations."
+```
+
+### Architecture Decisions
+```
+You: "Should we use GraphQL or REST for this new service?"
+
+Agent: "Analyzing your past decisions... ProjectA used GraphQL for complex 
+data fetching and saw 40% fewer API calls. ProjectB used REST for simple 
+CRUD and had faster development time. Based on your current requirements..."
+
+You: "What were the specific trade-offs we documented?"
+
+Agent: "Here's what you learned: GraphQL better for frontend teams with complex 
+queries, REST better for simple APIs with caching. Your current service looks 
+more like ProjectB's use case..."
+```

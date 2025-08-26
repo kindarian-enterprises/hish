@@ -1,16 +1,47 @@
 # Hish
 
-Context management framework for AI coding assistants in Cursor. Provides persistent memory and cross-project knowledge sharing via RAG + MCP integration.
+Context management framework that gives Cursor AI agents persistent memory and cross-project knowledge. Instead of starting every conversation from zero, agents remember your codebase patterns, architectural decisions, and working solutions from all your projects.
 
-## Problem
+**Two-part approach**: 
+1. **Vector database** indexes your code into searchable knowledge
+2. **Structured prompts** transform any LLM into a disciplined engineering agent
 
-AI models in Cursor lack context about your codebase, architecture decisions, and development patterns. Each conversation starts from zero knowledge.
+**Works with any model** - Claude, GPT-4, Gemini. The behavioral patterns are encoded in prompts, not dependent on model training.
 
-## Solution
+## How It Works
 
-- **Persistent Context**: AI models access your codebase structure, patterns, and decisions via vector search
-- **Cross-Project Knowledge**: Solutions from one project inform work on others
-- **Zero Configuration**: Automatic context discovery and indexing
+### Indexing Your Codebase
+
+The framework scans your repositories and breaks them into searchable knowledge:
+
+**What gets indexed:**
+- Source code files (functions, classes, patterns)
+- Documentation and README files  
+- Configuration files and deployment scripts
+- Project contexts and historical decisions
+
+**Chunking strategy**: Files get broken into overlapping chunks with repository, file path, and context metadata.
+
+**Vector embeddings**: Creates semantic embeddings so similar code patterns cluster together in vector space, making them discoverable through natural language queries.
+
+### Agent Intelligence
+
+Once indexed, your code becomes searchable agent memory that works through structured behavioral prompts:
+
+```
+Your Code → Vector Index → Prompt-Guided Agent → Disciplined Output
+```
+
+**Prompt engineering system**: Instead of hoping LLMs follow good practices, Hish embeds engineering discipline directly into agent instructions through layered prompt structures:
+
+- **Context injection**: Agents must load project state before starting work
+- **Protocol enforcement**: Specific workflows for research → implementation → quality assurance  
+- **Knowledge integration**: Mandatory patterns for querying existing solutions and storing new ones
+- **Quality standards**: Built-in coding practices, anti-patterns, and engineering discipline
+
+**Behavioral transformation**: Raw LLMs are unfocused and inconsistent. Hish prompts create agents that automatically query existing patterns, propose evidence-based solutions, implement with quality standards, and store results for team reuse.
+
+**Technical architecture**: Qdrant vector database + MCP protocol bridge + automated indexing + structured prompt engineering. Standard RAG enhanced with behavioral discipline.
 
 ---
 
@@ -82,237 +113,69 @@ Install dependencies: `pip install -r rag/indexer/requirements.txt`
 
 
 
-## Quick Start
+## Setup (5 minutes)
 
-### 1. Set Up the Framework
 ```bash
-# Clone the framework directly from the main repository
+# 1. Clone
 git clone https://github.com/kindarian-enterprises/hish.git
 cd hish
 
-# Quick setup guide (shows configuration steps)
-make quick-start
-
-# This will:
-# - Show MCP configuration steps
-# - Explain the setup workflow
-# - No Docker startup needed (Cursor handles that)
-```
-
-### 2. Configure Cursor MCP Integration
-```bash
-# Get MCP configuration
+# 2. Add to Cursor settings.json (restart Cursor after)
 make setup-cursor
 
-# Add the provided JSON to Cursor settings.json and restart Cursor
-```
-
-### 3. Create Your First Project Context
-```bash
-# Create a new project context (simplified setup)
+# 3. Create project context
 make new-context
 
-# This creates: local/your-project-name/ (gitignored for local changes)
-# ├── dev_agent_context.md      # Project state and history
-# └── README.md                 # Project documentation
-```
-
-**Note**: The following files are now universal and shared across all projects:
-- **`dev_agent_persona.md`** - Universal dev agent persona (top-level)
-- **`dev_agent_init_prompt.md`** - Universal initialization protocol (top-level)
-- **`dev_agent_session_end_prompt.md`** - Universal session end protocol (top-level)
-
-### 4. Index Your Code Repositories
-```bash
-# Index everything: framework docs + all project repositories
+# 4. Index your code (requires Python 3.8+)
+pip install -r rag/indexer/requirements.txt
 make index
 
-# OR: Framework documentation only (quick updates)
-make index-framework
-
-# Advanced: Index specific repositories manually
-make index-repo REPO_PATH=/path/to/your-project-code COLLECTION_NAME=your_project_code
-
-# Projects share knowledge base for cross-project insights
-```
-
-**Requirements**: Python 3.12+ and dependencies: `pip install -r rag/indexer/requirements.txt`
-
-### 5. Test the Integration
-```bash
-# In Cursor, initialize your agent with:
+# 5. Test in Cursor
 # @dev_agent_init_prompt.md
-
-# Test RAG queries:
-# qdrant-find "test query"
+# qdrant-find "your search terms"
 ```
 
-**Quick MCP Setup**: Add this to your Cursor `settings.json`:
-```json
-{
-  "mcpServers": {
-    "qdrant": {
-      "type": "stdio",
-      "command": "/absolute/path/to/hish/scripts/run-mcp-llamaindex.sh",
-      "workingDirectory": "/absolute/path/to/hish",
-      "env": {
-        "NO_COLOR": "1"
-      }
-    }
-  }
-}
+**What actually happens:**
+- Step 2: Adds MCP server config to Cursor
+- Step 3: Creates `local/project-name/` (gitignored)
+- Step 4: Builds vector index of your code + docs
+- Step 5: AI agents can now query/store knowledge
+
+## Agent Workflow
+
+### Session Initialization
 ```
-⚠️ **Replace `/absolute/path/to/hish/` with your actual path!**
+@dev_agent_init_prompt.md
+```
+Agent loads project context, reads all relevant documentation, establishes cross-project intelligence protocols, and prepares for knowledge-driven development.
 
-### 5. Initialize Your Agent
-In Cursor, reference: `@dev_agent_init_prompt.md`
+### Actual Usage Pattern
 
-Available tools:
-- `qdrant-find "search query"` - Search indexed knowledge
-- `qdrant-store "solution description"` - Store solutions
+```
+You: "I need to implement JWT authentication for this Node.js API"
 
-## Collaboration
+Agent (with Hish): 
+- Automatically queries existing auth patterns
+- Finds Redis blacklist approach from ProjectA, refresh token logic from ProjectB
+- Proposes solution: "I found proven JWT implementations across your projects..."
+- Implements code using established patterns
+- Stores new solution in knowledge base for team reuse
 
-See: [Upstream + Main Workflow](docs/setup/upstream-main-workflow.md)
-- **Clone directly** from the main repository
-- **Local overrides** in ignored folders (automatically safe)
-- **Easy updates** from the main repo when you want new features
-
-**Result**: Clean collaboration, no merge conflicts, easy customization.
-
-### **⚡ One-time Setup (2 minutes)**
-```bash
-# Clone the repository
-git clone https://github.com/kindarian-enterprises/hish.git
-cd hish
-
-# Create your working branch
-git checkout -b my-team-customization
-
-# Create local directories for your customizations
-mkdir -p local overrides private tmp
+You: Just tell the agent what you want. It handles the knowledge discovery.
 ```
 
-### **🔄 Daily Workflow (30 seconds)**
-```bash
-# Get updates when you want new features
-git checkout main
-git fetch origin
-git merge origin/main
-git checkout my-team-customization
-git merge main
+**Behind the scenes**: Agent uses `qdrant-find` to research patterns, `qdrant-store` to save solutions. You don't type these commands - the prompts make agents do it automatically.
 
-# Work on your changes as normal
-git add . && git commit -m "Your changes"
-git push origin my-team-customization
+### Session End
 ```
-
-
-
-## Architecture
-
-### Components
-- `rag/` - Knowledge indexing and search
-- `mcp/` - Model Context Protocol server
-- `deploy/compose.rag.yml` - Docker orchestration for Qdrant vector DB
-- `config/` - Environment configuration files
-
-### **📖 Documentation**
+@dev_agent_session_end_prompt.md
 ```
-docs/
-├── integration/       # RAG/MCP setup guides
-├── philosophy/        # Knowledge-driven development principles
-└── setup/            # Installation and configuration guides
-```
+Agent captures learnings, updates project context, stores successful patterns, and ensures knowledge transfers to future sessions and other team members.
 
-## 🎭 **Agent Persona System**
+## Team Collaboration
 
-**Universal Intelligence**: The framework provides a single, comprehensive dev agent persona that operates across all projects.
+Details: [Upstream + Main Workflow](docs/setup/upstream-main-workflow.md) - Simple workflow where everyone clones the main repo, customizations go in `local/` and data goes in `.data/` (both gitignored), no merge conflicts.
 
-**No configuration files needed** - agents intelligently discover context and relationships from directory structure and content.
+**Important**: Files in `local/` are managed by agents. Manual editing can disrupt the framework's behavior and break agent context tracking. For proper agent interaction patterns, see [Agent Management](docs/agent-management/).
 
-The universal persona includes:
-
-- **Universal Expertise**: Multi-project intelligence, technology agnostic, development methodologies
-- **Coding Standards**: Language-agnostic patterns, quality requirements, anti-patterns
-- **Architectural Philosophy**: Design principles, decision-making frameworks, quality evolution
-- **RAG Integration**: Knowledge discovery and storage workflows across all projects
-
-## Project Contexts
-
-Each project in `local/` tracks:
-- Current status, achievements, issues
-- Architecture and implementation state  
-- Historical decisions and patterns
-
-Workflow:
-```bash
-# Query existing patterns
-qdrant-find "authentication patterns"
-
-# Store new solutions  
-qdrant-store "Solution: JWT with Redis blacklist"
-```
-
-### **Automatic Indexing**
-- **Local Contexts**: All project contexts in `local/` are automatically indexed
-- **Framework Content**: Documentation, workflows, and examples are indexed
-- **Cross-Project Discovery**: Find patterns from any project when working on any other
-
-## 🛠️ **Setup Workflows**
-
-### **For New Projects**
-1. Copy and customize templates
-2. Set up RAG infrastructure (optional)
-3. Index existing codebase and documentation
-4. Train team on knowledge query patterns
-5. Establish context update protocols
-
-### **For Existing Projects**
-1. Create context based on current practices
-2. Document current state in context template
-3. Gradually build knowledge base from tribal knowledge
-4. Integrate RAG queries into daily development
-5. Store solutions as they are discovered
-
-### **For Teams**
-1. Establish shared context standards
-2. Create team-wide knowledge collections
-3. Set up automated knowledge capture workflows
-4. Train on effective RAG query patterns
-5. Implement knowledge review processes
-
-## 🌟 **Cross-Project Intelligence in Action**
-
-### **Real Example: Authentication Solution Discovery**
-```bash
-# 🎯 Scenario: You're building a new mobile app and need authentication
-
-# 1. Query across ALL your projects for auth patterns
-qdrant-find "JWT refresh token implementations"
-
-# 2. Framework finds solutions from:
-# - Web App: React useAuth hook with automatic refresh
-# - API Service: Go middleware with Redis token blacklist  
-# - Previous Mobile: React Native secure storage patterns
-# - Shared: OAuth2 server configuration
-
-# 3. You adapt the best patterns for your new context
-qdrant-store "Mobile Auth Solution: Combined web useAuth pattern with RN secure storage - Automatic token refresh, biometric fallback, offline support. Context: React Native apps. Performance: <200ms auth check. Files: hooks/useAuth.ts, utils/secureStorage.ts"
-
-# 4. Your solution becomes available to ALL future projects!
-```
-
-### **Example: Performance Pattern Cross-Pollination**
-```bash
-# API team discovers caching strategy
-qdrant-store "Redis Caching Layer: 80% latency reduction with write-through cache - Cache user sessions, API responses, computed values. Context: High-traffic APIs. Implementation: Redis cluster with TTL."
-
-# Mobile team later queries for performance
-qdrant-find "caching strategies for better performance"
-# Discovers the API caching pattern and adapts it for mobile local storage
-
-# Web team benefits too
-qdrant-find "user session optimization patterns"  
-# Finds both API Redis patterns and mobile storage patterns
-```
+**Documentation**: [Setup guides](docs/setup/), [Integration help](docs/integration/)
