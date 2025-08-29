@@ -1,0 +1,68 @@
+# Local-only overrides & temp (existing dirs only; do not add if not present)
+
+local/
+overrides/
+private/
+tmp/
+scratch/
+var/
+
+# MCP runtime/local state (only if present)
+
+mcp_data/
+mcp_state/
+mcp_cache/
+
+# User/editor caches (only if present)
+
+.cursor/
+.cache/
+
+# Optional user data (only if present and intended as local)
+
+.data/
+artifacts/
+models/
+datasets/
+checkpoints/
+
+# Env files / secrets (always safe)
+
+# Hidden env files (always ignored)
+.env
+.env.local
+.env.*.local
+
+# Visible env files (tracked by default, but can be ignored if needed)
+# Uncomment the lines below if you want to ignore these files:
+# env.framework
+# env.code
+# env.example
+
+# Python virtual environments and cache
+
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# OS/editor noise
+
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Qdrant data (stored in parent directory)
+# Note: ../.data/qdrant/ is not in this repo, so no need to ignore here

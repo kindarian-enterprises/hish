@@ -1,0 +1,10 @@
+# (Optional) Enable Git LFS for large shared data by uncommenting a path:
+
+# data/** filter=lfs diff=lfs merge=lfs -text
+
+# If your repo uses a different shared data dir (e.g., datasets/ or artifacts/), 
+# add commented examples for those too:
+
+# datasets/** filter=lfs diff=lfs merge=lfs -text
+# artifacts/** filter=lfs diff=lfs merge=lfs -text
+# models/** filter=lfs diff=lfs merge=lfs -text
