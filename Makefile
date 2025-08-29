@@ -46,10 +46,10 @@ list-contexts: ## List all project contexts
 
 
 # Knowledge Management
-index: ## Index framework docs and all project code repositories (host-based)
+index: ## Index framework docs and all project code repositories (host-based) - Code collections are recreated, framework preserved
 	@echo "🚀 Host-based indexing for improved performance..."
-	@echo "📚 Indexing framework documentation..."
-	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file config/env.framework --collection framework_docs
+	@echo "📚 Indexing framework documentation (preserving existing data)..."
+	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file config/env.framework --collection hish_framework
 	@echo "🔍 Discovering and indexing project code repositories..."
 	@if [ -d "local" ]; then \
 		for context_dir in local/*/; do \
@@ -58,7 +58,8 @@ index: ## Index framework docs and all project code repositories (host-based)
 				context_name=$$(basename "$$context_dir"); \
 				if [ -d "$$repo_path" ]; then \
 					echo "📁 Host-indexing $$context_name code: $$repo_path"; \
-					python3 scripts/host-indexer.py --work-dir "$$repo_path" --env-file config/env.code --collection "$${context_name}_code"; \
+					echo "⚠️  WARNING: Code collection will be DROPPED and RECREATED, replacing existing code data!"; \
+					python3 scripts/host-indexer.py --work-dir "$$repo_path" --env-file config/env.code --collection "$${context_name}_code" --recreate; \
 				else \
 					echo "⚠️  Repo path not found for $$context_name: $$repo_path"; \
 				fi; \
@@ -69,8 +70,9 @@ index: ## Index framework docs and all project code repositories (host-based)
 	fi
 	@echo "✅ Indexing complete! Framework and all project code is now searchable."
 
-index-framework: ## Index framework docs only (fast reindexing for framework changes)
+index-framework: ## Index framework docs only (fast reindexing for framework changes) - PRESERVES existing data
 	@echo "📚 Indexing framework documentation only..."
+	@echo "ℹ️  Framework collection will be updated, preserving existing data..."
 	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file config/env.framework --collection hish_framework
 	@echo "✅ Framework documentation indexing complete!"
 
@@ -79,7 +81,7 @@ setup-intelligence: ## Setup cross-project intelligence collection
 	@python3 scripts/intelligence-collection-setup.py
 	@echo "✅ Intelligence collection setup complete!"
 
-reindex-contexts: ## Reindex specific contexts (Usage: make reindex-contexts CONTEXTS="context1 context2 context3")
+reindex-contexts: ## Reindex specific contexts (Usage: make reindex-contexts CONTEXTS="context1 context2 context3") - DESTRUCTIVE: replaces code data only
 	@if [ -z "$(CONTEXTS)" ]; then \
 		echo "❌ Usage: make reindex-contexts CONTEXTS=\"context1 context2 context3\""; \
 		echo "📁 Available project contexts:"; \
@@ -100,6 +102,7 @@ reindex-contexts: ## Reindex specific contexts (Usage: make reindex-contexts CON
 		exit 1; \
 	fi
 	@echo "🔄 Reindexing specified contexts: $(CONTEXTS)"
+	@echo "⚠️  WARNING: Code collections will be DROPPED and RECREATED, losing existing code data!"
 	@for context_name in $(CONTEXTS); do \
 		context_dir="local/$$context_name"; \
 		if [ -d "$$context_dir" ] && [ -f "$$context_dir/repo_path.txt" ]; then \
@@ -116,7 +119,7 @@ reindex-contexts: ## Reindex specific contexts (Usage: make reindex-contexts CON
 	done
 	@echo "✅ Reindexing complete for: $(CONTEXTS)"
 
-index-repo: ## Index a specific code repository into the knowledge base (host-based)
+index-repo: ## Index a specific code repository into the knowledge base (host-based) - DESTRUCTIVE: replaces code collection data
 	@if [ -z "$(REPO_PATH)" ] || [ -z "$(COLLECTION_NAME)" ]; then \
 		echo "❌ Usage: make index-repo REPO_PATH=/path/to/repo COLLECTION_NAME=collection_name"; \
 		exit 1; \
@@ -125,10 +128,12 @@ index-repo: ## Index a specific code repository into the knowledge base (host-ba
 	@echo "📁 Collection: $(COLLECTION_NAME)"
 	@if [ "$(REPO_PATH)" = "." ]; then \
 		echo "🔍 Using config/env.framework for framework documentation..."; \
+		echo "ℹ️  Framework collection will be updated, preserving existing data..."; \
 		python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file config/env.framework --collection "$(COLLECTION_NAME)"; \
 	else \
 		echo "🔍 Using config/env.code for external code repository..."; \
-		python3 scripts/host-indexer.py --work-dir "$(REPO_PATH)" --env-file config/env.code --collection "$(COLLECTION_NAME)"; \
+		echo "⚠️  WARNING: Code collection will be DROPPED and RECREATED, replacing existing code data!"; \
+		python3 scripts/host-indexer.py --work-dir "$(REPO_PATH)" --env-file config/env.code --collection "$(COLLECTION_NAME)" --recreate; \
 	fi
 
 collections: ## List all knowledge collections

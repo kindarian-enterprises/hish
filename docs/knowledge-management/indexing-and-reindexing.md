@@ -2,6 +2,19 @@
 
 When and how to index your code so agents can access current information.
 
+## ⚠️ **IMPORTANT: Indexing Behavior**
+
+**Code Collections (Project Repositories):**
+- **DESTRUCTIVE**: `make index` and `./reindex` will **DROP and RECREATE** code collections
+- **All existing code chunks are lost** when reindexing
+- **Use when**: You want fresh, current code information
+- **Avoid when**: You need to preserve historical code knowledge
+
+**Framework Collections (Preserved):**
+- **NON-DESTRUCTIVE**: Framework documentation and cross-project intelligence are **PRESERVED**
+- **Existing knowledge patterns remain intact**
+- **Use when**: You want to update framework docs without losing intelligence
+
 ## When to Index
 
 **Initial setup:**
@@ -26,6 +39,8 @@ Indexes framework docs, project contexts, and all discovered code repositories.
 - Major feature implementation
 - Architecture changes
 
+**⚠️ WARNING**: Reindexing **DESTROYS** existing code knowledge. Only reindex when you need fresh code information.
+
 ## Indexing Commands
 
 **Setup once:**
@@ -35,15 +50,15 @@ pip install -r rag/indexer/requirements.txt
 
 **Regular use:**
 ```bash
-make index-framework  # Quick framework updates
-make index           # Full reindexing (all projects)
+make index-framework  # Quick framework updates (PRESERVES data)
+make index           # Full reindexing (DESTROYS code, PRESERVES framework)
 ```
 
 **Reindex specific projects:**
 ```bash
-./reindex shire                    # Single project
-./reindex shire platform-backend  # Multiple projects
-./reindex all                      # All projects (same as make index)
+./reindex shire                    # Single project (DESTROYS project code)
+./reindex shire platform-backend  # Multiple projects (DESTROYS project code)
+./reindex all                      # All projects (DESTROYS all code, PRESERVES framework)
 ```
 
 **Manual project indexing:**
@@ -52,26 +67,31 @@ make index-repo REPO_PATH=/path/to/code COLLECTION_NAME=project_code
 ```
 
 **Collections created automatically:**
-- `hish_framework` - Framework docs and contexts
-- `cross_project_intelligence` - Patterns and observations  
-- `{project}_code` - Source code from specific projects
+- `hish_framework` - Framework docs and contexts (**PRESERVED**)
+- `cross_project_intelligence` - Patterns and observations (**PRESERVED**)
+- `{project}_code` - Source code from specific projects (**DESTROYED on reindex**)
 
 ## Workflows
 
 **New project:**
 ```bash
 make new-context  # Creates context, asks for repo path
-make index        # Indexes everything
+make index        # Indexes everything (DESTROYS existing code, PRESERVES framework)
 ```
 
 **Weekly maintenance:**
 ```bash
-make index        # Updates all knowledge
+make index        # Updates all knowledge (DESTROYS code, PRESERVES framework)
 ```
 
 **Quick framework updates:**
 ```bash
-make index-framework  # Just docs and contexts
+make index-framework  # Just docs and contexts (PRESERVES all data)
+```
+
+**Code-only updates:**
+```bash
+./reindex project-name  # Updates specific project code (DESTROYS project code only)
 ```
 
 ## Health Check
@@ -82,10 +102,27 @@ make collections  # View all collections
 make health      # Check framework status
 ```
 
-**Agents not finding recent code?** → Run `make index`
+**Agents not finding recent code?** → Run `make index` (⚠️ **DESTROYS existing code**)
 
 **Indexing fails?** → Check Cursor MCP connection and restart if needed
 
-The framework handles complexity automatically - just run `make index` when you want agents to access recent changes.
+## ⚠️ **Data Loss Prevention**
+
+**Before reindexing code:**
+1. **Verify you need fresh code information**
+2. **Ensure important code knowledge is stored in framework collections**
+3. **Consider using `make index-framework` for framework-only updates**
+
+**Framework collections are safe:**
+- `hish_framework` - Your documentation and guides
+- `cross_project_intelligence` - Patterns and learnings across projects
+
+**Code collections are volatile:**
+- `{project}_code` - Recreated on every reindex
+- Contains only current code state, not historical knowledge
+
+---
+
+The framework handles complexity automatically - just run `make index` when you want agents to access recent changes. **Remember: Code reindexing is destructive, framework indexing is safe.**
 
 

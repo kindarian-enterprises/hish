@@ -54,7 +54,8 @@ def load_env_file(env_file: Path) -> dict:
 
 def index_directory(work_dir: Path,
                     env_file: Path,
-                    collection_name: Optional[str] = None) -> bool:
+                    collection_name: Optional[str] = None,
+                    recreate: bool = False) -> bool:
     """Index a directory using direct function calls."""
 
     # Load environment variables from env file
@@ -74,8 +75,45 @@ def index_directory(work_dir: Path,
     logger.info(
         f"Indexing {work_dir} into collection '{env_vars.get('COLLECTION_NAME', 'unknown')}'")
 
+    if recreate:
+        logger.warning(
+            "⚠️  RECREATE FLAG ENABLED - This will DROP and RECREATE the collection, replacing all existing data!")
+        # Handle collection recreation before indexing
+        try:
+            from qdrant_client import QdrantClient
+            from qdrant_client.http.models import VectorParams, Distance
+
+            client = QdrantClient(url=env_vars.get("QDRANT_URL", "http://localhost:6333"),
+                                  api_key=env_vars.get("QDRANT_API_KEY", ""))
+
+            # Get embedding dimension from model name
+            model_name = env_vars.get(
+                "EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5")
+            if "bge-small" in model_name.lower():
+                dim = 384
+            elif "bge-base" in model_name.lower():
+                dim = 768
+            elif "bge-large" in model_name.lower():
+                dim = 1024
+            else:
+                dim = 384  # Default
+
+            collection = env_vars.get("COLLECTION_NAME", "hish_framework")
+            logger.info(
+                f"Recreating collection '{collection}' with dimension {dim}")
+
+            vectors_config = {model_name: VectorParams(
+                size=dim, distance=Distance.COSINE)}
+            client.recreate_collection(
+                collection, vectors_config=vectors_config)
+            logger.info(f"Collection '{collection}' recreated successfully")
+
+        except Exception as e:
+            logger.error(f"Failed to recreate collection: {e}")
+            return False
+
     try:
-        # Call the indexing function directly
+        # Call the indexing function directly (without recreate parameter)
         index_repo(
             work_root=str(work_dir),
             qdrant_url=env_vars.get("QDRANT_URL", "http://localhost:6333"),
@@ -115,13 +153,16 @@ def main():
                         help="Environment configuration file")
     parser.add_argument("--collection", type=str,
                         help="Override collection name")
+    parser.add_argument("--recreate", action="store_true",
+                        help="Drop and recreate collection (DESTRUCTIVE - loses all existing data)")
 
     args = parser.parse_args()
 
     success = index_directory(
         work_dir=args.work_dir,
         env_file=args.env_file,
-        collection_name=args.collection
+        collection_name=args.collection,
+        recreate=args.recreate
     )
 
     if success:
