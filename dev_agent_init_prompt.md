@@ -26,36 +26,62 @@ This file defines the MANDATORY initialization protocol for the Hish Development
 
 ---
 
-## 1️⃣ **Required Reading and Absorption**
-**🚨 MANDATORY: You MUST read and fully understand ALL of the following files before starting ANY work:**
+## 1️⃣ **Foundation Context Absorption (Direct Reading)**
+**🚨 MANDATORY: Establish complete understanding of current state and structure:**
 
-- **`dev_agent_persona.md`**: Contains the universal Hish Agent's role, coding standards, architectural philosophy, and **RAG-ENHANCED DEVELOPMENT METHODOLOGY**. This file defines *how* you should think, code, and communicate using knowledge discovery first.
-- **`local/dev_agent_framework_context.md`** (FRAMEWORK WORK): Contains framework state, achievements, architectural decisions for hish framework itself. **REQUIRED for framework modifications, persona updates, workflow changes, or cross-project pattern work.**
-- **`local/[project-name]/dev_agent_context.md`** (PROJECT WORK): Contains the current project state, achievements, issues, architectural decisions, technical debt, and **CRITICAL UPDATE PROTOCOLS**. This file defines *what* is happening in the project, *why*, and *what to prioritize*. **⚠️ READ THE UPDATE PROTOCOL SECTION COMPLETELY BEFORE ANY EDITS ⚠️**
-- **`local/workflows-and-processes/`**: ALL files in this directory contain workflow documentation, process guidelines, and special project context. These provide critical operational knowledge and lessons learned.
-- **`docs/`**: Framework documentation, integration guides, and best practices.
+**PHASE 1A: Core Context Files (read_file)**
+- **`dev_agent_persona.md`**: Complete persona understanding including coding standards, architectural philosophy, and **RAG-ENHANCED DEVELOPMENT METHODOLOGY**
+- **`local/dev_agent_framework_context.md`** (FRAMEWORK WORK): Current framework state, achievements, architectural decisions. **REQUIRED for framework modifications**
+- **`local/[project-name]/dev_agent_context.md`** (PROJECT WORK): Specific project state, issues, technical debt, and **CRITICAL UPDATE PROTOCOLS**. **⚠️ READ THE UPDATE PROTOCOL SECTION COMPLETELY BEFORE ANY EDITS ⚠️**
 
-**🛑 FAILURE TO READ these files completely VIOLATES the initialization protocol 🛑**
+**PHASE 1B: Workflow Discovery (Targeted Reading)**
+- **`local/workflows-and-processes/README.md`**: Workflow overview and usage patterns
+- **Selective workflow files**: Read specific workflows relevant to your session needs
+- **`docs/README.md`**: Framework documentation overview
+
+**🎯 PURPOSE**: Deep absorption of complete, structured, current context that forms your operational foundation.
 
 ---
 
-## 2️⃣ **Initialization Verification Checklist**
+## 2️⃣ **Strategic Tool Usage Decision Framework**
+
+**🎯 WHEN TO USE EACH TOOL:**
+
+### **Direct File Reading (read_file) - Use When:**
+- ✅ You need **complete context** of a specific state/configuration
+- ✅ You're working with **structured data** (context files, configurations)
+- ✅ You need to **understand exact format** and current status
+- ✅ You're **debugging specific issues** in known files
+- ✅ You need **sequential understanding** of a workflow or process
+
+### **Semantic Queries (qdrant-find) - Use When:**
+- ✅ You need **cross-cutting insights** from multiple sources
+- ✅ You're looking for **patterns and best practices**
+- ✅ You want **validated approaches** from successful implementations
+- ✅ You need **behavioral guidance** that has evolved over time
+- ✅ You're **exploring relationships** between concepts across projects
+
+### **Codebase Search (codebase_search) - Use When:**
+- ✅ You're **exploring unknown codebases** for the first time
+- ✅ You need to **understand how something works** without knowing where it's implemented
+- ✅ You're **finding specific implementations** of concepts
+- ✅ You're **mapping relationships** between components
+
+## 3️⃣ **Initialization Verification Checklist**
 **✅ REQUIRED CONFIRMATIONS:**
-- [ ] Read `dev_agent_persona.md` completely **INCLUDING UNIVERSAL EXPERTISE AND RAG-ENHANCED METHODOLOGY**
-- [ ] Read `local/[project-name]/dev_agent_context.md` completely **INCLUDING UPDATE PROTOCOLS**
-- [ ] Read ALL files in `local/workflows-and-processes/` **INCLUDING RAG WORKFLOW GUIDES**
-- [ ] Understand timestamp verification requirements
-- [ ] Understand append-only update methodology
+- [ ] **Phase 1A Complete**: Read core context files with `read_file` for foundational understanding
+- [ ] **Phase 1B Complete**: Targeted workflow discovery based on session needs
+- [ ] **Phase 2 Complete**: Cross-project intelligence gathered via `qdrant-find` queries
+- [ ] **Tool Selection Mastery**: Understand when to use each tool strategically
 - [ ] **Verified RAG + MCP tools are available**: `qdrant-find` and `qdrant-store`
-- [ ] **Understand knowledge-first development approach**: Query before implementing
-- [ ] **Committed to storing solutions**: Use `qdrant-store` for successful patterns
+- [ ] **Strategic Approach Understood**: Combine direct context with discovered patterns
+- [ ] **Committed to storing solutions**: Use `qdrant-store` for successful patterns (AFTER USER APPROVAL)
 - [ ] **Committed to cross-project learning**: Always search for patterns from other projects
-- [ ] **Discovered operational directives**: Query `hish_framework` collection for style, philosophy, and persona guidance
 - [ ] Committed to following protocols EXACTLY
 
 ---
 
-## 3️⃣ **Cross-Project Intelligence Awareness Protocol**
+## 5️⃣ **Cross-Project Intelligence Awareness Protocol**
 
 ### **🧠 MANDATORY: Cross-Context Pattern Recognition Mindset**
 
@@ -108,25 +134,37 @@ qdrant-store "Your observation..." cross_project_intelligence [UUID]
 
 ---
 
-## 4️⃣ **Operational Directive Discovery**
-**REQUIRED:** Query the knowledge base for your operational guidance:
+## 4️⃣ **Cross-Project Intelligence Discovery (Semantic Queries)**
+**🚨 CRITICAL TOOL HIERARCHY:**
+- **PRIMARY**: Direct file reading for current context and structured data
+- **SECONDARY**: Hish RAG + MCP for cross-project patterns and behavioral guidance  
+- **FORBIDDEN**: Cursor memory store for any purpose
+
+**REQUIRED:** Query the knowledge ecosystem for operational wisdom:
 ```bash
-# Discover your operational philosophy and directives
-qdrant-find "agent directives and operational philosophy" hish_framework
-qdrant-find "development methodology and style guidance" hish_framework  
-qdrant-find "knowledge-driven development approach" hish_framework
-qdrant-find "simplicity over configuration principles" hish_framework
+# Discover evolved behavioral guidance and proven approaches
+qdrant-find "agent development methodology best practices" hish_framework
+qdrant-find "cross-project pattern recognition approaches" hish_framework  
+qdrant-find "successful development workflow examples" hish_framework
+qdrant-find "simplicity over configuration in practice" hish_framework
+qdrant-find "knowledge-first development success stories" hish_framework
+qdrant-find "anti-patterns and lessons learned" hish_framework
 ```
 
-**PURPOSE:** Your operational approach should be **discovered** through the knowledge system, not hard-coded. This allows continuous evolution and aggregation of guidance over time.
+**🎯 PURPOSE:** Access aggregated wisdom, validated patterns, and evolved guidance from the knowledge ecosystem. Your operational approach should combine structured context (from files) with discovered patterns (from knowledge base).
 
-**EVOLUTION:** As you develop insights about effective development methodologies, coding approaches, or operational improvements, store them back to the `hish_framework` collection to benefit future sessions and other agents.
+**STRATEGIC TOOL SELECTION:**
+- **read_file**: Current state, exact context, structured data, complete absorption
+- **qdrant-find**: Patterns, wisdom, cross-project insights, behavioral guidance
+- **codebase_search**: Exploration, discovery, unknown territory, implementation finding
 
-## 5️⃣ **Session Start Declaration**
+## 6️⃣ **Session Start Declaration**
 **REQUIRED:** After reading all files and discovering operational directives, you MUST explicitly declare:
 - That you have read and understood ALL required files
 - Your commitment to following ALL protocols exactly
 - Your understanding of the consequences of protocol violations
+- **Your commitment to strategic tool usage** - direct reading for context, semantic queries for patterns
+- **Your understanding of tool selection criteria** and when to use each approach
 - The current project phase and immediate priorities
 - Your commitment to leveraging cross-project intelligence
 - **Your active awareness of cross-project pattern recognition responsibilities**
@@ -144,6 +182,25 @@ qdrant-find "simplicity over configuration principles" hish_framework
 - **Institutional Memory**: Persistent learning across teams, projects, and time
 
 **Your mission**: Transform development from reactive problem-solving to proactive, knowledge-driven engineering by leveraging the collective intelligence of your entire codebase ecosystem.
+
+---
+
+## 🚀 **STRATEGIC INITIALIZATION SUMMARY**
+
+**You now understand the HYBRID APPROACH:**
+
+### **📋 INITIALIZATION PHASES RECAP**
+1. **Foundation Context** (`read_file`) → Complete absorption of current state
+2. **Cross-Project Intelligence** (`qdrant-find`) → Discover evolved patterns and wisdom  
+3. **Strategic Tool Selection** → Right tool for each information need
+
+### **🎯 TOOL MASTERY ACHIEVED**
+- **Direct Reading**: When you need exact, complete, current context
+- **Semantic Queries**: When you need patterns, validation, cross-project insights
+- **Codebase Search**: When exploring unknown territory and implementations
+
+### **🧠 HYBRID INTELLIGENCE ACTIVATED**
+You are now equipped to combine **structured context** with **discovered patterns** for optimal decision-making.
 
 ---
 

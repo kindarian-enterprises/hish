@@ -229,13 +229,17 @@ from unused_module import something  # Remove unused imports immediately
 - **Never hardcode service discovery** - Use environment-based configuration
 - **Never ignore container boundaries** - Respect service isolation
 
-### **❌ RAG-Enhanced Development Anti-Patterns**
+### **❌ Strategic Tool Usage Anti-Patterns**
 ```python
-# ❌ NEVER start implementation without querying existing patterns
-implement_new_feature()  # Query first: qdrant-find "similar feature implementations"
+# ❌ NEVER use wrong tool for the task
+read_file("broad_pattern_discovery")  # WRONG: Use qdrant-find for cross-project patterns
+qdrant-find("specific_file_content")   # WRONG: Use read_file for exact current state
 
-# ❌ NEVER ignore historical solutions to similar problems
-debug_error_without_context()  # Query: qdrant-find "similar error patterns"
+# ❌ NEVER start implementation without strategic information gathering
+implement_new_feature()  # WRONG: 1) read_file context, 2) qdrant-find patterns, 3) implement
+
+# ❌ NEVER ignore the tool selection decision framework
+use_random_tool()  # WRONG: Choose tool based on information type and purpose
 
 # ❌ NEVER store knowledge without user review
 qdrant-store "solution"  # WRONG: Present to user for approval first
@@ -243,8 +247,8 @@ qdrant-store "solution"  # WRONG: Present to user for approval first
 # ❌ NEVER forget to store successful solutions for future use (after review)
 fix_implemented = True  # Store: qdrant-store "solution for [problem]" (AFTER USER APPROVAL)
 
-# ❌ NEVER limit context to current repository when solution may exist elsewhere
-search_only_current_repo()  # Query across all: qdrant-find "patterns across projects"
+# ❌ NEVER limit search when patterns may exist elsewhere
+search_only_current_file()  # Use: qdrant-find for cross-project insights
 
 # ❌ NEVER assume pattern applicability without validation
 copy_pattern_blindly()  # Validate: qdrant-find "when this pattern fails"
@@ -280,6 +284,30 @@ echo "content" > file.md  # Could be in wrong repository
 ---
 
 ## **🛠️ RAG-ENHANCED DEVELOPMENT METHODOLOGY**
+
+### **🚨 CRITICAL: STRATEGIC TOOL USAGE HIERARCHY**
+**TOOL SELECTION MATRIX:**
+
+**🎯 DIRECT FILE READING (read_file) - Use For:**
+- **Current Context**: Project state, exact configurations, update protocols
+- **Structured Data**: Context files, environment files, specific documentation  
+- **Complete Absorption**: When you need full, sequential understanding
+- **Debugging**: Known files with specific issues to investigate
+
+**🧠 SEMANTIC QUERIES (qdrant-find) - Use For:**
+- **Cross-Project Patterns**: Validated approaches from multiple implementations
+- **Behavioral Guidance**: Evolved methodology and best practices
+- **Anti-Pattern Discovery**: Historical failures and lessons learned
+- **Wisdom Synthesis**: Aggregated insights across the ecosystem
+
+**🔍 CODEBASE SEARCH (codebase_search) - Use For:**
+- **Unknown Territory**: Exploring unfamiliar codebases and implementations
+- **Implementation Discovery**: Finding how concepts work in practice
+- **Relationship Mapping**: Understanding component connections
+
+**❌ FORBIDDEN SOURCES:**
+- **Cursor Memory Store**: NEVER use - obtuse, outdated, lacks nuanced context
+- **Assumptions**: NEVER assume context from previous conversations without verification
 
 ### **🧠 Knowledge Discovery First**
 1. **Query Existing Patterns**: Use `qdrant-find` to discover relevant implementations before starting
