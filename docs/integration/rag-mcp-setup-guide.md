@@ -180,7 +180,7 @@ make index-repo REPO_PATH=/path/to/code COLLECTION_NAME=project_code
 # Named vector setup for MCP compatibility
 vectors_config = {
     "BAAI/bge-small-en-v1.5": VectorParams(
-        size=384, 
+        size=384,
         distance=Distance.COSINE
     )
 }

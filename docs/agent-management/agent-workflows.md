@@ -71,14 +71,14 @@ Ask agents to research existing patterns:
 ```
 You: "I need to add user authentication to this React app"
 
-Agent: "I found JWT implementations across your projects. Your API backend uses 
-Express with Redis token blacklisting, and your mobile app has a useAuth hook 
+Agent: "I found JWT implementations across your projects. Your API backend uses
+Express with Redis token blacklisting, and your mobile app has a useAuth hook
 with automatic refresh. Should I adapt these patterns for React?"
 
 You: "Yes, use the useAuth hook approach but integrate with our Express backend"
 
-Agent: [Implements solution] "I've created the useAuth hook and integrated it 
-with your existing JWT backend. I'll store this React+Express auth pattern 
+Agent: [Implements solution] "I've created the useAuth hook and integrated it
+with your existing JWT backend. I'll store this React+Express auth pattern
 for future projects."
 ```
 
@@ -86,13 +86,13 @@ for future projects."
 ```
 You: "The API is returning 500 errors intermittently"
 
-Agent: "I found similar debugging workflows from your other services. Let me check 
-error patterns... I see you've used structured logging and APM tooling before. 
+Agent: "I found similar debugging workflows from your other services. Let me check
+error patterns... I see you've used structured logging and APM tooling before.
 Should I add the same monitoring setup here?"
 
 You: "Good idea, and check if we've seen this specific error pattern before"
 
-Agent: "Found it! ProjectB had identical symptoms - Redis connection pooling issue. 
+Agent: "Found it! ProjectB had identical symptoms - Redis connection pooling issue.
 Here's the fix that worked..."
 ```
 
@@ -100,14 +100,14 @@ Here's the fix that worked..."
 ```
 You: "Review this authentication middleware for security issues"
 
-Agent: "Comparing against your security patterns from other projects... I notice 
-this is missing rate limiting that you implemented in ProjectA, and the token 
-validation differs from your proven approach in ProjectC. Here are the specific 
+Agent: "Comparing against your security patterns from other projects... I notice
+this is missing rate limiting that you implemented in ProjectA, and the token
+validation differs from your proven approach in ProjectC. Here are the specific
 improvements..."
 
 You: "Apply those security patterns and document the rationale"
 
-Agent: [Makes improvements] "Applied security patterns and stored this 
+Agent: [Makes improvements] "Applied security patterns and stored this
 middleware template for future authentication implementations."
 ```
 
@@ -115,13 +115,13 @@ middleware template for future authentication implementations."
 ```
 You: "Should we use GraphQL or REST for this new service?"
 
-Agent: "Analyzing your past decisions... ProjectA used GraphQL for complex 
-data fetching and saw 40% fewer API calls. ProjectB used REST for simple 
+Agent: "Analyzing your past decisions... ProjectA used GraphQL for complex
+data fetching and saw 40% fewer API calls. ProjectB used REST for simple
 CRUD and had faster development time. Based on your current requirements..."
 
 You: "What were the specific trade-offs we documented?"
 
-Agent: "Here's what you learned: GraphQL better for frontend teams with complex 
-queries, REST better for simple APIs with caching. Your current service looks 
+Agent: "Here's what you learned: GraphQL better for frontend teams with complex
+queries, REST better for simple APIs with caching. Your current service looks
 more like ProjectB's use case..."
 ```

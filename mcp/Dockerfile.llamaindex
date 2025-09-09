@@ -1,22 +1,18 @@
 FROM python:3.11-slim
 
-# Install system dependencies
+# Set working directory and PATH
+WORKDIR /app
+ENV PATH="/root/.local/bin:$PATH"
+
+# Install everything in a single optimized layer
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install uv
-RUN pip install --no-cache-dir uv
-
-# Set working directory
-WORKDIR /app
-
-# Pre-download and cache the package for uvx
-RUN uv tool install qdrant-llamaindex-mcp-server
-
-# Set the PATH to include uv tools
-ENV PATH="/root/.local/bin:$PATH"
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install --no-cache-dir uv \
+    && uv tool install qdrant-llamaindex-mcp-server \
+    && uv pip install --system --no-cache fastembed \
+    && python3 -c "from fastembed import TextEmbedding; print('Pre-warming MPNet embedding model with fastembed...'); model = TextEmbedding('sentence-transformers/paraphrase-multilingual-mpnet-base-v2'); print('MPNet model ready!')"
 
 # Default command
 CMD ["qdrant-llamaindex-mcp-server", "--transport", "stdio"]

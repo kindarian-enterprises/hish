@@ -18,11 +18,11 @@
   - Lines 42-58: Context management (`new-context`, `list-contexts`)
 - **Search Patterns**: "index", "context", "setup", "mcp"
 
-#### `dev_agent_persona.md` (545 lines) 
+#### `dev_agent_persona.md` (545 lines)
 - **Purpose**: Universal AI agent persona and behavior guidelines
 - **Key Sections**:
   - Lines 1-50: Core persona definition
-  - Lines 200-250: Multi-collection search protocol  
+  - Lines 200-250: Multi-collection search protocol
   - Lines 300-400: Knowledge management strategies
   - Lines 450-545: Quality standards and enforcement
 - **Search Patterns**: "collection", "search", "qdrant-find", "persona"
@@ -50,7 +50,7 @@
 - **Search Patterns**: "INDEX_INCLUDE", "framework", "docs"
 
 #### `env.code` (22 lines)
-- **Purpose**: Environment configuration for external code repository indexing  
+- **Purpose**: Environment configuration for external code repository indexing
 - **Key Sections**:
   - Lines 12-13: Comprehensive file patterns for code repositories
   - Lines 16-18: Chunking configuration
@@ -69,7 +69,7 @@
 - **Purpose**: Core repository indexing and vector embedding logic
 - **Key Sections**:
   - Lines 27-52: Collection management and vector configuration
-  - Lines 55-92: Embedding model loading and configuration  
+  - Lines 55-92: Embedding model loading and configuration
   - Lines 180-320: File processing and chunking logic
   - Lines 199-280: Main indexing workflow
 - **Search Patterns**: "collection", "embed", "chunk", "qdrant"
@@ -79,7 +79,7 @@
 - **Key Sections**:
   - Lines 106-115: User input collection (simplified)
   - Lines 129-140: Context directory setup
-  - Lines 192-255: README template generation  
+  - Lines 192-255: README template generation
   - Lines 259-268: Optional indexing workflow
 - **Search Patterns**: "context", "project", "template"
 
@@ -106,7 +106,7 @@
 - **Key Sections**: MCP server configuration and JSON settings
 - **Search Patterns**: "mcp", "cursor", "settings", "json"
 
-### Template and Context Files  
+### Template and Context Files
 
 #### `templates/context/dev_agent_context_template.md`
 - **Purpose**: Template for new project contexts
@@ -142,14 +142,14 @@
 - Init prompts
 - Simple templates
 
-### Medium Files (100-300 lines) - Use Targeted Search  
+### Medium Files (100-300 lines) - Use Targeted Search
 - Scripts
 - Configuration files
 - Specific documentation
 
 ### Large Files (300+ lines) - Always Use Semantic Search
 - `dev_agent_persona.md`
-- `README.md` 
+- `README.md`
 - Large documentation files
 
 ## Search Strategy Patterns

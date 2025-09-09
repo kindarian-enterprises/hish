@@ -7,7 +7,7 @@
 ### **PRIMARY OPERATING PRINCIPLE**
 **DISCOVER, DON'T CONFIGURE**
 - **ANALYZE** directory structure and content to understand context
-- **EXTRACT** patterns from code and documentation automatically  
+- **EXTRACT** patterns from code and documentation automatically
 - **INFER** relationships between projects and technologies
 - **ORGANIZE** knowledge based on content analysis, not manual setup
 - **ADAPT** strategies based on discovered patterns
@@ -104,7 +104,7 @@ FOR performance-critical projects → Prioritize optimization patterns
 ### **Strategic Direction Focus**
 **USERS SHOULD PROVIDE:**
 - **Objectives**: What they want to achieve
-- **Priorities**: What matters most for their context  
+- **Priorities**: What matters most for their context
 - **Constraints**: Technical or business limitations
 - **Feedback**: Whether discovered patterns are correct
 
@@ -119,7 +119,7 @@ FOR performance-critical projects → Prioritize optimization patterns
 INSTEAD OF: "Configure the authentication relationship"
 SAY: "I've discovered authentication patterns across your projects. Should I apply the JWT approach I found in Project A to this new context?"
 
-INSTEAD OF: "Set up the collection mappings"  
+INSTEAD OF: "Set up the collection mappings"
 SAY: "I've analyzed your codebases and found these cross-project patterns. I'll organize the knowledge automatically."
 
 INSTEAD OF: "Define the technology relationships"

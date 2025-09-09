@@ -2,7 +2,7 @@
 
 Context management framework that gives Cursor AI agents persistent memory and cross-project knowledge. Instead of starting every conversation from zero, agents remember your codebase patterns, architectural decisions, and working solutions from all your projects.
 
-**Two-part approach**: 
+**Two-part approach**:
 1. **Vector database** indexes your code into searchable knowledge
 2. **Structured prompts** transform any LLM into a disciplined engineering agent
 
@@ -16,7 +16,7 @@ The framework scans your repositories and breaks them into searchable knowledge:
 
 **What gets indexed:**
 - Source code files (functions, classes, patterns)
-- Documentation and README files  
+- Documentation and README files
 - Configuration files and deployment scripts
 - Project contexts and historical decisions
 
@@ -35,7 +35,7 @@ Your Code → Vector Index → Prompt-Guided Agent → Disciplined Output
 **Prompt engineering system**: Instead of hoping LLMs follow good practices, Hish embeds engineering discipline directly into agent instructions through layered prompt structures:
 
 - **Context injection**: Agents must load project state before starting work
-- **Protocol enforcement**: Specific workflows for research → implementation → quality assurance  
+- **Protocol enforcement**: Specific workflows for research → implementation → quality assurance
 - **Knowledge integration**: Mandatory patterns for querying existing solutions and storing new ones
 - **Quality standards**: Built-in coding practices, anti-patterns, and engineering discipline
 
@@ -120,7 +120,7 @@ Install dependencies: `pip install -r rag/indexer/requirements.txt`
 git clone https://github.com/kindarian-enterprises/hish.git
 cd hish
 
-# 2. Add to Cursor settings.json (restart Cursor after)
+# 2. Add to Cursor settings.json (builds MCP server, restart Cursor after)
 make setup-cursor
 
 # 3. Create project context
@@ -154,7 +154,7 @@ Agent loads project context, reads all relevant documentation, establishes cross
 ```
 You: "I need to implement JWT authentication for this Node.js API"
 
-Agent (with Hish): 
+Agent (with Hish):
 - Automatically queries existing auth patterns
 - Finds Redis blacklist approach from ProjectA, refresh token logic from ProjectB
 - Proposes solution: "I found proven JWT implementations across your projects..."
@@ -178,4 +178,4 @@ Details: [Upstream + Main Workflow](docs/setup/upstream-main-workflow.md) - Simp
 
 **Important**: Files in `local/` are managed by agents. Manual editing can disrupt the framework's behavior and break agent context tracking. For proper agent interaction patterns, see [Agent Management](docs/agent-management/).
 
-**Documentation**: [Setup guides](docs/setup/), [Integration help](docs/integration/)
+**Documentation**: [Setup guides](docs/setup/), [Integration help](docs/integration/), [Collection Governance](docs/collection-governance.md)

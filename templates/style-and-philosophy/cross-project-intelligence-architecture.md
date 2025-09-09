@@ -106,7 +106,7 @@ python3 -c "import uuid; print(uuid.uuid4())"
 # Pattern observations with evidence
 qdrant-store "Observed: JWT refresh pattern from auth-service successfully reduces session timeout issues. Evidence: 50% reduction in authentication errors across 3 test scenarios. Validation needed: Apply to web-application authentication flow." cross_project_intelligence a870346e-03c7-4622-b113-60a7efc0f9ac
 
-# Relationship mappings  
+# Relationship mappings
 qdrant-store "Relationship: api-gateway nginx patterns directly applicable to web-app reverse proxy setup. Common requirements: SSL termination, rate limiting, auth_request. Validation status: Hypothesis - requires testing in web-app context." cross_project_intelligence [UUID]
 
 # Effectiveness metrics

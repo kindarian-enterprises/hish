@@ -48,22 +48,24 @@ Indexes framework docs, project contexts, and all discovered code repositories.
 pip install -r rag/indexer/requirements.txt
 ```
 
-**Regular use:**
+**Regular use with optimal embeddings:**
 ```bash
-make index-framework  # Quick framework updates (PRESERVES data)
-make index           # Full reindexing (DESTROYS code, PRESERVES framework)
+make index-framework  # Framework docs only (BGE-small, PRESERVES data)
+make index-code      # Code repositories only (Jina Code, DESTROYS code)
+make index           # Full reindexing (BGE + Jina Code, DESTROYS code, PRESERVES framework)
 ```
 
 **Reindex specific projects:**
 ```bash
-./reindex shire                    # Single project (DESTROYS project code)
-./reindex shire platform-backend  # Multiple projects (DESTROYS project code)
-./reindex all                      # All projects (DESTROYS all code, PRESERVES framework)
+./reindex shire                    # Single project (Jina Code, DESTROYS project code)
+./reindex shire platform-backend  # Multiple projects (Jina Code, DESTROYS project code)
+./reindex all                      # All projects (Jina Code, DESTROYS all code, PRESERVES framework)
 ```
 
-**Manual project indexing:**
+**Manual project indexing with auto-detection:**
 ```bash
-make index-repo REPO_PATH=/path/to/code COLLECTION_NAME=project_code
+make index-repo REPO_PATH=/path/to/code COLLECTION_NAME=project_code  # Auto-detects Jina Code for code
+make index-repo REPO_PATH=. COLLECTION_NAME=hish_framework           # Auto-detects BGE for framework
 ```
 
 **Collections created automatically:**
@@ -124,5 +126,3 @@ make health      # Check framework status
 ---
 
 The framework handles complexity automatically - just run `make index` when you want agents to access recent changes. **Remember: Code reindexing is destructive, framework indexing is safe.**
-
-

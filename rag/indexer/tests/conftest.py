@@ -1,17 +1,18 @@
 """Test configuration and fixtures."""
 
+from unittest.mock import Mock
+
 import pytest
-from typing import Dict, Any, List
-from unittest.mock import Mock, MagicMock
 
 # Test constants following Hish framework standards - no magic numbers
 CHUNK_MAX_TOKENS_TEST = 100
 CHUNK_MIN_CHARS_TEST = 50
 CHUNK_OVERLAP_TOKENS_TEST = 20
-EXPECTED_EMBEDDING_DIMENSION = 384  # BGE-small models use 384 dimensions
+EXPECTED_EMBEDDING_DIMENSION = 768  # MPNet models use 768 dimensions
 BATCH_SIZE_TEST = 2
-TEST_COLLECTION_NAME = "test_collection"
-TEST_MODEL_NAME = "BAAI/bge-small-en-v1.5"  # Default embedding model for tests
+TEST_COLLECTION_NAME = "test_collection_mpnet"
+# Unified MPNet embedding model for tests
+TEST_MODEL_NAME = "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
 
 # Sample test data
 SAMPLE_MARKDOWN_TEXT = """# Test Document
@@ -42,10 +43,10 @@ def hello_world():
 
 class TestClass:
     """A test class."""
-    
+
     def __init__(self):
         self.value = 42
-    
+
     def method(self):
         """A test method."""
         return self.value * 2

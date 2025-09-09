@@ -8,22 +8,25 @@ Collections are organized knowledge storage that agents search automatically. Yo
 
 ## Collection Types
 
-**Framework documentation** (`hish_framework`)
+**Framework documentation** (`hish_framework_mpnet`)
 - Hish documentation and guides
-- Project context files from `local/` directories  
+- Project context files from `local/` directories
 - Official templates and workflows
+- **EMBEDDINGS**: MPNet (768d) - unified embeddings for granular text understanding
 - **PRESERVED**: Never destroyed during reindexing
 
-**Cross-project intelligence** (`cross_project_intelligence`)
+**Cross-project intelligence** (`cross_project_intelligence_mpnet`)
 - Patterns agents discover across your projects
 - Relationships between different codebases
 - Effectiveness data from implemented solutions
+- **EMBEDDINGS**: MPNet (768d) - unified embeddings for granular text understanding
 - **PRESERVED**: Never destroyed during reindexing
 
-**Project code** (`projectname_code`)
+**Project code** (`projectname_code_mpnet`)
 - Source code from specific repositories
 - One collection per project for focused search
 - Created automatically when you run `make index`
+- **EMBEDDINGS**: MPNet (768d) - unified embeddings for consistent code/docs understanding
 - **VOLATILE**: Destroyed and recreated on every reindex
 
 ## How It Works
@@ -36,14 +39,41 @@ Collections are organized knowledge storage that agents search automatically. Yo
 
 **You don't need to manage collections directly** - the framework handles organization automatically.
 
+## Unified MPNet Architecture
+
+The framework uses **unified MPNet embeddings** for all content types:
+
+**MPNet embeddings** (768 dimensions)
+- Used for: ALL content - framework docs, cross-project intelligence, and code repositories
+- Benefits: Excellent granular text understanding for both natural language and code
+- Model: `sentence-transformers/paraphrase-multilingual-mpnet-base-v2`
+- Superior keyword matching while maintaining semantic understanding
+
+**Unified approach benefits:**
+- **Consistent search quality** across all content types
+- **Simplified architecture** with single MCP server
+- **Better cross-modal understanding** between documentation and code
+- **Optimized similarity thresholds** (0.2) for inclusive but relevant results
+
+**Collection naming:**
+- All collections now have `_mpnet` suffix to indicate unified embedding model
+- Framework automatically uses MPNet for all new collections
+- No configuration needed - it just works
+
+**Search simplicity:**
+- **Single unified MCP server** (`qdrant-unified`) for all collections
+- **Automatic MPNet query vectorization** matches all collection embeddings
+- **Optimized similarity thresholds** for consistent, relevant results
+- **No server switching** - one tool works for everything
+
 ## ⚠️ **Important: Data Preservation**
 
 **Collections that are PRESERVED:**
-- `hish_framework` - Your documentation and guides
-- `cross_project_intelligence` - Patterns and learnings across projects
+- `hish_framework_mpnet` - Your documentation and guides
+- `cross_project_intelligence_mpnet` - Patterns and learnings across projects
 
 **Collections that are DESTROYED on reindex:**
-- `{project}_code` - Source code from repositories
+- `{project}_code_mpnet` - Source code from repositories
 - These are recreated fresh each time
 
 **Why this design:**

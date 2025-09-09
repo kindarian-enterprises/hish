@@ -2,7 +2,7 @@
 
 # data/** filter=lfs diff=lfs merge=lfs -text
 
-# If your repo uses a different shared data dir (e.g., datasets/ or artifacts/), 
+# If your repo uses a different shared data dir (e.g., datasets/ or artifacts/),
 # add commented examples for those too:
 
 # datasets/** filter=lfs diff=lfs merge=lfs -text

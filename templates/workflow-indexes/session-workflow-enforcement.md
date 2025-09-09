@@ -8,7 +8,7 @@
 ## Initialization Checklist
 ```markdown
 ✅ Read framework-command-index.md completely
-✅ Read framework-file-index.md for search strategy  
+✅ Read framework-file-index.md for search strategy
 ✅ Read session-workflow-enforcement.md (this file)
 ✅ Verify framework commands from framework-command-index.md
 ✅ Set semantic search strategy for detailed procedures
@@ -66,7 +66,7 @@
 
 ### Quality Control
 - **Search Quality**: Use multiple collections, validate results
-- **Command Quality**: Use documented patterns, avoid improvisation  
+- **Command Quality**: Use documented patterns, avoid improvisation
 - **Context Quality**: Verify project contexts have proper structure
 
 ### Error Recovery

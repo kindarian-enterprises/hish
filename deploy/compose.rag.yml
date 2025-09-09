@@ -19,16 +19,17 @@ services:
       retries: 6
       start_period: 5s
 
-  # LlamaIndex-Compatible Qdrant MCP: main CRUD server
-  mcp-qdrant-llamaindex:
+  # Unified LlamaIndex-Compatible Qdrant MCP: All collections (MPNet)
+  mcp-qdrant-unified:
+    image: hish-mcp-unified:latest
     build:
-      context: ./mcp
+      context: ../mcp
       dockerfile: Dockerfile.llamaindex
     depends_on:
       qdrant:
         condition: service_healthy
     env_file:
-      - ../config/env.mcp
+      - ../config/env.mcp.unified
     environment:
       - QDRANT_READ_ONLY=false
     command: ["qdrant-llamaindex-mcp-server", "--transport", "stdio"]
@@ -39,5 +40,5 @@ services:
   # Note: Indexing is now done host-based for better performance
   # Container-based indexing services have been removed in favor of host-based indexing
   # Use 'make index' or 'python3 scripts/host-indexer.py' for indexing
-  # 
+  #
   # For testing, use: cd rag/indexer && python -m pytest tests/ -v

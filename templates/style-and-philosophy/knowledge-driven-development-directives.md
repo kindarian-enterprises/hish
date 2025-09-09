@@ -8,7 +8,7 @@
 ```bash
 # ALWAYS start with knowledge discovery
 qdrant-find "similar implementations of [component]"
-qdrant-find "error handling patterns for [context]" 
+qdrant-find "error handling patterns for [context]"
 qdrant-find "testing strategies for [component type]"
 
 # ALWAYS check for anti-patterns
@@ -21,7 +21,7 @@ qdrant-find "common mistakes in [technology]"
 ### **KNOWLEDGE ACCUMULATION PRINCIPLE**
 ```
 Every solution you implement → MUST store pattern with qdrant-store
-Every mistake discovered → MUST document anti-pattern  
+Every mistake discovered → MUST document anti-pattern
 Every decision made → MUST capture architectural reasoning
 Every problem solved → MUST create reusable methodology
 ```
@@ -55,7 +55,7 @@ qdrant-store "Anti-pattern: [Failed approach] - [Why it failed]. Context: [When 
 ```bash
 # Research existing solutions
 qdrant-find "[feature] implementation patterns"
-qdrant-find "[technology] best practices" 
+qdrant-find "[technology] best practices"
 qdrant-find "architecture decisions for [component]"
 
 # Check failure modes
@@ -92,7 +92,7 @@ qdrant-store "Enhancement: [Improvement] - [How it works better]. Context: [When
 - ❌ **NEVER** fail to store successful solutions
 - ❌ **NEVER** assume patterns from one project don't apply to others
 
-### **Decision Anti-Patterns**  
+### **Decision Anti-Patterns**
 - ❌ **NEVER** make architectural decisions without historical context
 - ❌ **NEVER** choose solutions without evidence
 - ❌ **NEVER** ignore performance data from similar implementations

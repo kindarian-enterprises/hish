@@ -11,7 +11,7 @@
 
 ### Core Concepts
 - **Multi-Project Intelligence**: One framework manages contexts for all projects
-- **Shared Knowledge Base**: Patterns discovered in one project benefit ALL projects  
+- **Shared Knowledge Base**: Patterns discovered in one project benefit ALL projects
 - **Cross-Project Learning**: Agents learn from entire codebase ecosystem
 - **Institutional Memory**: Persistent learning across teams, projects, and time
 
@@ -38,7 +38,7 @@
   - Key Sections: Collection management, file processing, chunking
   - Search Patterns: "embed", "chunk", "collection", "qdrant"
 - **`compose.rag.yml`** - Docker services configuration
-  - Key Sections: Qdrant, indexer, MCP server definitions  
+  - Key Sections: Qdrant, indexer, MCP server definitions
   - Search Patterns: "service", "qdrant", "mcp"
 
 ### Documentation (`docs/`)
@@ -59,7 +59,7 @@
 
 ### Configuration Files
 - **`env.framework`** - Framework documentation indexing patterns
-- **`env.code`** - External code repository indexing patterns  
+- **`env.code`** - External code repository indexing patterns
 - **`env.mcp`** - MCP server configuration
 - **`.gitignore`** - Ensures local/ directory is gitignored for user customization
 
@@ -98,7 +98,7 @@
 - **Search Strategy**: Start here for architectural context
 
 ### Project Code Collections (`{project-name}_code`)
-- **Content**: External project repositories  
+- **Content**: External project repositories
 - **Include Patterns**: Comprehensive code file patterns
 - **Search Strategy**: Use for project-specific implementation details
 
@@ -111,7 +111,7 @@ INDEX_INCLUDE=dev_agent_init_prompt.md,dev_agent_persona.md,dev_agent_session_en
 ```
 
 ### Code Repository Indexing (`env.code`)
-```bash  
+```bash
 COLLECTION_NAME=external_code
 INDEX_INCLUDE=**/*.py,**/*.yaml,**/*.yml,**/*.json,**/*.md,**/*.js,**/*.ts,**/*.tf,**/*.go,**/*.rs,**/*.scala,**/*.java,**/*.c,**/*.cpp,**/*.cc,**/*.cxx,**/*.h,**/*.hpp
 INDEX_EXCLUDE=**/.git/**,**/.data/**,**/node_modules/**,**/.terraform/**,**/.venv/**,**/dist/**,**/build/**,**/__pycache__/**,**/venv/**,**/.pytest_cache/**
@@ -131,7 +131,7 @@ VECTOR_NAME=BAAI/bge-small-en-v1.5
 3. `make new-context` - Create project context (name + repo path)
 4. `make index` - Index framework + all project repositories
 
-### Development Workflow  
+### Development Workflow
 1. `@dev_agent_init_prompt.md` - Initialize agent with universal persona
 2. Agent loads project-specific context automatically
 3. Use `qdrant-find` for cross-project knowledge discovery
@@ -168,7 +168,7 @@ VECTOR_NAME=BAAI/bge-small-en-v1.5
 - **Configuration**: JSON in Cursor settings.json
 - **Commands**: `qdrant-find`, `qdrant-store` available in Cursor
 
-### Docker Integration  
+### Docker Integration
 - **Services**: Qdrant (vector DB), Indexer (Python), MCP Server
 - **Data Persistence**: `.data/qdrant/` for vector storage
 - **Network**: Internal Docker network for service communication

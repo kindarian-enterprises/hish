@@ -1,7 +1,7 @@
 # Hish Cursor Context Framework - Makefile
 # Multi-project development agent framework with shared knowledge
 
-.PHONY: help health test new-context list-contexts index-repo reindex-contexts clean logs index collections setup-cursor quick-start backup mcp optimize-collections index-framework setup-intelligence
+.PHONY: help health test new-context list-contexts index-repo reindex-contexts clean logs index collections setup-cursor quick-start backup mcp build-mcp optimize-collections index-framework setup-intelligence lint lint-fix format type-check mypy-errors pre-commit-install dev-setup
 
 # Default target
 help: ## Show this help message
@@ -46,20 +46,20 @@ list-contexts: ## List all project contexts
 
 
 # Knowledge Management
-index: ## Index framework docs and all project code repositories (host-based) - Code collections are recreated, framework preserved
-	@echo "🚀 Host-based indexing for improved performance..."
-	@echo "📚 Indexing framework documentation (preserving existing data)..."
-	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file config/env.framework --collection hish_framework
-	@echo "🔍 Discovering and indexing project code repositories..."
+index: ## Index framework docs and all project code repositories (host-based) - Uses unified MPNet embeddings
+	@echo "🚀 Host-based indexing with unified MPNet embeddings..."
+	@echo "📚 Indexing framework documentation with MPNet (preserving existing data)..."
+	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file config/env.mpnet --collection hish_framework_mpnet
+	@echo "🔍 Discovering and indexing project code repositories with MPNet..."
 	@if [ -d "local" ]; then \
 		for context_dir in local/*/; do \
 			if [ -d "$$context_dir" ] && [ -f "$$context_dir/repo_path.txt" ]; then \
 				repo_path=$$(cat "$$context_dir/repo_path.txt" | tr -d '\n'); \
 				context_name=$$(basename "$$context_dir"); \
 				if [ -d "$$repo_path" ]; then \
-					echo "📁 Host-indexing $$context_name code: $$repo_path"; \
-					echo "⚠️  WARNING: Code collection will be DROPPED and RECREATED, replacing existing code data!"; \
-					python3 scripts/host-indexer.py --work-dir "$$repo_path" --env-file config/env.code --collection "$${context_name}_code" --recreate; \
+					echo "📁 Host-indexing $$context_name code with MPNet: $$repo_path"; \
+					echo "⚠️  WARNING: Code collection will be DROPPED and RECREATED with MPNet embeddings!"; \
+					python3 scripts/host-indexer.py --work-dir "$$repo_path" --env-file config/env.mpnet.code --collection "$${context_name}_code_mpnet" --recreate; \
 				else \
 					echo "⚠️  Repo path not found for $$context_name: $$repo_path"; \
 				fi; \
@@ -68,17 +68,38 @@ index: ## Index framework docs and all project code repositories (host-based) - 
 	else \
 		echo "ℹ️  No local contexts found. Create one with make new-context"; \
 	fi
-	@echo "✅ Indexing complete! Framework and all project code is now searchable."
+	@echo "✅ Indexing complete! Framework and code repositories now use unified MPNet embeddings."
 
-index-framework: ## Index framework docs only (fast reindexing for framework changes) - PRESERVES existing data
-	@echo "📚 Indexing framework documentation only..."
+index-code: ## Index all project code repositories with MPNet embeddings (DESTRUCTIVE: replaces existing code collections)
+	@echo "🔍 Indexing all project code repositories with MPNet embeddings..."
+	@if [ -d "local" ]; then \
+		for context_dir in local/*/; do \
+			if [ -d "$$context_dir" ] && [ -f "$$context_dir/repo_path.txt" ]; then \
+				repo_path=$$(cat "$$context_dir/repo_path.txt" | tr -d '\n'); \
+				context_name=$$(basename "$$context_dir"); \
+				if [ -d "$$repo_path" ]; then \
+					echo "📁 MPNet indexing $$context_name: $$repo_path"; \
+					echo "⚠️  WARNING: Code collection will be DROPPED and RECREATED with MPNet!"; \
+					python3 scripts/host-indexer.py --work-dir "$$repo_path" --env-file config/env.mpnet.code --collection "$${context_name}_code_mpnet" --recreate; \
+				else \
+					echo "⚠️  Repo path not found for $$context_name: $$repo_path"; \
+				fi; \
+			fi; \
+		done; \
+	else \
+		echo "ℹ️  No local contexts found. Create one with make new-context"; \
+	fi
+	@echo "✅ Code repository indexing complete! All code now uses MPNet embeddings."
+
+index-framework: ## Index framework docs only with MPNet embeddings - ONLY vectorized documentation, NOT learnings - PRESERVES existing data
+	@echo "📚 Indexing framework documentation with MPNet embeddings..."
 	@echo "ℹ️  Framework collection will be updated, preserving existing data..."
-	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file config/env.framework --collection hish_framework
+	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file $(or $(ENV_FILE),config/env.mpnet) --collection hish_framework_mpnet
 	@echo "✅ Framework documentation indexing complete!"
 
-setup-intelligence: ## Setup cross-project intelligence collection
-	@echo "🧠 Setting up cross-project intelligence collection..."
-	@python3 scripts/intelligence-collection-setup.py
+setup-intelligence: ## Setup cross-project intelligence collection with MPNet embeddings - For patterns applicable to framework or 2+ projects
+	@echo "🧠 Setting up cross-project intelligence collection with MPNet..."
+	@EMBEDDING_MODEL=sentence-transformers/paraphrase-multilingual-mpnet-base-v2 INTELLIGENCE_COLLECTION_NAME=cross_project_intelligence_mpnet python3 scripts/intelligence-collection-setup.py
 	@echo "✅ Intelligence collection setup complete!"
 
 reindex-contexts: ## Reindex specific contexts (Usage: make reindex-contexts CONTEXTS="context1 context2 context3") - DESTRUCTIVE: replaces code data only
@@ -109,7 +130,7 @@ reindex-contexts: ## Reindex specific contexts (Usage: make reindex-contexts CON
 			repo_path=$$(cat "$$context_dir/repo_path.txt" | tr -d '\n'); \
 			if [ -d "$$repo_path" ]; then \
 				echo "📁 Reindexing $$context_name: $$repo_path"; \
-				make index-repo REPO_PATH="$$repo_path" COLLECTION_NAME="$${context_name}_code"; \
+				make index-repo REPO_PATH="$$repo_path" COLLECTION_NAME="$${context_name}_code_mpnet"; \
 			else \
 				echo "⚠️  Repo path not found for $$context_name: $$repo_path"; \
 			fi; \
@@ -119,21 +140,21 @@ reindex-contexts: ## Reindex specific contexts (Usage: make reindex-contexts CON
 	done
 	@echo "✅ Reindexing complete for: $(CONTEXTS)"
 
-index-repo: ## Index a specific code repository into the knowledge base (host-based) - DESTRUCTIVE: replaces code collection data
+index-repo: ## Index a specific repository with unified MPNet embeddings - Auto-detects collection type
 	@if [ -z "$(REPO_PATH)" ] || [ -z "$(COLLECTION_NAME)" ]; then \
 		echo "❌ Usage: make index-repo REPO_PATH=/path/to/repo COLLECTION_NAME=collection_name"; \
 		exit 1; \
 	fi
 	@echo "📚 Host-based indexing of repository: $(REPO_PATH)"
 	@echo "📁 Collection: $(COLLECTION_NAME)"
-	@if [ "$(REPO_PATH)" = "." ]; then \
-		echo "🔍 Using config/env.framework for framework documentation..."; \
+	@if [ "$(REPO_PATH)" = "." ] || echo "$(COLLECTION_NAME)" | grep -E "(hish_framework|cross_project_intelligence|framework_docs)" > /dev/null; then \
+		echo "🔍 Framework collection detected - using MPNet embeddings..."; \
 		echo "ℹ️  Framework collection will be updated, preserving existing data..."; \
-		python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file config/env.framework --collection "$(COLLECTION_NAME)"; \
+		python3 scripts/host-indexer.py --work-dir "$(REPO_PATH)" --env-file config/env.mpnet --collection "$(COLLECTION_NAME)"; \
 	else \
-		echo "🔍 Using config/env.code for external code repository..."; \
-		echo "⚠️  WARNING: Code collection will be DROPPED and RECREATED, replacing existing code data!"; \
-		python3 scripts/host-indexer.py --work-dir "$(REPO_PATH)" --env-file config/env.code --collection "$(COLLECTION_NAME)" --recreate; \
+		echo "🔍 Code collection detected - using MPNet embeddings..."; \
+		echo "⚠️  WARNING: Code collection will be DROPPED and RECREATED with MPNet!"; \
+		python3 scripts/host-indexer.py --work-dir "$(REPO_PATH)" --env-file config/env.mpnet.code --collection "$(COLLECTION_NAME)" --recreate; \
 	fi
 
 collections: ## List all knowledge collections
@@ -150,10 +171,53 @@ optimize-collections: ## Optimize collections for better search quality (sets ef
 
 
 # Development
+dev-setup: ## Install development dependencies and pre-commit hooks
+	@echo "🔧 Setting up development environment..."
+	pip install -r requirements-dev.txt
+	pre-commit install
+	@echo "✅ Development environment ready!"
+
 test: ## Run framework tests (host-based)
 	@echo "🧪 Running framework tests..."
 	@echo "📋 Using host-based testing environment..."
 	cd rag/indexer && python -m pytest tests/ -v
+
+# Code Quality
+lint: ## Run all linting checks (ruff, black, isort, mypy)
+	@echo "🔍 Running code quality checks..."
+	@echo "📁 Checking rag/indexer/..."
+	cd rag/indexer && ruff check . --output-format=concise
+	cd rag/indexer && black --check --diff .
+	cd rag/indexer && isort --check-only --diff .
+	cd rag/indexer && mypy . --ignore-missing-imports || echo "⚠️ Type checking found issues (non-blocking)"
+	@echo "✅ Linting complete!"
+
+lint-fix: ## Fix auto-fixable linting issues
+	@echo "🔧 Fixing linting issues..."
+	cd rag/indexer && ruff check . --fix
+	cd rag/indexer && black .
+	cd rag/indexer && isort .
+	@echo "✅ Auto-fixes applied!"
+
+format: ## Format code with black and isort
+	@echo "🎨 Formatting code..."
+	cd rag/indexer && black .
+	cd rag/indexer && isort .
+	@echo "✅ Code formatted!"
+
+type-check: ## Run type checking with mypy
+	@echo "🔍 Running type checks..."
+	cd rag/indexer && mypy . --ignore-missing-imports
+	@echo "✅ Type checking complete!"
+
+mypy-errors: ## Show mypy errors in detail
+	@echo "🔍 Detailed mypy error analysis..."
+	cd rag/indexer && mypy app.py --ignore-missing-imports --show-error-codes || true
+
+pre-commit-install: ## Install pre-commit hooks
+	@echo "🪝 Installing pre-commit hooks..."
+	pre-commit install
+	@echo "✅ Pre-commit hooks installed!"
 
 clean: ## Clean up containers and volumes
 	@echo "🧹 Cleaning up framework..."
@@ -180,29 +244,45 @@ quick-start: ## Quick setup guide - show configuration steps
 	@echo "  5. Index everything: make index"
 	@echo "  6. In Cursor: @dev_agent_init_prompt.md"
 	@echo ""
+	@echo "🔧 Development Setup:"
+	@echo "  • make dev-setup       - Install dev dependencies + pre-commit hooks"
+	@echo "  • make lint            - Run all code quality checks"
+	@echo "  • make lint-fix        - Auto-fix linting issues"
+	@echo "  • make format          - Format code (black + isort)"
+	@echo ""
 	@echo "🧠 Knowledge Architecture:"
 	@echo "  • hish_framework - Static docs, guides, project contexts"
 	@echo "  • cross_project_intelligence - Dynamic observations, patterns"
 	@echo ""
 	@echo "🚀 Indexing Options:"
-	@echo "  • make index           - Full indexing (framework + all projects)"
-	@echo "  • make index-framework - Framework docs only (quick updates)"
-	@echo "  • make index-repo      - Specific repository indexing"
+	@echo "  • make index           - Full indexing (unified MPNet embeddings)"
+	@echo "  • make index-code      - Code repositories only (MPNet embeddings)"
+	@echo "  • make index-framework - Framework docs only (MPNet embeddings)"
+	@echo "  • make index-repo      - Specific repository (unified MPNet)"
+	@echo ""
+	@echo "🔧 MCP Server Options:"
+	@echo "  • make build-mcp       - Build MCP server image with pre-warmed model"
+	@echo "  • make setup-cursor    - Build MCP image + show Cursor configuration"
 	@echo ""
 	@echo "💡 Cursor will auto-start services when you restart after MCP config"
 	@echo "📚 All commands: make help"
 
-setup-cursor: ## Show Cursor MCP configuration instructions
-	@echo "🔌 Cursor MCP Integration Setup"
-	@echo "=============================="
+setup-cursor: ## Setup Cursor MCP integration with pre-built server image
+	@echo "🔌 Cursor MCP Integration Setup - Unified MPNet Embeddings"
+	@echo "=========================================================="
+	@echo ""
+	@echo "🔧 Building MCP server image with pre-downloaded model..."
+	@docker compose -f deploy/compose.rag.yml build mcp-qdrant-unified
+	@echo ""
+	@echo "✅ MCP server image built with pre-warmed MPNet model!"
 	@echo ""
 	@echo "Add this to your Cursor settings.json:"
 	@echo ""
 	@echo '{'
 	@echo '  "mcpServers": {'
-	@echo '    "qdrant": {'
+	@echo '    "qdrant-unified": {'
 	@echo '      "type": "stdio",'
-	@echo '      "command": "$(PWD)/scripts/run-mcp-llamaindex.sh",'
+	@echo '      "command": "$(PWD)/scripts/run-mcp-unified.sh",'
 	@echo '      "workingDirectory": "$(PWD)",'
 	@echo '      "env": {'
 	@echo '        "NO_COLOR": "1"'
@@ -211,12 +291,21 @@ setup-cursor: ## Show Cursor MCP configuration instructions
 	@echo '  }'
 	@echo '}'
 	@echo ""
+	@echo "🔍 Unified Search Tools:"
+	@echo "  • All Collections: Use qdrant-find with any collection (MPNet embeddings)"
+	@echo "  • Better granular text understanding for both docs and code"
+	@echo ""
 	@echo "📖 Detailed guide: docs/setup/getting-started.md"
-	@echo "🧪 Test with: qdrant-find \"test query\" in Cursor chat"
+	@echo "🧪 Test framework: qdrant-find \"test query\" hish_framework_mpnet"
+	@echo "🧪 Test code repos: qdrant-find \"function implementation\" project_code_mpnet"
 
 
 
-mcp: ## Start MCP server for development  
+build-mcp: ## Build MCP server image with pre-warmed MPNet model
+	@echo "🔧 Building MCP server image with pre-downloaded MPNet model..."
+	@docker compose -f deploy/compose.rag.yml build mcp-qdrant-unified
+	@echo "✅ MCP server image built! Model will be ready instantly on startup."
+
+mcp: ## Start MCP server for development
 	@echo "🔌 Starting MCP server (stdio mode)..."
-	docker compose -f ./deploy/compose.rag.yml run --rm -i mcp-qdrant-llamaindex
-
+	docker compose -f ./deploy/compose.rag.yml run --rm -i mcp-qdrant-unified

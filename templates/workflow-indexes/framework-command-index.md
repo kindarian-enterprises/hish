@@ -138,7 +138,7 @@ INDEX_EXCLUDE=**/.git/**,**/.data/**,**/node_modules/**,**/.terraform/**,**/.ven
 
 ### Key Framework Files
 - **`dev_agent_init_prompt.md`** - Universal agent initialization
-- **`dev_agent_persona.md`** - Universal agent persona 
+- **`dev_agent_persona.md`** - Universal agent persona
 - **`dev_agent_session_end_prompt.md`** - Universal session end protocol
 - **`Makefile`** - All framework commands
 - **`compose.rag.yml`** - Docker services configuration
@@ -161,7 +161,7 @@ INDEX_EXCLUDE=**/.git/**,**/.data/**,**/node_modules/**,**/.terraform/**,**/.ven
 docker compose -f compose.rag.yml logs qdrant
 make down && make up
 
-# MCP connection issues  
+# MCP connection issues
 make setup-cursor  # Get fresh config
 # Restart Cursor after updating settings.json
 

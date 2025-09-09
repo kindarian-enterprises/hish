@@ -57,15 +57,15 @@ print_info "Found collections: $collections"
 # Optimize each collection
 for collection in $collections; do
     print_info "Optimizing collection: $collection"
-    
+
     # Get current collection info
     current_config=$(curl -s "$QDRANT_URL/collections/$collection" | jq '.result.config.params.vectors' 2>/dev/null || echo "")
-    
+
     if [ -z "$current_config" ]; then
         print_warning "Could not get current config for $collection, skipping..."
         continue
     fi
-    
+
     # Update ef_search parameter
     update_payload=$(cat <<EOF
 {
@@ -75,9 +75,9 @@ for collection in $collections; do
 }
 EOF
 )
-    
+
     print_info "Setting ef_search=$EF_SEARCH for $collection..."
-    
+
     if curl -s -X PATCH "$QDRANT_URL/collections/$collection" \
         -H "Content-Type: application/json" \
         -d "$update_payload" > /dev/null; then
