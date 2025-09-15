@@ -14,7 +14,7 @@ git clone https://github.com/kindarian-enterprises/hish.git
 cd hish
 make quick-start
 
-# 2. Configure Cursor integration
+# 2. Configure Cursor integration (builds MCP server with pre-warmed model)
 make setup-cursor
 # Add the provided JSON to Cursor settings.json and restart
 
@@ -49,7 +49,7 @@ This loads the agent with your project context and cross-project knowledge. From
 
 **Common issues:**
 - Docker not running → Start Docker service
-- Port conflicts → Check ports 6333 are available  
+- Port conflicts → Check ports 6333 are available
 - MCP connection issues → Verify Cursor settings.json configuration
 - Python issues → Use virtual environments (see [Virtual Environment Guide](virtual-environment-guide.md))
 
@@ -60,7 +60,7 @@ This loads the agent with your project context and cross-project knowledge. From
 
 **Debug commands:**
 - `make health` - Check framework status
-- `make collections` - List indexed collections  
+- `make collections` - List indexed collections
 - `make logs` - View framework logs
 
 **Documentation:** [Agent management](../agent-management/), [Technical architecture](../integration/)

@@ -20,7 +20,7 @@ Working effectively with AI agents is a skill. This guide covers the nuanced art
 
 **How it works**:
 - **Better guidance this session** → More accurate solutions stored → Better research in future sessions
-- **Correcting agent mistakes** → Improved decision patterns → Fewer mistakes over time  
+- **Correcting agent mistakes** → Improved decision patterns → Fewer mistakes over time
 - **Teaching agent preferences** → Stored context about your priorities → More aligned suggestions
 
 **Real example**: Spend 10 minutes teaching an agent your security patterns today, save hours of security reviews for months.
@@ -38,7 +38,7 @@ Working effectively with AI agents is a skill. This guide covers the nuanced art
 
 **Guide when**:
 - Agent goes down wrong path
-- Solution doesn't fit your architecture  
+- Solution doesn't fit your architecture
 - Agent misses critical requirements
 
 **Let go when**:
@@ -81,7 +81,7 @@ You: "That should work in theory, but I'm getting CORS errors. Let me check the 
 **When to step in and debug manually**:
 - **Agent shows circular reasoning**: Keeps returning to same theories despite evidence
 - **Agent makes broad assumptions**: Suggests multiple possible causes without focusing
-- **Agent requests repetitive information**: Asks for the same debugging steps multiple times  
+- **Agent requests repetitive information**: Asks for the same debugging steps multiple times
 - **Agent proposes theoretical solutions**: Offers fixes without understanding the actual problem
 
 
@@ -100,7 +100,7 @@ You: "That should work in theory, but I'm getting CORS errors. Let me check the 
 Agent: "We could implement a message queue with Redis and background workers..."
 You: "Stop. This is a simple user notification. What's the simplest approach that fits our current architecture?"
 
-// Agent goes off-architecture  
+// Agent goes off-architecture
 Agent: "Let's add GraphQL to handle this data fetching..."
 You: "We're a REST shop with established patterns. Research our existing API patterns for this use case instead."
 
@@ -116,7 +116,7 @@ You: "Before adding dependencies, research how we've handled similar validation 
 **Start broad, get specific**:
 ```
 1. "Research authentication approaches for this project"
-2. "Focus on the JWT + Redis pattern you found"  
+2. "Focus on the JWT + Redis pattern you found"
 3. "Adapt that for our requirements"
 ```
 
@@ -203,7 +203,7 @@ You: "Good. Research failure modes before we proceed."
 
 **The compound effect**: Good guidance creates progressively smarter agents. Week 1 requires corrections and teaching. Month 6 gets you agents that know your patterns and avoid known pitfalls.
 
-**ROI breakdown**: 
+**ROI breakdown**:
 - **Investment**: 5-10 minutes per session teaching patterns
 - **Returns**: Cleaner code, better architecture decisions, faster debugging, institutional memory
 

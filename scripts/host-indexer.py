@@ -95,6 +95,8 @@ def index_directory(work_dir: Path,
                 dim = 768
             elif "bge-large" in model_name.lower():
                 dim = 1024
+            elif "paraphrase-multilingual-mpnet-base-v2" in model_name.lower():
+                dim = 768
             else:
                 dim = 384  # Default
 

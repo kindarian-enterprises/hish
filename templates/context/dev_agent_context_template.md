@@ -107,7 +107,7 @@ style_analysis_completion: [date]; architectural_foundations: [status]; [categor
 ## NEXT_ACTION
 **IMMEDIATE_PRIORITY**: [priority_description]
 **CURRENT_STATUS**: [status_description]
-**NEXT_SESSION_PRIORITIES**: 
+**NEXT_SESSION_PRIORITIES**:
 - [ ] **PRIORITY**: [task_description]
 - [ ] **PRIORITY**: [task_description]
 

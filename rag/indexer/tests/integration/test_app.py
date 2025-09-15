@@ -1,20 +1,21 @@
 """Integration tests for app.py."""
 
-import pytest
 import tempfile
-import os
 from pathlib import Path
-from unittest.mock import patch, Mock, MagicMock
-from app import ensure_collection, embedder, guess_dim, index_repo, main
+from unittest.mock import Mock, patch
+
+import pytest
+
+from app import embedder, ensure_collection, guess_dim, index_repo, main
 from tests.conftest import (
-    EXPECTED_EMBEDDING_DIMENSION,
-    TEST_COLLECTION_NAME,
-    TEST_MODEL_NAME,
     CHUNK_MAX_TOKENS_TEST,
     CHUNK_MIN_CHARS_TEST,
     CHUNK_OVERLAP_TOKENS_TEST,
+    EXPECTED_EMBEDDING_DIMENSION,
     SAMPLE_MARKDOWN_TEXT,
-    SAMPLE_PYTHON_CODE
+    SAMPLE_PYTHON_CODE,
+    TEST_COLLECTION_NAME,
+    TEST_MODEL_NAME,
 )
 
 
@@ -32,11 +33,14 @@ class TestEnsureCollection:
         mock_qdrant_client.get_collection.return_value = mock_collection_info
 
         # Should not raise exception
-        ensure_collection(mock_qdrant_client, TEST_COLLECTION_NAME,
-                          EXPECTED_EMBEDDING_DIMENSION, "BAAI/bge-small-en-v1.5")
+        ensure_collection(
+            mock_qdrant_client,
+            TEST_COLLECTION_NAME,
+            EXPECTED_EMBEDDING_DIMENSION,
+            TEST_MODEL_NAME,
+        )
 
-        mock_qdrant_client.get_collection.assert_called_once_with(
-            TEST_COLLECTION_NAME)
+        mock_qdrant_client.get_collection.assert_called_once_with(TEST_COLLECTION_NAME)
         mock_qdrant_client.recreate_collection.assert_not_called()
 
     @pytest.mark.integration
@@ -44,11 +48,14 @@ class TestEnsureCollection:
         """Test creating new collection when it doesn't exist."""
         mock_qdrant_client.get_collection.side_effect = Exception("Not found")
 
-        ensure_collection(mock_qdrant_client, TEST_COLLECTION_NAME,
-                          EXPECTED_EMBEDDING_DIMENSION, "BAAI/bge-small-en-v1.5")
+        ensure_collection(
+            mock_qdrant_client,
+            TEST_COLLECTION_NAME,
+            EXPECTED_EMBEDDING_DIMENSION,
+            TEST_MODEL_NAME,
+        )
 
-        mock_qdrant_client.get_collection.assert_called_once_with(
-            TEST_COLLECTION_NAME)
+        mock_qdrant_client.get_collection.assert_called_once_with(TEST_COLLECTION_NAME)
         mock_qdrant_client.recreate_collection.assert_called_once()
 
 
@@ -56,10 +63,10 @@ class TestEmbedder:
     """Test the embedder function."""
 
     @pytest.mark.integration
-    @patch('app.TextEmbedding')
+    @patch("app.TextEmbedding")
     def test_embedder_initialization(self, mock_text_embedding):
         """Test embedder model initialization."""
-        model_name = "BAAI/bge-small-en-v1.5"
+        model_name = TEST_MODEL_NAME
         mock_model = Mock()
         mock_text_embedding.return_value = mock_model
 
@@ -73,11 +80,10 @@ class TestGuessDim:
     """Test the guess_dim function."""
 
     @pytest.mark.integration
-    def test_guess_dim_returns_384(self):
-        """Test that guess_dim returns expected dimension."""
+    def test_guess_dim_returns_expected_dimension(self):
+        """Test that guess_dim returns expected dimension for MPNet."""
         # Test various model names
-        assert guess_dim(
-            "BAAI/bge-small-en-v1.5") == EXPECTED_EMBEDDING_DIMENSION
+        assert guess_dim(TEST_MODEL_NAME) == EXPECTED_EMBEDDING_DIMENSION
         assert guess_dim("custom-model") == EXPECTED_EMBEDDING_DIMENSION
 
 
@@ -93,9 +99,10 @@ class TestIndexRepo:
             (Path(tmpdir) / "code.py").write_text(SAMPLE_PYTHON_CODE)
             (Path(tmpdir) / "ignore.txt").write_text("ignored content")
 
-            with patch('app.embedder', return_value=mock_text_embedding), \
-                    patch('app.QdrantClient', return_value=mock_qdrant_client):
-
+            with (
+                patch("app.embedder", return_value=mock_text_embedding),
+                patch("app.QdrantClient", return_value=mock_qdrant_client),
+            ):
                 index_repo(
                     work_root=tmpdir,
                     qdrant_url="http://localhost:6333",
@@ -106,7 +113,7 @@ class TestIndexRepo:
                     excludes="*.txt",
                     chunk_max_tokens=CHUNK_MAX_TOKENS_TEST,
                     chunk_min_chars=CHUNK_MIN_CHARS_TEST,
-                    chunk_overlap=CHUNK_OVERLAP_TOKENS_TEST
+                    chunk_overlap=CHUNK_OVERLAP_TOKENS_TEST,
                 )
 
                 # Verify collection was ensured
@@ -122,9 +129,10 @@ class TestIndexRepo:
     def test_index_repo_empty_directory(self, mock_qdrant_client, mock_text_embedding):
         """Test indexing empty directory."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with patch('app.embedder', return_value=mock_text_embedding), \
-                    patch('app.QdrantClient', return_value=mock_qdrant_client):
-
+            with (
+                patch("app.embedder", return_value=mock_text_embedding),
+                patch("app.QdrantClient", return_value=mock_qdrant_client),
+            ):
                 index_repo(
                     work_root=tmpdir,
                     qdrant_url="http://localhost:6333",
@@ -135,7 +143,7 @@ class TestIndexRepo:
                     excludes="",
                     chunk_max_tokens=CHUNK_MAX_TOKENS_TEST,
                     chunk_min_chars=CHUNK_MIN_CHARS_TEST,
-                    chunk_overlap=CHUNK_OVERLAP_TOKENS_TEST
+                    chunk_overlap=CHUNK_OVERLAP_TOKENS_TEST,
                 )
 
                 # Should still ensure collection
@@ -146,15 +154,18 @@ class TestIndexRepo:
                 mock_qdrant_client.upsert.assert_not_called()
 
     @pytest.mark.integration
-    def test_index_repo_with_small_chunks(self, mock_qdrant_client, mock_text_embedding):
+    def test_index_repo_with_small_chunks(
+        self, mock_qdrant_client, mock_text_embedding
+    ):
         """Test that small chunks are filtered out."""
         with tempfile.TemporaryDirectory() as tmpdir:
             # Create file with very short content
             (Path(tmpdir) / "short.md").write_text("x")  # Very short content
 
-            with patch('app.embedder', return_value=mock_text_embedding), \
-                    patch('app.QdrantClient', return_value=mock_qdrant_client):
-
+            with (
+                patch("app.embedder", return_value=mock_text_embedding),
+                patch("app.QdrantClient", return_value=mock_qdrant_client),
+            ):
                 index_repo(
                     work_root=tmpdir,
                     qdrant_url="http://localhost:6333",
@@ -165,7 +176,7 @@ class TestIndexRepo:
                     excludes="",
                     chunk_max_tokens=CHUNK_MAX_TOKENS_TEST,
                     chunk_min_chars=CHUNK_MIN_CHARS_TEST,  # Higher than content length
-                    chunk_overlap=CHUNK_OVERLAP_TOKENS_TEST
+                    chunk_overlap=CHUNK_OVERLAP_TOKENS_TEST,
                 )
 
                 # Should not process chunks that are too small
@@ -178,12 +189,12 @@ class TestIndexRepo:
         with tempfile.TemporaryDirectory() as tmpdir:
             # Create multiple files to trigger batching
             for i in range(5):
-                (Path(tmpdir) /
-                 f"file_{i}.md").write_text(SAMPLE_MARKDOWN_TEXT)
+                (Path(tmpdir) / f"file_{i}.md").write_text(SAMPLE_MARKDOWN_TEXT)
 
-            with patch('app.embedder', return_value=mock_text_embedding), \
-                    patch('app.QdrantClient', return_value=mock_qdrant_client):
-
+            with (
+                patch("app.embedder", return_value=mock_text_embedding),
+                patch("app.QdrantClient", return_value=mock_qdrant_client),
+            ):
                 index_repo(
                     work_root=tmpdir,
                     qdrant_url="http://localhost:6333",
@@ -194,7 +205,7 @@ class TestIndexRepo:
                     excludes="",
                     chunk_max_tokens=CHUNK_MAX_TOKENS_TEST,
                     chunk_min_chars=CHUNK_MIN_CHARS_TEST,
-                    chunk_overlap=CHUNK_OVERLAP_TOKENS_TEST
+                    chunk_overlap=CHUNK_OVERLAP_TOKENS_TEST,
                 )
 
                 # Should have called upsert at least once
@@ -205,8 +216,8 @@ class TestMain:
     """Test the main function."""
 
     @pytest.mark.integration
-    @patch('app.index_repo')
-    @patch('os.getenv')
+    @patch("app.index_repo")
+    @patch("os.getenv")
     def test_main_default_args(self, mock_getenv, mock_index_repo):
         """Test main function with default arguments."""
         # Mock environment variables
@@ -221,20 +232,19 @@ class TestMain:
             "CHUNK_MIN_CHARS": str(CHUNK_MIN_CHARS_TEST),
             "CHUNK_OVERLAP_TOKENS": str(CHUNK_OVERLAP_TOKENS_TEST),
         }
-        mock_getenv.side_effect = lambda key, default="": env_vars.get(
-            key, default)
+        mock_getenv.side_effect = lambda key, default="": env_vars.get(key, default)
 
-        with patch('sys.argv', ['app.py']):
+        with patch("sys.argv", ["app.py"]):
             main()
 
             mock_index_repo.assert_called_once()
             args = mock_index_repo.call_args[1]  # Get keyword arguments
-            assert args['qdrant_url'] == "http://localhost:6333"
-            assert args['collection'] == TEST_COLLECTION_NAME
+            assert args["qdrant_url"] == "http://localhost:6333"
+            assert args["collection"] == TEST_COLLECTION_NAME
 
     @pytest.mark.integration
-    @patch('app.QdrantClient')
-    @patch('os.getenv')
+    @patch("app.QdrantClient")
+    @patch("os.getenv")
     def test_main_recreate_flag(self, mock_getenv, mock_qdrant_client):
         """Test main function with --recreate flag."""
         mock_client = Mock()
@@ -244,19 +254,19 @@ class TestMain:
             "QDRANT_URL": "http://localhost:6333",
             "COLLECTION_NAME": TEST_COLLECTION_NAME,
         }
-        mock_getenv.side_effect = lambda key, default="": env_vars.get(
-            key, default)
+        mock_getenv.side_effect = lambda key, default="": env_vars.get(key, default)
 
-        with patch('sys.argv', ['app.py', '--recreate']), \
-                patch('app.index_repo'):
-
+        with patch("sys.argv", ["app.py", "--recreate"]), patch("app.index_repo"):
             main()
 
             # Should recreate collection with named vector config for MCP compatibility
-            from qdrant_client.http.models import VectorParams, Distance
-            expected_vectors_config = {TEST_MODEL_NAME: VectorParams(
-                size=EXPECTED_EMBEDDING_DIMENSION, distance=Distance.COSINE)}
+            from qdrant_client.http.models import Distance, VectorParams
+
+            expected_vectors_config = {
+                TEST_MODEL_NAME: VectorParams(
+                    size=EXPECTED_EMBEDDING_DIMENSION, distance=Distance.COSINE
+                )
+            }
             mock_client.recreate_collection.assert_called_once_with(
-                TEST_COLLECTION_NAME,
-                vectors_config=expected_vectors_config
+                TEST_COLLECTION_NAME, vectors_config=expected_vectors_config
             )

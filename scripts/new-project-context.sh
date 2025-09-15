@@ -34,7 +34,7 @@ mkdir -p local
 # Create local workflows directory structure (first time only, for entire local ecosystem)
 if [[ ! -d "local/workflows-and-processes" ]]; then
     mkdir -p "local/workflows-and-processes"
-    
+
     # Create initial workflows README
     cat > "local/workflows-and-processes/README.md" << EOF
 # Local Workflows and Processes
@@ -99,7 +99,7 @@ fi
 # Initialize workflow indexes (first time only, for entire local ecosystem)
 if [[ ! -d "local/workflow-indexes" ]]; then
     mkdir -p "local/workflow-indexes"
-    
+
     # Copy workflow index templates
     if [[ -d "templates/workflow-indexes" ]]; then
         cp templates/workflow-indexes/* local/workflow-indexes/
@@ -112,7 +112,7 @@ fi
 # Copy style and philosophy directives (first time only, for entire local ecosystem)
 if [[ ! -d "local/style-and-philosophy" ]]; then
     mkdir -p "local/style-and-philosophy"
-    
+
     # Copy agent directive templates
     if [[ -d "templates/style-and-philosophy" ]]; then
         cp templates/style-and-philosophy/* local/style-and-philosophy/
@@ -130,6 +130,34 @@ if [[ ! -f "local/dev_agent_framework_context.md" ]]; then
         print_success "Initialized framework context from template"
     else
         print_warning "Framework context template not found in templates/context/"
+    fi
+fi
+
+# Initialize agent templates (first time only, for entire local ecosystem)
+if [[ ! -f "local/dev_agent_persona.md" ]]; then
+    if [[ -f "templates/dev_agent_persona.md" ]]; then
+        cp "templates/dev_agent_persona.md" "local/dev_agent_persona.md"
+        print_success "Copied agent persona from template"
+    else
+        print_warning "Agent persona template not found in templates/"
+    fi
+fi
+
+if [[ ! -f "local/dev_agent_workflow_guide.md" ]]; then
+    if [[ -f "templates/dev_agent_workflow_guide.md" ]]; then
+        cp "templates/dev_agent_workflow_guide.md" "local/dev_agent_workflow_guide.md"
+        print_success "Copied workflow guide from template"
+    else
+        print_warning "Workflow guide template not found in templates/"
+    fi
+fi
+
+if [[ ! -f "local/dev_agent_troubleshooting.md" ]]; then
+    if [[ -f "templates/dev_agent_troubleshooting.md" ]]; then
+        cp "templates/dev_agent_troubleshooting.md" "local/dev_agent_troubleshooting.md"
+        print_success "Copied troubleshooting guide from template"
+    else
+        print_warning "Troubleshooting guide template not found in templates/"
     fi
 fi
 
@@ -262,7 +290,7 @@ This context benefits from and contributes to the shared knowledge base:
 
 ### **Learns From**
 - Authentication patterns from all projects
-- Testing strategies from similar project types  
+- Testing strategies from similar project types
 - Performance optimization techniques
 - Architecture patterns from the entire ecosystem
 
