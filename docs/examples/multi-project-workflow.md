@@ -11,14 +11,16 @@ Working across multiple projects with shared learnings:
 1. **Performance issue** in React web app
 2. **Authentication implementation** for mobile app
 3. **API optimization** for high latency
-4. **New project setup** with proven patterns
+4. **Quality analysis** for testing coverage
+5. **Security analysis** for vulnerability assessment
+6. **New project setup** with proven patterns
 
 ## React Performance Issue
 
 ### Initialize Agent Context
 
 ```
-@dev_agent_init_prompt.md
+@prompts/dev_agent/dev_agent_init_prompt.md
 ```
 
 ### Research and Apply Solutions
@@ -65,7 +67,7 @@ Agent: "Storing this React optimization pattern with the verified performance da
 ### End Session
 
 ```
-@dev_agent_session_end_prompt.md
+@prompts/dev_agent/dev_agent_session_end_prompt.md
 ```
 
 Agent captures the performance optimization patterns, implementation details, and measured results for future React projects.
@@ -77,7 +79,7 @@ Agent captures the performance optimization patterns, implementation details, an
 **In a new Cursor conversation thread:**
 
 ```
-@dev_agent_init_prompt.md
+@prompts/dev_agent/dev_agent_init_prompt.md
 ```
 
 ### Authentication Research and Implementation
@@ -106,7 +108,7 @@ Agent: [Implements authentication] "I've created the authentication system using
 ### End Session
 
 ```
-@dev_agent_session_end_prompt.md
+@prompts/dev_agent/dev_agent_session_end_prompt.md
 ```
 
 Agent captures the mobile authentication implementation, security patterns, and integration approach for future mobile projects.
@@ -118,7 +120,7 @@ Agent captures the mobile authentication implementation, security patterns, and 
 **In a new Cursor conversation thread:**
 
 ```
-@dev_agent_init_prompt.md
+@prompts/dev_agent/dev_agent_init_prompt.md
 ```
 
 ### Performance Research and Implementation
@@ -147,10 +149,90 @@ Agent: [Implements optimizations] "I've added Redis caching following your web a
 ### End Session
 
 ```
-@dev_agent_session_end_prompt.md
+@prompts/dev_agent/dev_agent_session_end_prompt.md
 ```
 
 Agent captures the API optimization techniques, caching strategies, and performance improvements for future API projects.
+
+## Quality Analysis
+
+### Initialize QA Agent
+
+```
+@prompts/qa/qa_agent_init_prompt.md
+```
+
+### Analyze Testing Coverage
+
+```
+You: "I need to assess the testing coverage and quality standards across our projects. Generate a comprehensive quality analysis report with recommendations."
+
+QA Agent: "I'll analyze testing patterns and quality standards across your ecosystem. Based on my analysis, I found several enhancement opportunities:
+
+**Testing Coverage Analysis:**
+- Project A: 85% unit test coverage, missing integration tests for API endpoints
+- Project B: 92% coverage, excellent E2E test coverage
+- Project C: 67% coverage, needs performance testing
+
+**Quality Gate Assessment:**
+- All projects have pre-deployment checks
+- Performance benchmarks need updating
+- Security testing could be enhanced
+
+**Recommendations:**
+1. Implement integration tests for Project A API endpoints
+2. Add performance testing suite to Project C
+3. Update performance benchmarks across all projects
+4. Enhance security testing with automated vulnerability scanning
+
+I'll generate a detailed report in `hish/local/project-name/qa_reports/` with specific implementation guidance."
+```
+
+### End QA Session
+
+```
+@prompts/qa/qa_agent_session_end_prompt.md
+```
+
+## Security Analysis
+
+### Initialize Red Team Agent
+
+```
+@prompts/red_team/red_team_agent_init_prompt.md
+```
+
+### Analyze Security Vulnerabilities
+
+```
+You: "I need to conduct a comprehensive security analysis across our projects. Identify vulnerabilities, attack vectors, and provide remediation guidance."
+
+Red Team Agent: "I'll analyze security patterns and vulnerability landscapes across your ecosystem. Based on my analysis, I found several security concerns:
+
+**Vulnerability Assessment:**
+- Project A: SQL injection risk in user input handling, missing input validation
+- Project B: Weak authentication mechanism, no rate limiting on login attempts
+- Project C: Exposed API endpoints without proper authorization checks
+
+**Attack Vector Analysis:**
+- Authentication bypass potential in Project B
+- Data exfiltration risk through Project A SQL injection
+- Privilege escalation opportunities in Project C
+
+**Security Recommendations:**
+1. Implement parameterized queries and input validation for Project A
+2. Add rate limiting and strengthen authentication for Project B
+3. Implement proper authorization middleware for Project C
+4. Add security headers and implement OWASP security guidelines
+
+I'll generate a detailed security report in `hish/local/project-name/red_team_reports/` with specific remediation steps and security enhancements."
+```
+
+### End Red Team Session
+
+```
+@prompts/red_team/red_team_agent_session_end_prompt.md
+```
 
 ## New Project Architecture
 
@@ -159,7 +241,7 @@ Agent captures the API optimization techniques, caching strategies, and performa
 **In a new Cursor conversation thread:**
 
 ```
-@dev_agent_init_prompt.md
+@prompts/dev_agent/dev_agent_init_prompt.md
 ```
 
 ### Architecture Research and Planning
@@ -188,7 +270,7 @@ Agent: "I'll create the foundation using your proven component library structure
 ### End Session
 
 ```
-@dev_agent_session_end_prompt.md
+@prompts/dev_agent/dev_agent_session_end_prompt.md
 ```
 
 Agent captures the architectural decisions, component choices, and cross-project pattern applications for future dashboard projects.
@@ -228,7 +310,7 @@ Agent: "I'll document these proven patterns as recommended standards for future 
 ### End Session
 
 ```
-@dev_agent_session_end_prompt.md
+@prompts/dev_agent/dev_agent_session_end_prompt.md
 ```
 
 Agent captures the pattern analysis, standardization recommendations, and cross-project insights for future ecosystem development.
@@ -259,11 +341,23 @@ Agent captures the pattern analysis, standardization recommendations, and cross-
 
 ### Daily Development Pattern
 1. **Start fresh** - New Cursor conversation thread for each project
-2. **Initialize** agent with project context (`@dev_agent_init_prompt.md`)
+2. **Initialize** agent with project context (`@prompts/dev_agent/dev_agent_init_prompt.md`)
 3. **Research** by asking agents to find existing patterns
 4. **Apply** proven solutions adapted to current needs
-5. **End session** with knowledge capture (`@dev_agent_session_end_prompt.md`)
+5. **End session** with knowledge capture (`@prompts/dev_agent/dev_agent_session_end_prompt.md`)
 6. **Repeat** - Start new thread for next project
+
+### QA Analysis Pattern
+1. **Initialize QA agent** (`@prompts/qa/qa_agent_init_prompt.md`)
+2. **Analyze** quality standards and testing coverage
+3. **Generate reports** with findings and recommendations
+4. **End QA session** with analysis capture (`@prompts/qa/qa_agent_session_end_prompt.md`)
+
+### Red Team Analysis Pattern
+1. **Initialize red team agent** (`@prompts/red_team/red_team_agent_init_prompt.md`)
+2. **Analyze** security vulnerabilities and attack vectors
+3. **Generate security reports** with findings and remediation guidance
+4. **End red team session** with analysis capture (`@prompts/red_team/red_team_agent_session_end_prompt.md`)
 
 ### Interaction Model
 - Natural conversation with agents about development needs

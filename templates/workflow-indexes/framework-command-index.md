@@ -113,7 +113,7 @@ make backup
 ### Environment Variable Patterns
 ```bash
 # Framework patterns (env.framework)
-INDEX_INCLUDE=dev_agent_init_prompt.md,dev_agent_persona.md,dev_agent_session_end_prompt.md,README.md,local/*/dev_agent_context.md,local/*/README.md
+INDEX_INCLUDE=prompts/dev_agent/dev_agent_init_prompt.md,local/dev_agent_persona.md,prompts/dev_agent/dev_agent_session_end_prompt.md,prompts/qa/qa_agent_init_prompt.md,prompts/qa/qa_agent_session_end_prompt.md,prompts/red_team/red_team_agent_init_prompt.md,prompts/red_team/red_team_agent_session_end_prompt.md,README.md,local/*/dev_agent_context.md,local/*/README.md
 
 # Code patterns (env.code)
 INDEX_INCLUDE=**/*.py,**/*.yaml,**/*.yml,**/*.json,**/*.md,**/*.js,**/*.ts,**/*.tf,**/*.go,**/*.rs,**/*.scala,**/*.java,**/*.c,**/*.cpp,**/*.cc,**/*.cxx,**/*.h,**/*.hpp
@@ -137,9 +137,14 @@ INDEX_EXCLUDE=**/.git/**,**/.data/**,**/node_modules/**,**/.terraform/**,**/.ven
 ## File Path References
 
 ### Key Framework Files
-- **`dev_agent_init_prompt.md`** - Universal agent initialization
-- **`dev_agent_persona.md`** - Universal agent persona
-- **`dev_agent_session_end_prompt.md`** - Universal session end protocol
+- **`prompts/dev_agent/dev_agent_init_prompt.md`** - Universal agent initialization
+- **`local/dev_agent_persona.md`** - Universal agent persona
+- **`prompts/dev_agent/dev_agent_session_end_prompt.md`** - Universal session end protocol
+- **`prompts/qa/qa_agent_init_prompt.md`** - QA agent initialization
+- **`prompts/qa/qa_agent_session_end_prompt.md`** - QA agent session end protocol
+- **`templates/qa_agent_todo_checklist.md`** - QA agent systematic analysis checklist
+- **`prompts/red_team/red_team_agent_init_prompt.md`** - Red team agent initialization
+- **`prompts/red_team/red_team_agent_session_end_prompt.md`** - Red team agent session end protocol
 - **`Makefile`** - All framework commands
 - **`compose.rag.yml`** - Docker services configuration
 - **`rag/indexer/app.py`** - Core indexing logic

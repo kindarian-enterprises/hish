@@ -43,6 +43,30 @@ Your Code → Vector Index → Prompt-Guided Agent → Disciplined Output
 
 **Technical architecture**: Qdrant vector database + MCP protocol bridge + automated indexing + structured prompt engineering. Standard RAG enhanced with behavioral discipline.
 
+## Agent Personas
+
+Hish provides three specialized agent personas, each optimized for different aspects of software development:
+
+### 🔧 **Development Agent**
+**Role**: Implementation and problem-solving
+- **Focus**: Code implementation, architecture decisions, feature development
+- **Strengths**: Research existing patterns, propose solutions, implement with quality standards
+- **Use when**: Building features, fixing bugs, refactoring code, architectural planning
+
+### 🔍 **QA Agent**
+**Role**: Quality analysis and testing assessment
+- **Focus**: Testing coverage analysis, quality gate evaluation, validation assessment
+- **Strengths**: Systematic testing analysis, quality reporting, testing strategy recommendations
+- **Use when**: Assessing test coverage, evaluating quality standards, testing strategy planning
+
+### 🛡️ **Red Team Agent**
+**Role**: Security analysis and vulnerability assessment
+- **Focus**: Security vulnerability analysis, attack vector assessment, threat modeling
+- **Strengths**: Security pattern recognition, vulnerability reporting, remediation guidance
+- **Use when**: Security audits, vulnerability assessment, threat analysis, security planning
+
+**All agents share**: Cross-project intelligence, knowledge discovery, and institutional memory capabilities.
+
 ---
 
 ## Prerequisites
@@ -131,7 +155,7 @@ pip install -r rag/indexer/requirements.txt
 make index
 
 # 5. Test in Cursor
-# @dev_agent_init_prompt.md
+# @prompts/dev_agent/dev_agent_init_prompt.md
 # qdrant-find "your search terms"
 ```
 
@@ -145,9 +169,21 @@ make index
 
 ### Session Initialization
 ```
-@dev_agent_init_prompt.md
+@prompts/dev_agent/dev_agent_init_prompt.md
 ```
 Agent loads project context, reads all relevant documentation, establishes cross-project intelligence protocols, and prepares for knowledge-driven development.
+
+### QA Agent Initialization
+```
+@prompts/qa/qa_agent_init_prompt.md
+```
+QA agent loads testing context, validates quality standards, and prepares for comprehensive testing and validation activities.
+
+### Red Team Agent Initialization
+```
+@prompts/red_team/red_team_agent_init_prompt.md
+```
+Red team agent loads security context, analyzes vulnerability landscapes, and prepares for comprehensive security analysis and threat assessment.
 
 ### Actual Usage Pattern
 
@@ -168,9 +204,21 @@ You: Just tell the agent what you want. It handles the knowledge discovery.
 
 ### Session End
 ```
-@dev_agent_session_end_prompt.md
+@prompts/dev_agent/dev_agent_session_end_prompt.md
 ```
 Agent captures learnings, updates project context, stores successful patterns, and ensures knowledge transfers to future sessions and other team members.
+
+### QA Session End
+```
+@prompts/qa/qa_agent_session_end_prompt.md
+```
+QA agent captures testing achievements, quality improvements, and validation learnings to ensure seamless continuity between QA sessions.
+
+### Red Team Session End
+```
+@prompts/red_team/red_team_agent_session_end_prompt.md
+```
+Red team agent captures security analysis achievements, vulnerability discoveries, and threat assessment learnings to ensure seamless continuity between security sessions.
 
 ## Team Collaboration
 

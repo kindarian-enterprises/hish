@@ -143,7 +143,17 @@ You: "Good. Research failure modes before we proceed."
 
 **Always initialize properly**:
 ```
-@dev_agent_init_prompt.md
+@prompts/dev_agent/dev_agent_init_prompt.md
+```
+
+**For QA analysis**:
+```
+@prompts/qa/qa_agent_init_prompt.md
+```
+
+**For security analysis**:
+```
+@prompts/red_team/red_team_agent_init_prompt.md
 ```
 
 **Set session expectations**:
@@ -172,7 +182,17 @@ You: "Good. Research failure modes before we proceed."
 
 **Use the session end prompt**:
 ```
-@dev_agent_session_end_prompt.md
+@prompts/dev_agent/dev_agent_session_end_prompt.md
+```
+
+**For QA session closure**:
+```
+@prompts/qa/qa_agent_session_end_prompt.md
+```
+
+**For red team session closure**:
+```
+@prompts/red_team/red_team_agent_session_end_prompt.md
 ```
 
 ## When Things Go Wrong
@@ -183,7 +203,7 @@ You: "Good. Research failure modes before we proceed."
 
 **Agent overcomplicates**: "That might work, but our team knows [simpler approach]. Research our existing patterns instead."
 
-**Context gets muddled**: Start fresh with `@dev_agent_init_prompt.md`
+**Context gets muddled**: Start fresh with `@prompts/dev_agent/dev_agent_init_prompt.md`, `@prompts/qa/qa_agent_init_prompt.md`, or `@prompts/red_team/red_team_agent_init_prompt.md`
 
 ## Building Agent Intelligence
 

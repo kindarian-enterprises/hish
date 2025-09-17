@@ -12,7 +12,7 @@
 ✅ Read session-workflow-enforcement.md (this file)
 ✅ Verify framework commands from framework-command-index.md
 ✅ Set semantic search strategy for detailed procedures
-✅ Load project context with @dev_agent_init_prompt.md
+✅ Load project context with @prompts/dev_agent/dev_agent_init_prompt.md, @prompts/qa/qa_agent_init_prompt.md, or @prompts/red_team/red_team_agent_init_prompt.md
 ```
 
 ## Command Execution Rules
@@ -77,7 +77,7 @@
 ## Session Management
 
 ### Session Start Protocol
-1. Load universal initialization: `@dev_agent_init_prompt.md`
+1. Load universal initialization: `@prompts/dev_agent/dev_agent_init_prompt.md`, `@prompts/qa/qa_agent_init_prompt.md`, or `@prompts/red_team/red_team_agent_init_prompt.md`
 2. Read workflow indexes (this system)
 3. Identify project context if working on specific project
 4. Set multi-collection search strategy
@@ -90,7 +90,7 @@
 ### Session End Protocol
 - Document any new workflows discovered
 - Update indexes if new patterns emerge
-- Use `@dev_agent_session_end_prompt.md` for proper closure
+- Use `@prompts/dev_agent/dev_agent_session_end_prompt.md`, `@prompts/qa/qa_agent_session_end_prompt.md`, or `@prompts/red_team/red_team_agent_session_end_prompt.md` for proper closure
 
 ## Override Hierarchy
 
