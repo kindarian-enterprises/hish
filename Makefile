@@ -171,11 +171,47 @@ optimize-collections: ## Optimize collections for better search quality (sets ef
 
 
 # Development
-dev-setup: ## Install development dependencies and pre-commit hooks
-	@echo "🔧 Setting up development environment..."
+dev-setup: ## Install development dependencies and pre-commit hooks (requires hish-dev venv)
+	@echo "🔧 Setting up Hish development environment..."
+	@echo ""
+	@# Check if in virtual environment
+	@if [ -z "$$VIRTUAL_ENV" ]; then \
+		echo "❌ ERROR: No virtual environment activated!"; \
+		echo ""; \
+		echo "Please activate the hish-dev virtualenv:"; \
+		echo "  workon hish-dev"; \
+		echo ""; \
+		echo "Or create it first:"; \
+		echo "  mkvirtualenv hish-dev --python=python3.12"; \
+		echo "  workon hish-dev"; \
+		echo "  make dev-setup"; \
+		echo ""; \
+		exit 1; \
+	fi
+	@# Check if it's the hish-dev venv (optional check)
+	@if echo "$$VIRTUAL_ENV" | grep -q "hish-dev"; then \
+		echo "✅ Using hish-dev virtualenv: $$VIRTUAL_ENV"; \
+	else \
+		echo "⚠️  WARNING: Expected 'hish-dev' venv, but using: $$VIRTUAL_ENV"; \
+		echo "   (continuing anyway...)"; \
+	fi
+	@echo ""
+	@echo "📦 Installing development dependencies..."
+	pip install --upgrade pip
 	pip install -r requirements-dev.txt
+	@echo ""
+	@echo "🪝 Installing pre-commit hooks..."
 	pre-commit install
+	@echo ""
 	@echo "✅ Development environment ready!"
+	@echo ""
+	@echo "📋 Available commands:"
+	@echo "  make test        - Run tests"
+	@echo "  make lint        - Check code quality"
+	@echo "  make lint-fix    - Auto-fix linting issues"
+	@echo "  make format      - Format code"
+	@echo "  make index       - Index framework + code"
+	@echo ""
 
 test: ## Run framework tests (host-based)
 	@echo "🧪 Running framework tests..."

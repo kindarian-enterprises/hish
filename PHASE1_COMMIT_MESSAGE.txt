@@ -1,0 +1,41 @@
+feat(qdrant): Phase 1 - Core optimizations for local code vectorization
+
+Implements performance optimizations for Qdrant-based code indexing:
+
+* Normalize embeddings on write for DOT distance compatibility
+* Switch from COSINE to DOT distance (~30% faster)
+* Configure HNSW for 768-dim vectors (m=40, ef_construct=384)
+* Enable on-disk mmap storage + WAL for durability
+* Add payload indexes on repo, language, path_prefix for pre-filtering
+* Extract metadata (language, path_prefix) from file paths
+* Enhance dev environment setup with hish-dev venv
+
+Changes:
+- rag/indexer/app.py: Core optimization logic (~150 lines)
+  * normalize_vectors() function for unit-length vectors
+  * create_payload_indexes() for efficient filtering
+  * Language detection (30+ languages)
+  * Path prefix extraction
+  * DOT distance + HNSW config
+
+- rag/indexer/requirements.txt: Add numpy>=1.21.0
+- requirements-dev.txt: Include indexer requirements
+- Makefile: Enhanced dev-setup with venv checks
+- docs/development/dev-environment-setup.md: New setup guide
+- scripts/test-qdrant-optimizations.py: Validation tests
+
+Performance improvements:
+- DOT distance: ~30% faster than COSINE (with normalization)
+- HNSW tuning: Optimized for 768-dimensional MPNet embeddings
+- On-disk storage: Reduces memory pressure
+- Payload indexes: Enables fast pre-filtering
+
+Testing:
+```bash
+mkvirtualenv hish-dev --python=python3.12
+workon hish-dev
+make dev-setup
+python3 scripts/test-qdrant-optimizations.py
+```
+
+Ref: OPTIMIZE_LOCAL_QDRANT.md Phase 1
