@@ -93,34 +93,31 @@ class TestCollectionHelpers:
 
     @pytest.mark.unit
     def test_is_code_collection_edge_cases(self):
-        """Test is_code_collection with edge cases."""
-        # Code collections
-        code_collections = [
+        """Test is_code_collection - now always returns False for unified MPNet architecture."""
+        # All collections now use unified MPNet embeddings
+        # This function is kept for backward compatibility but always returns False
+        test_collections = [
             "project_code",
             "adamantite_code",
             "platform-backend_code",
             "my-awesome-project_code",
             "test123_code",
-        ]
-
-        for collection in code_collections:
-            assert is_code_collection(collection), f"Failed for {collection}"
-
-        # Non-code collections
-        non_code_collections = [
             "hish_framework",
             "cross_project_intelligence",
             "documentation",
             "project_docs",
-            "code_documentation",  # Contains 'code' but doesn't end with '_code'
-            "codecov_reports",  # Contains 'code' but doesn't end with '_code'
-            "",  # Empty string
-            "project",  # Simple name
-            "collection_name",  # Generic name
+            "code_documentation",
+            "codecov_reports",
+            "",
+            "project",
+            "collection_name",
         ]
 
-        for collection in non_code_collections:
-            assert not is_code_collection(collection), f"Failed for {collection}"
+        for collection in test_collections:
+            assert not is_code_collection(collection), (
+                f"is_code_collection should always return False (unified MPNet), "
+                f"but returned True for {collection}"
+            )
 
     @pytest.mark.unit
     def test_get_model_suffix_edge_cases(self):

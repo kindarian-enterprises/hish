@@ -64,15 +64,20 @@ class TestEmbedder:
 
     @pytest.mark.integration
     @patch("app.TextEmbedding")
-    def test_embedder_initialization(self, mock_text_embedding):
+    @patch("app.torch")
+    def test_embedder_initialization(self, mock_torch, mock_text_embedding):
         """Test embedder model initialization."""
         model_name = TEST_MODEL_NAME
         mock_model = Mock()
         mock_text_embedding.return_value = mock_model
+        mock_torch.cuda.is_available.return_value = True
+        mock_torch.cuda.get_device_name.return_value = "Test GPU"
 
         result = embedder(model_name)
 
-        mock_text_embedding.assert_called_once_with(model_name=model_name)
+        mock_text_embedding.assert_called_once_with(
+            model_name=model_name, cuda=True, lazy_load=False
+        )
         assert result == mock_model
 
 
