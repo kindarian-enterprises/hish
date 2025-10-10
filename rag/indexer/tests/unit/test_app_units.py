@@ -93,34 +93,31 @@ class TestCollectionHelpers:
 
     @pytest.mark.unit
     def test_is_code_collection_edge_cases(self):
-        """Test is_code_collection with edge cases."""
-        # Code collections
-        code_collections = [
+        """Test is_code_collection - now always returns False for unified MPNet architecture."""
+        # All collections now use unified MPNet embeddings
+        # This function is kept for backward compatibility but always returns False
+        test_collections = [
             "project_code",
             "adamantite_code",
             "platform-backend_code",
             "my-awesome-project_code",
             "test123_code",
-        ]
-
-        for collection in code_collections:
-            assert is_code_collection(collection), f"Failed for {collection}"
-
-        # Non-code collections
-        non_code_collections = [
             "hish_framework",
             "cross_project_intelligence",
             "documentation",
             "project_docs",
-            "code_documentation",  # Contains 'code' but doesn't end with '_code'
-            "codecov_reports",  # Contains 'code' but doesn't end with '_code'
-            "",  # Empty string
-            "project",  # Simple name
-            "collection_name",  # Generic name
+            "code_documentation",
+            "codecov_reports",
+            "",
+            "project",
+            "collection_name",
         ]
 
-        for collection in non_code_collections:
-            assert not is_code_collection(collection), f"Failed for {collection}"
+        for collection in test_collections:
+            assert not is_code_collection(collection), (
+                f"is_code_collection should always return False (unified MPNet), "
+                f"but returned True for {collection}"
+            )
 
     @pytest.mark.unit
     def test_get_model_suffix_edge_cases(self):
@@ -172,10 +169,10 @@ class TestCollectionHelpers:
                 "collection_mpnet",
             ),  # Removes _bge, adds _mpnet
             (
-                "collection_code",
+                "collection_docs",
                 TEST_MODEL_NAME,
-                "collection_code_mpnet",
-            ),  # Preserves _code, adds _mpnet
+                "collection_docs_mpnet",
+            ),  # Preserves _docs, adds _mpnet
             ("already_mpnet", TEST_MODEL_NAME, "already_mpnet"),  # Already correct
         ]
 
@@ -190,14 +187,14 @@ class TestCollectionHelpers:
         """Test get_optimal_model function coverage."""
         # Test without override (should always return MPNet now)
         assert get_optimal_model("any_collection") == TEST_MODEL_NAME
-        assert get_optimal_model("project_code") == TEST_MODEL_NAME
-        assert get_optimal_model("hish_framework") == TEST_MODEL_NAME
+        assert get_optimal_model("project_docs_mpnet") == TEST_MODEL_NAME
+        assert get_optimal_model("hish_framework_mpnet") == TEST_MODEL_NAME
 
         # Test with override
         custom_model = "custom/embedding-model"
         assert get_optimal_model("any_collection", custom_model) == custom_model
-        assert get_optimal_model("project_code", custom_model) == custom_model
-        assert get_optimal_model("hish_framework", custom_model) == custom_model
+        assert get_optimal_model("project_docs_mpnet", custom_model) == custom_model
+        assert get_optimal_model("hish_framework_mpnet", custom_model) == custom_model
 
         # Test with empty override (empty string is falsy, so it should return default)
         assert get_optimal_model("any_collection", "") == TEST_MODEL_NAME

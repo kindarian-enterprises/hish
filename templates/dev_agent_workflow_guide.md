@@ -51,8 +51,8 @@ Always search multiple collections for comprehensive knowledge discovery:
 # Framework guidance (established patterns)
 qdrant-find "authentication patterns" hish_framework
 
-# Code implementations (working examples)
-qdrant-find "authentication patterns" project_name_code
+# Project documentation (working examples, context)
+qdrant-find "authentication patterns" project_name_docs_mpnet
 
 # Cross-project intelligence (observed relationships)
 qdrant-find "authentication patterns" cross_project_intelligence
@@ -66,9 +66,9 @@ qdrant-find "authentication patterns" cross_project_intelligence
 - Official templates and patterns
 - Current framework status
 
-**`{project}_code` Collections:**
-- Working implementation examples
-- Actual code patterns and architectures
+**`{project}_docs_mpnet` Collections:**
+- Project documentation and context
+- Architectural patterns and decisions
 - Configuration and deployment patterns
 - Technical documentation
 
@@ -153,9 +153,9 @@ issue_YYYY_MM_DD_HH_MM_SS_description {
 ### **Phase 1: Discovery & Context Building**
 ```bash
 # Research existing solutions across all collections
-qdrant-find "[feature] implementation patterns" hish_framework
-qdrant-find "[feature] implementation patterns" {project}_code
-qdrant-find "[feature] implementation patterns" cross_project_intelligence
+qdrant-find "[feature] implementation patterns" hish_framework_mpnet
+qdrant-find "[feature] implementation patterns" {project}_docs_mpnet
+qdrant-find "[feature] implementation patterns" cross_project_intelligence_mpnet
 
 # Check for anti-patterns and known issues
 qdrant-find "known pitfalls with [approach]" hish_framework
@@ -169,7 +169,7 @@ qdrant-find "testing strategies for [component type]" hish_framework
 ### **Phase 2: Implementation with Knowledge Validation**
 ```bash
 # Validate approach against existing patterns
-qdrant-find "successful implementations of [similar feature]" {project}_code
+qdrant-find "successful implementations of [similar feature]" {project}_docs_mpnet
 
 # Check for architectural consistency
 qdrant-find "design decisions for [component type]" hish_framework
@@ -210,8 +210,8 @@ qdrant-find "[error type] resolution patterns" cross_project_intelligence
 qdrant-find "[component] debugging approaches" hish_framework
 
 # Find documented solutions
-qdrant-find "fixes for [specific issue]" {project}_code
-qdrant-find "[error] recovery strategies" cross_project_intelligence
+qdrant-find "fixes for [specific issue]" {project}_docs_mpnet
+qdrant-find "[error] recovery strategies" cross_project_intelligence_mpnet
 
 # Store successful resolution
 qdrant-store "Error Resolution: [Issue] - Root cause: [analysis]. Solution: [implementation]. Validation: [proof]. Context: [applicability]" cross_project_intelligence [UUID]

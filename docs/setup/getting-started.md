@@ -34,12 +34,22 @@ make index
 
 ## Using Hish
 
-**In Cursor:**
+**Development Agent:**
 ```
-@dev_agent_init_prompt.md
+@prompts/dev_agent/dev_agent_init_prompt.md
 ```
 
-This loads the agent with your project context and cross-project knowledge. From there, work naturally - agents automatically research patterns, propose solutions, and store learnings.
+**QA Agent:**
+```
+@prompts/qa/qa_agent_init_prompt.md
+```
+
+**Red Team Agent:**
+```
+@prompts/red_team/red_team_agent_init_prompt.md
+```
+
+This loads the appropriate agent with your project context and cross-project knowledge. From there, work naturally - agents automatically research patterns, propose solutions, and store learnings.
 
 **Key files (agent-managed):**
 - Agent contexts in `local/` - Don't edit manually

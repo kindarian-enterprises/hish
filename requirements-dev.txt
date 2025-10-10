@@ -1,5 +1,5 @@
 # Hish Framework Development Dependencies
-# Install: pip install -r requirements-dev.txt
+# Install in hish-dev venv: workon hish-dev && make dev-setup
 
 # Code quality and linting
 ruff>=0.1.6
@@ -19,3 +19,6 @@ pytest-asyncio>=0.21.0
 # Type stubs
 types-PyYAML>=6.0.0
 types-requests>=2.31.0
+
+# Include all indexer/runtime dependencies
+-r rag/indexer/requirements.txt

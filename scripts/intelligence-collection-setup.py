@@ -2,10 +2,23 @@
 """
 Cross-Project Intelligence Collection Setup
 Manages the dedicated collection for cross-project observations, patterns, and relationships.
+
+Uses Phase 1 optimizations:
+- DOT distance with normalized vectors
+- HNSW tuning (m=40, ef_construct=384)
+- On-disk storage + WAL
+- Payload indexes for filtering
 """
 
 from sentence_transformers import SentenceTransformer
-from qdrant_client.http.models import VectorParams, Distance
+from qdrant_client.http.models import (
+    Distance,
+    HnswConfigDiff,
+    OptimizersConfigDiff,
+    PayloadSchemaType,
+    VectorParams,
+    WalConfigDiff,
+)
 from qdrant_client import QdrantClient
 import os
 import sys
@@ -43,11 +56,19 @@ def setup_intelligence_collection():
         embedding_dim = model.get_sentence_embedding_dimension()
         print(f"📐 Embedding Dimension: {embedding_dim}")
 
-        # Create collection with named vectors for MCP compatibility
+        # Create collection with Phase 1 optimizations
+        # DOT distance (requires normalized vectors, ~30% faster than COSINE)
+        # HNSW optimized for 768-dim MPNet embeddings
         vectors_config = {
             model_name: VectorParams(
                 size=embedding_dim,
-                distance=Distance.COSINE
+                distance=Distance.DOT,  # Changed from COSINE
+                hnsw_config=HnswConfigDiff(
+                    m=40,                # Graph connectivity for 768-dim
+                    ef_construct=384,    # Build-time search effort
+                    full_scan_threshold=10000,
+                ),
+                on_disk=True,  # Enable mmap for memory efficiency
             )
         }
 
@@ -61,26 +82,78 @@ def setup_intelligence_collection():
                 "Do you want to recreate it? (y/N): ").lower().strip()
             if recreate == 'y':
                 client.recreate_collection(
-                    collection_name, vectors_config=vectors_config)
-                print(f"🔄 Recreated collection '{collection_name}'")
+                    collection_name=collection_name,
+                    vectors_config=vectors_config,
+                    optimizers_config=OptimizersConfigDiff(
+                        indexing_threshold=10000,
+                    ),
+                    wal_config=WalConfigDiff(
+                        wal_capacity_mb=64,
+                    ),
+                )
+                print(f"🔄 Recreated collection '{collection_name}' with Phase 1 optimizations")
             else:
                 print(f"✅ Using existing collection '{collection_name}'")
+                print(f"⚠️  Note: Existing collection may not have Phase 1 optimizations")
         else:
             client.create_collection(
-                collection_name, vectors_config=vectors_config)
-            print(f"✨ Created new collection '{collection_name}'")
+                collection_name=collection_name,
+                vectors_config=vectors_config,
+                optimizers_config=OptimizersConfigDiff(
+                    indexing_threshold=10000,
+                ),
+                wal_config=WalConfigDiff(
+                    wal_capacity_mb=64,
+                ),
+            )
+            print(f"✨ Created new collection '{collection_name}' with Phase 1 optimizations")
 
-        # Verify collection
+        # Create payload indexes for efficient pre-filtering
+        print(f"📑 Creating payload indexes...")
+        try:
+            client.create_payload_index(
+                collection_name=collection_name,
+                field_name="repo",
+                field_schema=PayloadSchemaType.KEYWORD,
+            )
+            print(f"  ✓ Created index on 'repo' field")
+
+            client.create_payload_index(
+                collection_name=collection_name,
+                field_name="language",
+                field_schema=PayloadSchemaType.KEYWORD,
+            )
+            print(f"  ✓ Created index on 'language' field")
+
+            client.create_payload_index(
+                collection_name=collection_name,
+                field_name="pattern_type",
+                field_schema=PayloadSchemaType.KEYWORD,
+            )
+            print(f"  ✓ Created index on 'pattern_type' field")
+        except Exception as e:
+            print(f"  ⚠️  Some indexes may already exist: {e}")
+
+        # Verify collection and show optimizations
         collection_info = client.get_collection(collection_name)
-        print(f"📊 Collection Status: {collection_info.status}")
+        print(f"\n📊 Collection Status: {collection_info.status}")
         print(f"📈 Vector Count: {collection_info.points_count}")
+
+        # Show optimization details
+        config = collection_info.config
+        vec_config = config.params.vectors[model_name]
+        print(f"\n🚀 Phase 1 Optimizations:")
+        print(f"  • Distance: {vec_config.distance.value} (DOT = ~30% faster)")
+        print(f"  • HNSW m: {vec_config.hnsw_config.m}")
+        print(f"  • HNSW ef_construct: {vec_config.hnsw_config.ef_construct}")
+        print(f"  • On-disk storage: {vec_config.on_disk}")
+        print(f"  • Indexing threshold: {config.optimizer_config.indexing_threshold}")
 
         print(f"\n✅ Cross-Project Intelligence Collection setup complete!")
         print(f"\n🎯 Usage:")
-        print(
-            f"   - Framework docs: Use collection '{os.getenv('COLLECTION_NAME', 'hish_framework')}'")
-        print(
-            f"   - Cross-project intelligence: Use collection '{collection_name}'")
+        print(f"   - Framework docs: Use collection 'hish_framework_mpnet'")
+        print(f"   - Cross-project intelligence: Use collection '{collection_name}'")
+        print(f"   - ⚠️  Important: Vectors MUST be normalized before storage (DOT distance)")
         print(f"\n📋 Collection Purpose:")
         print(f"   - Pattern observations across projects")
         print(f"   - Relationship mappings between contexts")

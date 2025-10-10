@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+"""
+HISH Cursor Hook: Protect Framework Collection
+Blocks writes to framework collections (read-only, rebuilt from markdown).
+
+Framework collections (hish_framework_mpnet, *_framework_*) are IMMUTABLE at runtime.
+They can only be updated via 'make index-framework' from source markdown files.
+
+Cross-project intelligence (cross_project_intelligence) is the ONLY writable collection
+for agent-curated patterns and learnings.
+
+Flow:
+1. Receive MCP execution event from Cursor
+2. Check if it's a qdrant-store call to a framework collection
+3. Reject with clear error message and guidance
+4. Allow all other operations (reads, writes to cross_project_intelligence)
+"""
+import json
+import os
+import sys
+from datetime import datetime
+from pathlib import Path
+
+# Setup logging
+LOG_FILE = Path.home() / ".cursor" / "hook_debug.log"
+
+
+def log(message: str):
+    """Write debug log with timestamp."""
+    try:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+        with open(LOG_FILE, "a") as f:
+            f.write(f"[{timestamp}] [PROTECT] {message}\n")
+            f.flush()
+    except Exception:
+        pass  # Silent failure for logging
+
+
+def is_framework_collection(collection_name: str) -> bool:
+    """Check if collection is a protected framework collection."""
+    if not collection_name:
+        return False
+
+    # Framework collections are read-only
+    protected_patterns = [
+        "hish_framework",
+        "_framework_",
+        "framework_mpnet",
+    ]
+
+    collection_lower = collection_name.lower()
+    return any(pattern in collection_lower for pattern in protected_patterns)
+
+
+def main():
+    """Process Cursor MCP execution event and block writes to framework collections."""
+    log("=" * 80)
+    log("🛡️  HOOK INVOKED - protect_framework_collection")
+
+    try:
+        # Read event from stdin
+        log("📥 Reading event from stdin...")
+        event = json.load(sys.stdin)
+        log(f"✅ Event loaded: {len(json.dumps(event))} bytes")
+
+        # Extract tool information
+        tool_name = event.get("tool_name", "")
+        tool_input_raw = event.get("tool_input", "{}")
+
+        log(f"🔧 Tool: {tool_name}")
+        log(f"📋 Input (raw): {tool_input_raw[:200]}...")
+
+        # Parse tool input JSON
+        try:
+            tool_input = json.loads(tool_input_raw) if isinstance(tool_input_raw, str) else tool_input_raw
+        except json.JSONDecodeError:
+            log("⚠️  Could not parse tool_input as JSON, passing through")
+            json.dump(event, sys.stdout)
+            return
+
+        collection_name = tool_input.get("collection_name", "")
+        log(f"📦 Collection: {collection_name}")
+
+        # Check if this is a write operation to a framework collection
+        if tool_name == "qdrant-store" and is_framework_collection(collection_name):
+            log(f"🚫 BLOCKED: Attempt to write to protected framework collection '{collection_name}'")
+
+            # Construct proper hook response per Cursor documentation
+            # Use POSITIVE framing - agents respond best to assertive guidance about the RIGHT way
+            agent_message = (
+                f"✨ EXCELLENT INSTINCT to store this knowledge! However, '{collection_name}' is a framework collection that's "
+                f"rebuilt from markdown sources, so direct writes won't persist.\n\n"
+                f"🎯 USE cross_project_intelligence_mpnet INSTEAD - This is THE SUPERIOR CHOICE for pattern storage:\n"
+                f"   • PERMANENT: Your patterns persist across framework updates\n"
+                f"   • DISCOVERABLE: Other projects benefit from your insights immediately\n"
+                f"   • CURATED: This collection contains only validated, high-value patterns\n\n"
+                f"💎 BEST PRACTICE - Store your pattern this way:\n"
+                f'   qdrant-store "your pattern documentation" cross_project_intelligence_mpnet <uuid>\n\n'
+                f"This approach GUARANTEES your work creates lasting value across the entire ecosystem.\n"
+                f"See templates/pattern-taxonomy-guide.md for proven taxonomy patterns that maximize discoverability."
+            )
+
+            user_message = f"Blocked write attempt to read-only framework collection '{collection_name}'"
+
+            response = {
+                "permission": "deny",
+                "userMessage": user_message,
+                "agentMessage": agent_message
+            }
+
+            log(f"📤 Outputting DENY response")
+            json.dump(response, sys.stdout)
+            log("✅ Hook completed - write blocked")
+            return
+
+        # Allow all other operations
+        log(f"✅ Operation allowed: {tool_name} on {collection_name or 'default'}")
+
+        response = {
+            "permission": "allow"
+        }
+
+        log("📤 Outputting ALLOW response")
+        json.dump(response, sys.stdout)
+        log("✅ Hook completed successfully")
+
+    except Exception as e:
+        # On error, pass through original event unchanged
+        log(f"❌ EXCEPTION: {type(e).__name__}: {e}")
+        import traceback
+        log(f"📍 Traceback:\n{traceback.format_exc()}")
+
+        # On error, allow the operation (fail open for safety)
+        try:
+            response = {
+                "permission": "allow"
+            }
+            json.dump(response, sys.stdout)
+            log("⚠️  Allowed operation due to hook error (fail-open)")
+        except Exception as e2:
+            log(f"❌ Failed to output response: {e2}")
+            # Last resort: output minimal allow response
+            print('{"permission":"allow"}')
+
+
+if __name__ == "__main__":
+    log("🚀 Starting main()...")
+    main()
+    log("🏁 main() completed")

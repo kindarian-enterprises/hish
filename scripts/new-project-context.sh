@@ -161,6 +161,71 @@ if [[ ! -f "local/dev_agent_troubleshooting.md" ]]; then
     fi
 fi
 
+# Initialize QA agent templates (first time only, for entire local ecosystem)
+if [[ ! -f "local/qa_agent_persona.md" ]]; then
+    if [[ -f "templates/qa_agent_persona.md" ]]; then
+        cp "templates/qa_agent_persona.md" "local/qa_agent_persona.md"
+        print_success "Copied QA agent persona from template"
+    else
+        print_warning "QA agent persona template not found in templates/"
+    fi
+fi
+
+if [[ ! -f "local/qa_agent_workflow_guide.md" ]]; then
+    if [[ -f "templates/qa_agent_workflow_guide.md" ]]; then
+        cp "templates/qa_agent_workflow_guide.md" "local/qa_agent_workflow_guide.md"
+        print_success "Copied QA agent workflow guide from template"
+    else
+        print_warning "QA agent workflow guide template not found in templates/"
+    fi
+fi
+
+if [[ ! -f "local/qa_agent_troubleshooting.md" ]]; then
+    if [[ -f "templates/qa_agent_troubleshooting.md" ]]; then
+        cp "templates/qa_agent_troubleshooting.md" "local/qa_agent_troubleshooting.md"
+        print_success "Copied QA agent troubleshooting guide from template"
+    else
+        print_warning "QA agent troubleshooting guide template not found in templates/"
+    fi
+fi
+
+if [[ ! -f "local/qa_agent_todo_checklist.md" ]]; then
+    if [[ -f "templates/qa_agent_todo_checklist.md" ]]; then
+        cp "templates/qa_agent_todo_checklist.md" "local/qa_agent_todo_checklist.md"
+        print_success "Copied QA agent TODO checklist from template"
+    else
+        print_warning "QA agent TODO checklist template not found in templates/"
+    fi
+fi
+
+# Initialize red team agent templates (first time only, for entire local ecosystem)
+if [[ ! -f "local/red_team_agent_persona.md" ]]; then
+    if [[ -f "templates/red_team_agent_persona.md" ]]; then
+        cp "templates/red_team_agent_persona.md" "local/red_team_agent_persona.md"
+        print_success "Copied red team agent persona from template"
+    else
+        print_warning "Red team agent persona template not found in templates/"
+    fi
+fi
+
+if [[ ! -f "local/red_team_agent_workflow_guide.md" ]]; then
+    if [[ -f "templates/red_team_agent_workflow_guide.md" ]]; then
+        cp "templates/red_team_agent_workflow_guide.md" "local/red_team_agent_workflow_guide.md"
+        print_success "Copied red team agent workflow guide from template"
+    else
+        print_warning "Red team agent workflow guide template not found in templates/"
+    fi
+fi
+
+if [[ ! -f "local/red_team_agent_troubleshooting.md" ]]; then
+    if [[ -f "templates/red_team_agent_troubleshooting.md" ]]; then
+        cp "templates/red_team_agent_troubleshooting.md" "local/red_team_agent_troubleshooting.md"
+        print_success "Copied red team agent troubleshooting guide from template"
+    else
+        print_warning "Red team agent troubleshooting guide template not found in templates/"
+    fi
+fi
+
 echo "🚀 Hish - New Project Context Setup"
 echo "========================================================="
 echo "This creates a new project context within the framework."
@@ -262,17 +327,27 @@ This directory contains the development agent context for **$PROJECT_NAME** with
 
 **Note**: The following files are now universal and shared across all projects:
 - **\`dev_agent_persona.md\`** - Universal dev agent persona (top-level)
-- **\`dev_agent_init_prompt.md\`** - Universal initialization protocol (top-level)
-- **\`dev_agent_session_end_prompt.md\`** - Universal session end protocol (top-level)
+- **\`prompts/dev_agent/dev_agent_init_prompt.md\`** - Universal initialization protocol
+- **\`prompts/dev_agent/dev_agent_session_end_prompt.md\`** - Universal session end protocol
+- **\`qa_agent_persona.md\`** - QA agent persona for quality analysis
+- **\`prompts/qa/qa_agent_init_prompt.md\`** - QA agent initialization protocol
+- **\`prompts/qa/qa_agent_session_end_prompt.md\`** - QA agent session end protocol
+- **\`red_team_agent_persona.md\`** - Red team agent persona for security analysis
+- **\`prompts/red_team/red_team_agent_init_prompt.md\`** - Red team agent initialization protocol
+- **\`prompts/red_team/red_team_agent_session_end_prompt.md\`** - Red team agent session end protocol
 
 ## 🚀 **Usage in Cursor**
 
 1. **Open the framework**: Open the \`hish\` directory in Cursor
-2. **Initialize agent**: Reference the universal init prompt: \`@dev_agent_init_prompt.md\`
+2. **Initialize agent**: Reference the appropriate init prompt:
+   - **Dev Agent**: \`@prompts/dev_agent/dev_agent_init_prompt.md\`
+   - **QA Agent**: \`@prompts/qa/qa_agent_init_prompt.md\`
+   - **Red Team Agent**: \`@prompts/red_team/red_team_agent_init_prompt.md\`
 3. **Load project context**: The agent will automatically load project-specific context from \`dev_agent_context.md\`
 4. **Cross-project queries**: Use RAG to discover patterns from other projects:
    - \`qdrant-find "authentication patterns"\`
    - \`qdrant-find "testing strategies"\`
+   - \`qdrant-find "security vulnerabilities"\`
 
 ## 📊 **Project Information**
 
@@ -281,8 +356,8 @@ This directory contains the development agent context for **$PROJECT_NAME** with
 
 ## 🔗 **Code Repository Setup**
 
-1. **Index your code** for RAG knowledge discovery:
-   Use: \`make index-repo REPO_PATH=/path/to/your/code COLLECTION_NAME=${PROJECT_DIR_NAME}_code\`
+1. **Index your documentation** for RAG knowledge discovery:
+   Use: \`make index-repo REPO_PATH=/path/to/your/code COLLECTION_NAME=${PROJECT_DIR_NAME}_docs_mpnet\`
 
 ## 🧠 **Cross-Project Learning**
 
@@ -337,16 +412,22 @@ print_status "Context Location: $CONTEXT_DIR"
 echo
 print_status "Next steps:"
 echo "  1. Update $CONTEXT_DIR/dev_agent_context.md with current project state"
-echo "  2. In Cursor (with hish open): @dev_agent_init_prompt.md"
+echo "  2. In Cursor (with hish open): @prompts/dev_agent/dev_agent_init_prompt.md"
 echo "  3. Start using cross-project knowledge queries:"
 echo "     - qdrant-find \"authentication patterns\""
 echo "     - qdrant-find \"testing strategies\""
 echo "     - qdrant-store \"your solutions for future projects\""
 echo
-print_status "The universal dev agent persona and protocols are now available:"
-echo "  - @dev_agent_persona.md - Universal dev agent persona"
-echo "  - @dev_agent_init_prompt.md - Universal initialization protocol"
-echo "  - @dev_agent_session_end_prompt.md - Universal session end protocol"
+print_status "The universal agent personas and protocols are now available:"
+echo "  - @local/dev_agent_persona.md - Universal dev agent persona"
+echo "  - @prompts/dev_agent/dev_agent_init_prompt.md - Dev agent initialization protocol"
+echo "  - @prompts/dev_agent/dev_agent_session_end_prompt.md - Dev agent session end protocol"
+echo "  - @local/qa_agent_persona.md - QA agent persona for quality analysis"
+echo "  - @prompts/qa/qa_agent_init_prompt.md - QA agent initialization protocol"
+echo "  - @prompts/qa/qa_agent_session_end_prompt.md - QA agent session end protocol"
+echo "  - @local/red_team_agent_persona.md - Red team agent persona for security analysis"
+echo "  - @prompts/red_team/red_team_agent_init_prompt.md - Red team agent initialization protocol"
+echo "  - @prompts/red_team/red_team_agent_session_end_prompt.md - Red team agent session end protocol"
 echo
 print_status "Your project will now benefit from and contribute to the shared knowledge ecosystem!"
 echo

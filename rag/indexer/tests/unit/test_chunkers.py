@@ -140,7 +140,7 @@ Conclusion text.
         assert prefer_md_splits("   \n\t   ") == []
 
     @pytest.mark.unit
-    def test_prefer_md_splits_code_content(self):
+    def test_prefer_md_splits_with_code_content(self):
         """Test with code-like content."""
         text = SAMPLE_PYTHON_CODE
 

@@ -1,14 +1,19 @@
-#!/bin/bash
-# Unified MCP Server Startup Script
-# Uses MPNet embeddings for all collections
+#!/usr/bin/env bash
+# MCP Server Launcher - Unified (Documentation/Framework)
+# Single MPNet-based server for all markdown/doc collections
 
-set -e
+set -euo pipefail
 
-# Change to the correct directory (script may be called from anywhere)
-cd "$(dirname "$0")/.."
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
-# Start Qdrant if not already running (silently)
-docker compose -f deploy/compose.rag.yml up -d qdrant >/dev/null 2>&1
+cd "$PROJECT_ROOT"
 
-# Start the unified MCP server (no echo output to avoid JSON parsing issues)
+# Ensure Qdrant is up
+docker compose -f deploy/compose.rag.yml --env-file config/env.mpnet up -d qdrant
+
+# Wait for Qdrant to be ready
+sleep 5
+
+# Spawn MCP server via docker compose
 exec docker compose -f deploy/compose.rag.yml run --rm -i mcp-qdrant-unified

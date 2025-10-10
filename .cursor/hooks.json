@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeSubmitPrompt": [
+      {
+        "command": "~/.cursor/hooks/.venv/bin/python3 ~/.cursor/hooks/prioritize_local_data"
+      }
+    ],
+    "beforeMCPExecution": [
+      {
+        "command": "~/.cursor/hooks/.venv/bin/python3 ~/.cursor/hooks/before_mcp_execution"
+      }
+    ]
+  }
+}

@@ -15,7 +15,6 @@ mcp_cache/
 
 # User/editor caches (only if present)
 
-.cursor/
 .cache/
 
 # Optional user data (only if present and intended as local)

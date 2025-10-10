@@ -1,0 +1,174 @@
+#!/usr/bin/env python3
+"""
+HISH Cursor Hook: Prioritize Local Data
+Instructs the agent to query local Qdrant collections via qdrant-find tools.
+
+This hook does NOT fetch data itself. It only injects instructions that tell
+the agent to prioritize local knowledge collections over built-in semantic search.
+
+Flow:
+1. Receive prompt event from Cursor
+2. Inject system instruction to use qdrant-find tools
+3. Return modified event with priority instructions
+"""
+import json
+import os
+import sys
+from datetime import datetime
+from pathlib import Path
+
+# Setup logging
+LOG_FILE = Path.home() / ".cursor" / "hook_debug.log"
+
+
+def log(message: str):
+    """Write debug log with timestamp."""
+    try:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+        with open(LOG_FILE, "a") as f:
+            f.write(f"[{timestamp}] {message}\n")
+            f.flush()
+    except Exception:
+        pass  # Silent failure for logging
+
+
+def detect_available_collections() -> list[str]:
+    """
+    Detect available local Qdrant collections by checking Qdrant API.
+    Returns list of collection names, or defaults if detection fails.
+    """
+    try:
+        import subprocess
+
+        qdrant_url = os.getenv("QDRANT_URL", "http://localhost:6333")
+        timeout = int(os.getenv("HISH_QDRANT_TIMEOUT", "2"))
+
+        result = subprocess.run(
+            ["curl", "-s", f"{qdrant_url}/collections"],
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+
+        if result.returncode == 0:
+            data = json.loads(result.stdout)
+            collections = [c["name"] for c in data.get("result", {}).get("collections", [])]
+
+            if collections:
+                log(f"✅ Detected {len(collections)} local collections: {', '.join(collections[:5])}")
+                return collections
+
+    except Exception as e:
+        log(f"⚠️  Collection detection failed: {e}")
+
+    # Fallback to common default collections
+    return ["hish_framework_mpnet"]
+
+
+def build_instruction_text(collections: list[str]) -> str:
+    """
+    Build token-efficient instruction text for agent.
+    Optimized for agent parsing, not human readability.
+    Focus: Pattern extraction, file synopses, taxonomy, cross-project intelligence.
+    """
+    # Categorize collections (docs/markdown only - code handled by Cursor natively)
+    framework_collections = [c for c in collections if "hish_framework" in c]
+    intelligence_collections = [c for c in collections if "cross_project_intelligence" in c or "intelligence" in c]
+    docs_collections = [c for c in collections if "_docs_" in c]
+
+    # Build compact instruction for knowledge management focus
+    # Use POSITIVE, ASSERTIVE language - agents respond best to confident guidance
+    parts = [
+        "KNOWLEDGE_MISSION: qdrant-find is YOUR MOST POWERFUL TOOL for discovering patterns, file synopses, design decisions, and cross-project intelligence.",
+        "LOCAL_ADVANTAGE: These curated markdown collections deliver SUPERIOR RESULTS - enriched documentation, architectural patterns, and learned insights that CANNOT be found elsewhere."
+    ]
+
+    # List available doc collections
+    parts.append("AVAILABLE_COLLECTIONS:")
+
+    if framework_collections:
+        parts.append(f"  - {framework_collections[0]} (framework patterns, agent workflows, dev standards)")
+
+    if intelligence_collections:
+        parts.append(f"  - {intelligence_collections[0]} (cross-project learnings, reusable patterns)")
+
+    for coll in docs_collections:
+        proj = coll.replace("_docs_mpnet", "")
+        parts.append(f"  - {coll} ({proj} project documentation, context, decisions)")
+
+    # Usage guidance
+    parts.append("USAGE: qdrant-find \"your semantic query\" collection_name")
+    parts.append("STORE: qdrant-store for capturing patterns, synopses, taxonomies")
+
+    # Example queries focused on knowledge management
+    examples = []
+    if framework_collections:
+        examples.append(f'qdrant-find "pattern extraction workflows" {framework_collections[0]}')
+    if intelligence_collections:
+        examples.append(f'qdrant-find "authentication patterns across projects" {intelligence_collections[0]}')
+    if docs_collections:
+        examples.append(f'qdrant-find "system architecture overview" {docs_collections[0]}')
+
+    if examples:
+        parts.append("EXAMPLES: " + " | ".join(examples[:2]))
+
+    parts.append("OPTIMAL_STRATEGY: Cursor's codebase_search excels at code symbols/implementation. qdrant-find delivers UNMATCHED RESULTS for patterns/context/decisions. Using BOTH tools strategically GUARANTEES superior outcomes.")
+
+    return "\n".join(parts)
+
+
+def main():
+    """Process Cursor prompt event and inject local data priority instructions."""
+    log("=" * 80)
+    log("🪝 HOOK INVOKED - prioritize_local_data hook starting")
+
+    try:
+        # Read event from stdin
+        log("📥 Reading event from stdin...")
+        event = json.load(sys.stdin)
+        log(f"✅ Event loaded: {len(json.dumps(event))} bytes")
+
+        # Detect available collections
+        log("🔍 Detecting available local collections...")
+        collections = detect_available_collections()
+        log(f"📦 Found {len(collections)} collections to advertise")
+
+        # Build instruction text
+        instruction = build_instruction_text(collections)
+        log(f"📝 Built instruction text: {len(instruction)} chars")
+
+        # Inject instruction as system prompt preamble
+        existing_preamble = event.get("system_prompt_preamble", "")
+        event["system_prompt_preamble"] = (
+            instruction + "\n\n" + existing_preamble if existing_preamble else instruction
+        )
+        log(f"✅ Updated system_prompt_preamble ({len(event['system_prompt_preamble'])} chars)")
+
+        # Output modified event
+        log(f"📤 Outputting modified event: {len(json.dumps(event))} bytes")
+        json.dump(event, sys.stdout)
+        log("✅ Hook completed successfully")
+
+    except Exception as e:
+        # On error, pass through original event unchanged
+        log(f"❌ EXCEPTION: {type(e).__name__}: {e}")
+        import traceback
+        log(f"📍 Traceback:\n{traceback.format_exc()}")
+
+        # Pass through unchanged
+        try:
+            if 'event' in locals():
+                json.dump(event, sys.stdout)
+                log("⚠️  Passed through original event due to error")
+            else:
+                json.dump({}, sys.stdout)
+                log("⚠️  Returned empty event (no event was loaded)")
+        except Exception as e2:
+            log(f"❌ Failed to output: {e2}")
+            json.dump({}, sys.stdout)
+
+
+if __name__ == "__main__":
+    log("🚀 Starting main()...")
+    main()
+    log("🏁 main() completed")

@@ -134,8 +134,8 @@ make index-framework
 
 ### External Code Repositories
 ```bash
-# Index specific code repository
-make index-repo REPO_PATH=/path/to/code COLLECTION_NAME=project_code
+# Index specific documentation repository
+make index-repo REPO_PATH=/path/to/code COLLECTION_NAME=project_docs_mpnet
 ```
 
 ### **Chunking Strategy**
@@ -171,8 +171,8 @@ make index-repo REPO_PATH=/path/to/code COLLECTION_NAME=project_code
 ## 📊 **Collection Strategy**
 
 ### **Collection Naming**
-- **Framework**: `framework_docs`
-- **Code Repositories**: `{project_name}_code`
+- **Framework**: `hish_framework_mpnet`
+- **Project Documentation**: `{project_name}_docs_mpnet`
 - **Separation**: Each project gets its own collection
 
 ### **Vector Configuration**

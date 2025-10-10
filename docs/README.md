@@ -6,16 +6,17 @@
 
 ## Usage
 - [Agent Management](agent-management/directing-agents.md) - Directing AI agents
-- [Knowledge Management](knowledge-management/indexing-and-reindexing.md) - Indexing and search
-- [Collections Overview](knowledge-management/collections-overview.md) - How knowledge is organized
+- [Collection Governance](collection-governance.md) - Collection lifecycle and governance
 
 ## Development
 - [Code Quality](development/code-quality.md) - Linting, formatting, and pre-commit hooks
 
-## Agent Reference
-- [Workflow Guide](../local/dev_agent_workflow_guide.md) - Complex procedures and cross-project intelligence
-- [Troubleshooting Guide](../local/dev_agent_troubleshooting.md) - Error recovery and problem resolution
-- [Template Versions](../templates/) - Available if local directory not initialized
+## Agent Templates & Directives
+- [Dev Agent Persona](../templates/dev_agent_persona.md) - Pattern-driven development
+- [Red Team Agent Persona](../templates/red_team_agent_persona.md) - Security analysis
+- [Pattern Taxonomy Guide](../templates/pattern-taxonomy-guide.md) - Pattern extraction and storage
+- [File Synopsis Workflows](../templates/file-synopsis-workflows.md) - AGENTS.md discovery and documentation
+- [All Templates](../templates/) - Persona files, workflows, troubleshooting guides
 
 ## Technical
 - [Architecture Overview](integration/rag-mcp-setup-guide.md) - Technology choices

@@ -25,7 +25,7 @@ Internal workflow indexes that initialize on first context creation:
 ## 🚫 **What's NOT Here (And Why)**
 
 - **No Persona Templates** - Universal persona is at top level (`dev_agent_persona.md`)
-- **No Prompt Templates** - Universal prompts are at top level (`dev_agent_init_prompt.md`, `dev_agent_session_end_prompt.md`)
+- **No Prompt Templates** - Universal prompts are in `prompts/` directory (`prompts/dev_agent/`, `prompts/red_team/`, `prompts/qa/`)
 - **No Workflow Templates** - Workflows are agent-managed in `local/workflows-and-processes/`
 
 ## 🎯 **Usage**

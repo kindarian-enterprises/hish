@@ -27,7 +27,7 @@
   - Lines 450-545: Quality standards and enforcement
 - **Search Patterns**: "collection", "search", "qdrant-find", "persona"
 
-#### `dev_agent_init_prompt.md`
+#### `prompts/dev_agent/dev_agent_init_prompt.md`
 - **Purpose**: Universal agent initialization protocol
 - **Key Sections**: Complete file is essential initialization content
 - **Search Patterns**: "init", "context", "project"

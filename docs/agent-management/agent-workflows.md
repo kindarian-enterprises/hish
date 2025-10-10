@@ -18,8 +18,12 @@ The script creates a project context in `local/your-project-name/` with:
 
 **Note**: The following files are now universal and shared across all projects:
 - **`dev_agent_persona.md`** - Universal dev agent persona (top-level)
-- **`dev_agent_init_prompt.md`** - Universal initialization protocol (top-level)
-- **`dev_agent_session_end_prompt.md`** - Universal session end protocol (top-level)
+- **`prompts/dev_agent/dev_agent_init_prompt.md`** - Universal initialization protocol
+- **`prompts/dev_agent/dev_agent_session_end_prompt.md`** - Universal session end protocol
+- **`prompts/qa/qa_agent_init_prompt.md`** - QA agent initialization protocol
+- **`prompts/qa/qa_agent_session_end_prompt.md`** - QA agent session end protocol
+- **`prompts/red_team/red_team_agent_init_prompt.md`** - Red team agent initialization protocol
+- **`prompts/red_team/red_team_agent_session_end_prompt.md`** - Red team agent session end protocol
 
 ### 3. Let Agents Manage Context
 **Important**: Context files in `local/` are managed by agents. Direct editing can disrupt framework behavior. Instead, use agent workflows to update project context through proper protocols.
@@ -37,16 +41,30 @@ The script creates a project context in `local/your-project-name/` with:
 
 ## Agent Initialization
 
-### In Cursor
+### Development Agent
 Reference the universal init prompt:
 ```
-@dev_agent_init_prompt.md
+@prompts/dev_agent/dev_agent_init_prompt.md
+```
+
+### QA Agent
+Reference the QA agent init prompt:
+```
+@prompts/qa/qa_agent_init_prompt.md
+```
+
+### Red Team Agent
+Reference the red team agent init prompt:
+```
+@prompts/red_team/red_team_agent_init_prompt.md
 ```
 
 ### Agent Behavior
-- The agent will read the universal persona from `dev_agent_persona.md`
+- **Dev Agent**: Reads universal persona, loads project context, implements solutions
+- **QA Agent**: Reads QA persona, analyzes quality standards, generates reports
+- **Red Team Agent**: Reads red team persona, analyzes security vulnerabilities, generates security reports
 - Project-specific context is loaded from `local/your-project-name/dev_agent_context.md`
-- The agent operates with both universal intelligence and project-specific knowledge
+- All agents operate with universal intelligence and project-specific knowledge
 
 ## Knowledge Management
 

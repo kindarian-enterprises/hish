@@ -235,8 +235,8 @@ class TestModelHelperFunctions:
             == "test_collection_mpnet"
         )
         assert (
-            ensure_model_suffix("test_collection_code", TEST_MODEL_NAME)
-            == "test_collection_code_mpnet"
+            ensure_model_suffix("test_collection_docs", TEST_MODEL_NAME)
+            == "test_collection_docs_mpnet"
         )
 
         # Test with already correct suffix
@@ -247,15 +247,12 @@ class TestModelHelperFunctions:
 
     @pytest.mark.unit
     def test_is_code_collection_variations(self):
-        """Test is_code_collection with various collection names."""
-        # Code collections
-        assert is_code_collection("project_code")
-        assert is_code_collection("adamantite_code")
-        assert is_code_collection("platform-backend_code")
-
-        # Framework collections
-        assert not is_code_collection("hish_framework")
-        assert not is_code_collection("cross_project_intelligence")
+        """Test is_code_collection - unified MPNet means all return False."""
+        # All collections use unified MPNet now
+        assert not is_code_collection("project_docs_mpnet")
+        assert not is_code_collection("mayr_docs_mpnet")
+        assert not is_code_collection("hish_framework_mpnet")
+        assert not is_code_collection("cross_project_intelligence_mpnet")
         assert not is_code_collection("documentation")
 
     @pytest.mark.unit
@@ -265,8 +262,10 @@ class TestModelHelperFunctions:
 
         # Override should always be used
         assert get_optimal_model("any_collection", override_model) == override_model
-        assert get_optimal_model("project_code", override_model) == override_model
-        assert get_optimal_model("hish_framework", override_model) == override_model
+        assert get_optimal_model("project_docs_mpnet", override_model) == override_model
+        assert (
+            get_optimal_model("hish_framework_mpnet", override_model) == override_model
+        )
 
 
 class TestMainFunctionCoverage:

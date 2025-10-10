@@ -30,8 +30,13 @@
 - **`dev_agent_persona.md`** - Universal AI agent persona for all projects
   - Key Sections: Multi-collection search protocol, quality standards
   - Search Patterns: "persona", "collection", "search"
-- **`dev_agent_init_prompt.md`** - Universal initialization protocol
-- **`dev_agent_session_end_prompt.md`** - Universal session end protocol
+- **`prompts/dev_agent/dev_agent_init_prompt.md`** - Universal initialization protocol
+- **`prompts/dev_agent/dev_agent_session_end_prompt.md`** - Universal session end protocol
+- **`prompts/qa/qa_agent_init_prompt.md`** - QA agent initialization protocol
+- **`prompts/qa/qa_agent_session_end_prompt.md`** - QA agent session end protocol
+- **`templates/qa_agent_todo_checklist.md`** - QA agent systematic analysis checklist
+- **`prompts/red_team/red_team_agent_init_prompt.md`** - Red team agent initialization protocol
+- **`prompts/red_team/red_team_agent_session_end_prompt.md`** - Red team agent session end protocol
 
 ### RAG System (`rag/`)
 - **`rag/indexer/app.py`** - Core indexing and embedding logic
@@ -97,9 +102,9 @@
 - **Include Patterns**: `dev_agent_*.md`, `README.md`, `local/*/dev_agent_context.md`
 - **Search Strategy**: Start here for architectural context
 
-### Project Code Collections (`{project-name}_code`)
-- **Content**: External project repositories
-- **Include Patterns**: Comprehensive code file patterns
+### Project Documentation Collections (`{project-name}_docs_mpnet`)
+- **Content**: External project documentation (markdown, AGENTS.md, docs)
+- **Include Patterns**: Documentation file patterns
 - **Search Strategy**: Use for project-specific implementation details
 
 ## Environment Configuration Reference
@@ -107,13 +112,13 @@
 ### Framework Indexing (`env.framework`)
 ```bash
 COLLECTION_NAME=framework_docs
-INDEX_INCLUDE=dev_agent_init_prompt.md,dev_agent_persona.md,dev_agent_session_end_prompt.md,README.md,local/*/dev_agent_context.md,local/*/README.md
+INDEX_INCLUDE=prompts/dev_agent/dev_agent_init_prompt.md,local/dev_agent_persona.md,prompts/dev_agent/dev_agent_session_end_prompt.md,prompts/qa/qa_agent_init_prompt.md,prompts/qa/qa_agent_session_end_prompt.md,prompts/red_team/red_team_agent_init_prompt.md,prompts/red_team/red_team_agent_session_end_prompt.md,README.md,local/*/dev_agent_context.md,local/*/README.md
 ```
 
-### Code Repository Indexing (`env.code`)
+### Documentation Repository Indexing (`env.mpnet`)
 ```bash
-COLLECTION_NAME=external_code
-INDEX_INCLUDE=**/*.py,**/*.yaml,**/*.yml,**/*.json,**/*.md,**/*.js,**/*.ts,**/*.tf,**/*.go,**/*.rs,**/*.scala,**/*.java,**/*.c,**/*.cpp,**/*.cc,**/*.cxx,**/*.h,**/*.hpp
+COLLECTION_NAME=external_docs_mpnet
+INDEX_INCLUDE=**/*.md,**/AGENTS.md,**/README.md
 INDEX_EXCLUDE=**/.git/**,**/.data/**,**/node_modules/**,**/.terraform/**,**/.venv/**,**/dist/**,**/build/**,**/__pycache__/**,**/venv/**,**/.pytest_cache/**
 ```
 
@@ -132,7 +137,9 @@ VECTOR_NAME=BAAI/bge-small-en-v1.5
 4. `make index` - Index framework + all project repositories
 
 ### Development Workflow
-1. `@dev_agent_init_prompt.md` - Initialize agent with universal persona
+1. `@prompts/dev_agent/dev_agent_init_prompt.md` - Initialize dev agent with universal persona
+2. `@prompts/qa/qa_agent_init_prompt.md` - Initialize QA agent for quality analysis
+3. `@prompts/red_team/red_team_agent_init_prompt.md` - Initialize red team agent for security analysis
 2. Agent loads project-specific context automatically
 3. Use `qdrant-find` for cross-project knowledge discovery
 4. Agent records workflows in `workflows-and-processes/`
