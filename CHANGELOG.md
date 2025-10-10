@@ -40,7 +40,7 @@ This file tracks major changes, migrations, and required user actions for the Hi
 ### Changes
 
 - **Unified Embedding Model**: Switched from dual embedding architecture (BGE + Jina Code) to unified `sentence-transformers/paraphrase-multilingual-mpnet-base-v2`
-- **Collection Naming**: All collections now include model suffix (e.g., `hish_framework_mpnet`, `{project}_code_mpnet`)
+- **Collection Naming**: All collections now include model suffix (e.g., `hish_framework_mpnet`, `{project}_docs_mpnet`)
 - **Single MCP Server**: Simplified from dual MCP servers back to single unified server
 - **Makefile Implementation**: Updated all indexing commands to use unified MPNet embeddings
 - **Improved Search**: Better granular text understanding while maintaining code comprehension

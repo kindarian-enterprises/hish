@@ -172,10 +172,10 @@ class TestCollectionHelpers:
                 "collection_mpnet",
             ),  # Removes _bge, adds _mpnet
             (
-                "collection_code",
+                "collection_docs",
                 TEST_MODEL_NAME,
-                "collection_code_mpnet",
-            ),  # Preserves _code, adds _mpnet
+                "collection_docs_mpnet",
+            ),  # Preserves _docs, adds _mpnet
             ("already_mpnet", TEST_MODEL_NAME, "already_mpnet"),  # Already correct
         ]
 
@@ -190,14 +190,14 @@ class TestCollectionHelpers:
         """Test get_optimal_model function coverage."""
         # Test without override (should always return MPNet now)
         assert get_optimal_model("any_collection") == TEST_MODEL_NAME
-        assert get_optimal_model("project_code") == TEST_MODEL_NAME
-        assert get_optimal_model("hish_framework") == TEST_MODEL_NAME
+        assert get_optimal_model("project_docs_mpnet") == TEST_MODEL_NAME
+        assert get_optimal_model("hish_framework_mpnet") == TEST_MODEL_NAME
 
         # Test with override
         custom_model = "custom/embedding-model"
         assert get_optimal_model("any_collection", custom_model) == custom_model
-        assert get_optimal_model("project_code", custom_model) == custom_model
-        assert get_optimal_model("hish_framework", custom_model) == custom_model
+        assert get_optimal_model("project_docs_mpnet", custom_model) == custom_model
+        assert get_optimal_model("hish_framework_mpnet", custom_model) == custom_model
 
         # Test with empty override (empty string is falsy, so it should return default)
         assert get_optimal_model("any_collection", "") == TEST_MODEL_NAME

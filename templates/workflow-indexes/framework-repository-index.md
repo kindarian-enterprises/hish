@@ -102,9 +102,9 @@
 - **Include Patterns**: `dev_agent_*.md`, `README.md`, `local/*/dev_agent_context.md`
 - **Search Strategy**: Start here for architectural context
 
-### Project Code Collections (`{project-name}_code`)
-- **Content**: External project repositories
-- **Include Patterns**: Comprehensive code file patterns
+### Project Documentation Collections (`{project-name}_docs_mpnet`)
+- **Content**: External project documentation (markdown, AGENTS.md, docs)
+- **Include Patterns**: Documentation file patterns
 - **Search Strategy**: Use for project-specific implementation details
 
 ## Environment Configuration Reference
@@ -115,10 +115,10 @@ COLLECTION_NAME=framework_docs
 INDEX_INCLUDE=prompts/dev_agent/dev_agent_init_prompt.md,local/dev_agent_persona.md,prompts/dev_agent/dev_agent_session_end_prompt.md,prompts/qa/qa_agent_init_prompt.md,prompts/qa/qa_agent_session_end_prompt.md,prompts/red_team/red_team_agent_init_prompt.md,prompts/red_team/red_team_agent_session_end_prompt.md,README.md,local/*/dev_agent_context.md,local/*/README.md
 ```
 
-### Code Repository Indexing (`env.code`)
+### Documentation Repository Indexing (`env.mpnet`)
 ```bash
-COLLECTION_NAME=external_code
-INDEX_INCLUDE=**/*.py,**/*.yaml,**/*.yml,**/*.json,**/*.md,**/*.js,**/*.ts,**/*.tf,**/*.go,**/*.rs,**/*.scala,**/*.java,**/*.c,**/*.cpp,**/*.cc,**/*.cxx,**/*.h,**/*.hpp
+COLLECTION_NAME=external_docs_mpnet
+INDEX_INCLUDE=**/*.md,**/AGENTS.md,**/README.md
 INDEX_EXCLUDE=**/.git/**,**/.data/**,**/node_modules/**,**/.terraform/**,**/.venv/**,**/dist/**,**/build/**,**/__pycache__/**,**/venv/**,**/.pytest_cache/**
 ```
 

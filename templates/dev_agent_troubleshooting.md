@@ -129,9 +129,9 @@ qdrant-store "content..." cross_project_intelligence [generated-uuid]
 make collections
 
 # Use correct collection names:
-# - hish_framework (framework docs)
-# - {project-name}_code (project code)
-# - cross_project_intelligence (observations)
+# - hish_framework_mpnet (framework docs)
+# - {project-name}_docs_mpnet (project documentation)
+# - cross_project_intelligence_mpnet (observations)
 ```
 
 **Content Format Issues:**
@@ -151,8 +151,8 @@ qdrant-store "Solution: Component authentication - JWT implementation with refre
 make collections
 
 # Try broader search terms
-qdrant-find "authentication" hish_framework
-qdrant-find "JWT" {project}_code
+qdrant-find "authentication" hish_framework_mpnet
+qdrant-find "JWT" {project}_docs_mpnet
 
 # Check if content was indexed
 qdrant-find "recent patterns" cross_project_intelligence
@@ -164,12 +164,12 @@ qdrant-find "recent patterns" cross_project_intelligence
 qdrant-find "JWT token validation patterns" hish_framework
 
 # Search multiple collections
-qdrant-find "error handling" hish_framework
-qdrant-find "error handling" {project}_code
-qdrant-find "error handling" cross_project_intelligence
+qdrant-find "error handling" hish_framework_mpnet
+qdrant-find "error handling" {project}_docs_mpnet
+qdrant-find "error handling" cross_project_intelligence_mpnet
 
 # Use domain-specific language
-qdrant-find "React component performance optimization" {project}_code
+qdrant-find "React component performance optimization" {project}_docs_mpnet
 ```
 
 ---

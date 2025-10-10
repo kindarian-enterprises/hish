@@ -370,22 +370,8 @@ def embedder(model_name: str):
 
 
 def is_code_collection(collection_name: str) -> bool:
-    """Determine if a collection should use code-specific embeddings."""
-    framework_collections = {
-        "hish_framework",
-        "cross_project_intelligence",
-        "framework_docs",
-    }
-
-    # Framework collections use BGE-small
-    if collection_name in framework_collections:
-        return False
-
-    # Collections ending with _code are code repositories
-    if collection_name.endswith("_code"):
-        return True
-
-    # Default to framework (BGE) for unknown collections
+    """Legacy function - now all collections use unified MPNet embeddings."""
+    # All collections now use MPNet - this function kept for backward compatibility
     return False
 
 
@@ -618,9 +604,7 @@ def index_repo(
     logger.info(f"Starting repository indexing from: {work_root}")
     logger.info(f"Target Qdrant: {qdrant_url}")
     logger.info(f"Collection: {collection}")
-    logger.info(
-        f"Collection type: {'Code Repository' if is_code_collection(collection) else 'Framework Documentation'}"
-    )
+    logger.info("Collection type: Documentation (unified MPNet embeddings)")
     logger.info(f"Optimal model: {optimal_model}")
     logger.info(f"Include patterns: {includes}")
     logger.info(f"Exclude patterns: {excludes}")
@@ -841,9 +825,7 @@ def main():
         # Determine optimal model for this collection type
         optimal_model = get_optimal_model(collection, model_name)
         dim = guess_dim(optimal_model)
-        logger.info(
-            f"Collection type: {'Code Repository' if is_code_collection(collection) else 'Framework Documentation'}"
-        )
+        logger.info("Collection type: Documentation (unified MPNet embeddings)")
         logger.info(f"Using optimal model: {optimal_model}")
         logger.info(
             f"Recreating collection '{collection}' with dimension {dim} using named vector '{optimal_model}'"

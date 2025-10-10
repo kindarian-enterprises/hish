@@ -49,8 +49,8 @@
 
 ### Knowledge Management
 1. **Indexing**: Use `make index` for complete indexing, `./reindex` for selective
-2. **Collections**: Framework uses `framework_docs` + `{project}_code` pattern
-3. **Vector Config**: Always use `BAAI/bge-small-en-v1.5` single vectors
+2. **Collections**: Framework uses `hish_framework_mpnet` + `{project}_docs_mpnet` pattern
+3. **Vector Config**: Always use `sentence-transformers/paraphrase-multilingual-mpnet-base-v2` unified embeddings
 
 ### File Operations
 1. **Large Files**: Never read completely - use semantic search

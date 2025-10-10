@@ -356,8 +356,8 @@ This directory contains the development agent context for **$PROJECT_NAME** with
 
 ## 🔗 **Code Repository Setup**
 
-1. **Index your code** for RAG knowledge discovery:
-   Use: \`make index-repo REPO_PATH=/path/to/your/code COLLECTION_NAME=${PROJECT_DIR_NAME}_code\`
+1. **Index your documentation** for RAG knowledge discovery:
+   Use: \`make index-repo REPO_PATH=/path/to/your/code COLLECTION_NAME=${PROJECT_DIR_NAME}_docs_mpnet\`
 
 ## 🧠 **Cross-Project Learning**
 

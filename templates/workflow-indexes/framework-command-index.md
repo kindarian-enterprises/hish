@@ -49,7 +49,7 @@ make index-framework
 make setup-intelligence
 
 # Index specific repository - host-based
-make index-repo REPO_PATH=/path/to/repo COLLECTION_NAME=repo_name_code
+make index-repo REPO_PATH=/path/to/repo COLLECTION_NAME=repo_name_docs_mpnet
 
 # Reindex specific contexts
 make reindex-contexts CONTEXTS="context1 context2"
@@ -125,8 +125,8 @@ INDEX_EXCLUDE=**/.git/**,**/.data/**,**/node_modules/**,**/.terraform/**,**/.ven
 ## Collection Naming Patterns
 
 ### Standard Collection Names
-- **`framework_docs`** - Framework documentation and context files
-- **`{project-name}_code`** - Project code repositories (e.g., `platform-backend_code`)
+- **`hish_framework_mpnet`** - Framework documentation and context files
+- **`{project-name}_docs_mpnet`** - Project documentation (e.g., `mayr_docs_mpnet`)
 
 ### Vector Configuration
 - **Model**: `BAAI/bge-small-en-v1.5`
