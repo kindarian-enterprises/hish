@@ -1,115 +1,230 @@
-# Collection Governance Guide
+# Collection Governance
 
-## Overview
+## 🎯 Purpose
 
-The Hish framework uses three distinct types of knowledge collections, each with specific purposes and governance rules. This document establishes clear boundaries to maintain collection integrity and effectiveness.
+This document defines governance rules for Qdrant collections in the Hish framework, including immutability policies, update procedures, and access controls.
 
-## Collection Types & Governance
+---
 
-### 1. Framework Collection (`hish_framework_mpnet`)
+## 📚 Collection Types
 
-**Purpose**: Vectorized framework documentation only
+### **1. Framework Collections (READ-ONLY)**
 
-**Content Rules**:
-- ✅ **INCLUDE**: Official framework documentation (README.md, setup guides, configuration docs)
-- ✅ **INCLUDE**: Framework templates and examples
-- ✅ **INCLUDE**: Agent prompts and personas
-- ❌ **EXCLUDE**: Learnings, patterns, or insights (these belong in cross-project intelligence)
-- ❌ **EXCLUDE**: Project-specific knowledge
-- ❌ **EXCLUDE**: Debugging workflows or operational procedures
+**Collections:**
+- `hish_framework_mpnet` - Framework documentation, agent directives, templates
+- Any collection matching `*_framework_*` pattern
 
-**Governance**:
-- Content is automatically vectorized from framework documentation files
-- Use `make index-framework` for updates
-- PRESERVES existing data (non-destructive)
-- Only framework maintainers should modify source documentation
+**Characteristics:**
+- ✅ **Read-only at runtime** - Agents cannot write to these collections
+- ✅ **Source-controlled** - Built from markdown files in git repositories
+- ✅ **Reproducible** - Can be rebuilt at any time via `make index-framework`
+- ✅ **Version-controlled** - Changes tracked through git commits
 
-### 2. Cross-Project Intelligence (`cross_project_intelligence_mpnet`)
+**Update Procedure:**
+1. Edit markdown files in the repository
+2. Commit changes to git
+3. Run `make index-framework` to rebuild collection
+4. Framework collection reflects new content
 
-**Purpose**: Validated patterns and insights applicable to the framework OR 2+ projects
+**Enforcement:**
+- `beforeMCPExecution` hook blocks `qdrant-store` calls to framework collections
+- Agent receives clear error message with guidance to use `cross_project_intelligence`
 
-**Content Rules**:
-- ✅ **INCLUDE**: Architecture patterns observed across multiple projects
-- ✅ **INCLUDE**: Infrastructure debugging methodologies
-- ✅ **INCLUDE**: Deployment patterns and best practices
-- ✅ **INCLUDE**: Performance optimization techniques
-- ✅ **INCLUDE**: Framework improvement insights
-- ❌ **EXCLUDE**: Project-specific solutions (unless pattern applies to 2+ projects)
-- ❌ **EXCLUDE**: One-off fixes or configurations
-- ❌ **EXCLUDE**: Unvalidated hypotheses
+**Why Read-Only?**
+- Ensures framework documentation consistency
+- Prevents accidental corruption of curated content
+- Enables easy rollback via git + reindex
+- Separates "source of truth" (markdown) from "search index" (Qdrant)
 
-**Governance**:
-- Manual curation required - use `qdrant-store` tool
-- Each entry must demonstrate cross-project applicability
-- Include evidence and validation status
-- Pattern format: Solution → Context → Implementation → Performance → Cross-Project Observations → Evidence → Validation Needed
+---
 
-### 3. Project Code Collections (`{project}_code_mpnet`)
+### **2. Cross-Project Intelligence Collection (WRITABLE)**
 
-**Purpose**: Searchable codebase content for specific projects
+**Collection:**
+- `cross_project_intelligence` - Agent-curated patterns, learnings, taxonomies
 
-**Content Rules**:
-- ✅ **INCLUDE**: Source code files (.py, .scala, .java, .ts, etc.)
-- ✅ **INCLUDE**: Configuration files and infrastructure code
-- ✅ **INCLUDE**: Project documentation and READMEs
-- ❌ **EXCLUDE**: Test files and test data (performance optimization)
-- ❌ **EXCLUDE**: Build artifacts and dependencies
-- ❌ **EXCLUDE**: Large data files and logs
+**Characteristics:**
+- ✅ **Writable at runtime** - Agents can store patterns (with user approval)
+- ✅ **Curated knowledge** - Not reproducible from source files
+- ✅ **Unique value** - Contains extracted patterns and learnings
+- ⚠️ **Requires backup** - Cannot be easily reconstructed
 
-**Governance**:
-- Automated via `make index` or `./reindex {project}`
-- DESTRUCTIVE updates (collections are recreated)
-- Managed per-project by context owners
+**Storage Workflow:**
+1. Agent identifies reusable pattern
+2. Documents pattern using taxonomy (see `templates/pattern-taxonomy-guide.md`)
+3. Presents to user for review and approval
+4. Only after approval: `qdrant-store` to `cross_project_intelligence`
+5. Pattern becomes discoverable across all projects
 
-## Collection Boundaries
+**Storage Requirements:**
+- User must explicitly approve storage
+- Pattern must follow taxonomy structure
+- Must include evidence and validation
+- Must have clear cross-project applicability
 
-### Framework vs Cross-Project Intelligence
+**Backup Strategy:**
+```bash
+# Backup intelligence collection
+make backup  # Creates tar.gz of .data/qdrant/
 
-**Question**: "Should this go in framework docs or cross-project intelligence?"
+# Scheduled backup (recommended: daily cron job)
+0 2 * * * cd /path/to/hish && make backup
+```
 
-- **Framework**: If it's documentation about how to use the framework
-- **Cross-Project**: If it's a validated pattern or insight that improves how we work
+---
 
-**Examples**:
-- Framework setup instructions → **Framework**
-- Authentication flow documentation → **Framework**
-- Performance optimization pattern observed across projects → **Cross-Project Intelligence**
-- Infrastructure debugging methodology → **Cross-Project Intelligence**
+### **3. Project Documentation Collections (READ-ONLY)**
 
-### Cross-Project vs Project-Specific
+**Collections:**
+- `{project}_docs_mpnet` - Project-specific documentation, AGENTS.md synopses
 
-**Question**: "Is this insight applicable beyond one project?"
+**Characteristics:**
+- ✅ **Read-only at runtime** - Rebuilt from project markdown files
+- ✅ **Project-specific** - Contains context for one project
+- ✅ **Includes synopses** - AGENTS.md file synopses generated by agent
 
-- **Cross-Project**: Pattern applies to framework improvement OR observed in 2+ projects
-- **Project-Specific**: Solution only applies to one specific project or context
+**Update Procedure:**
+1. Edit project documentation markdown files
+2. For AGENTS.md changes: Agent regenerates synopsis on next initialization
+3. Run `make index` to rebuild all project collections
+4. Project documentation collection reflects new content
 
-**Examples**:
-- Docker optimization technique used in 3 projects → **Cross-Project Intelligence**
-- Specific service configuration for one project → **Project Code Collection**
-- AWS authentication pattern used across infrastructure → **Cross-Project Intelligence**
+**Synopsis Generation:**
+- Agent scans for AGENTS.md files during initialization
+- Generates/updates synopses in `local/{project}/agents_synopsis.md`
+- Hash-based change detection prevents unnecessary regeneration
+- Synopses get indexed into `{project}_docs_mpnet` collection
 
-## Enforcement
+---
 
-### Automated Enforcement
-- Framework collection: Automatically enforced via file patterns in `config/env.mpnet`
-- Code collections: Automatically enforced via exclusion patterns in `config/env.mpnet.code`
+## 🔒 Access Control
 
-### Manual Review Required
-- Cross-project intelligence entries require manual validation before storage
-- Each entry should include evidence of cross-project applicability
-- Validation status should be documented
+### **Runtime Write Protection**
 
-### Tools
-- **Framework**: `make index-framework`
-- **Cross-Project**: `qdrant-store` tool with manual curation
-- **Code**: `make index` or `./reindex {project}`
+**Hook:** `.cursor/hooks/protect_framework_collection`
 
-## Migration Guidelines
+**Behavior:**
+- Intercepts all `qdrant-store` MCP calls via `beforeMCPExecution` hook
+- Checks collection name against framework patterns
+- Blocks writes to framework collections with clear error message
+- Allows writes to `cross_project_intelligence` collection
+- Allows all read operations (`qdrant-find`)
 
-When existing content doesn't follow these rules:
+**Error Message:**
+```
+❌ WRITE BLOCKED: Collection 'hish_framework_mpnet' is READ-ONLY.
 
-1. **Framework collection cleanup**: Remove any learnings/patterns, migrate to cross-project intelligence
-2. **Cross-project validation**: Review existing entries, remove project-specific items
-3. **Documentation updates**: Ensure all references reflect new governance model
+Framework collections are rebuilt from markdown sources via 'make index-framework'.
+They cannot be modified at runtime to ensure consistency.
 
-This governance model ensures clean separation of concerns and maintains the quality and relevance of each knowledge collection.
+✅ USE THIS INSTEAD:
+   Collection: cross_project_intelligence
+   Purpose: Agent-curated patterns, learnings, and taxonomies
+
+Example:
+   qdrant-store "your pattern documentation" cross_project_intelligence <uuid>
+
+See templates/pattern-taxonomy-guide.md for storage guidelines.
+```
+
+---
+
+## 📊 Collection Lifecycle
+
+### **Framework Collection Updates**
+
+**Trigger:** Documentation changes in repository
+**Frequency:** On-demand (after doc changes)
+**Command:** `make index-framework`
+**Duration:** Fast (~seconds for typical framework docs)
+**Safety:** Non-destructive (preserves existing data)
+
+### **Project Collection Updates**
+
+**Trigger:** Project documentation changes or AGENTS.md modifications
+**Frequency:** On-demand (after doc changes or quarterly review)
+**Command:** `make index` (all projects) or `make index-repo REPO=project-name` (specific)
+**Duration:** Depends on project size
+**Safety:** Non-destructive (preserves existing data)
+
+### **Intelligence Collection Curation**
+
+**Trigger:** User-approved pattern storage
+**Frequency:** Continuous (as patterns discovered)
+**Command:** Agent uses `qdrant-store` (with approval)
+**Duration:** Instant
+**Safety:** Append-only (no overwrites without explicit UUID)
+
+---
+
+## 🎯 Best Practices
+
+### **For Framework Maintainers**
+
+1. **Treat framework collections as cache** - True source of truth is markdown
+2. **Reindex after doc changes** - `make index-framework` after commits
+3. **Never manually edit Qdrant** - Always update markdown and reindex
+4. **Test hook enforcement** - Verify protection hook blocks writes
+
+### **For Agents**
+
+1. **Respect read-only collections** - Don't attempt to write to framework collections
+2. **Request approval before storage** - Present patterns for user review
+3. **Use proper taxonomy** - Follow `templates/pattern-taxonomy-guide.md`
+4. **Focus on cross-project value** - Only store patterns applicable to 2+ projects
+
+### **For Users**
+
+1. **Review before approving** - Verify pattern accuracy and appropriateness
+2. **Backup intelligence collection** - `make backup` regularly
+3. **Reindex after doc changes** - Keep collections in sync with markdown
+4. **Monitor storage requests** - Ensure quality of curated knowledge
+
+---
+
+## 🔍 Troubleshooting
+
+### **Agent claims it can't write to collection**
+
+**Issue:** Agent tries to write to `hish_framework_mpnet` or similar
+**Cause:** Protection hook is working correctly
+**Solution:** Agent should use `cross_project_intelligence` collection instead
+
+### **Framework collection is outdated**
+
+**Issue:** Documentation changes not reflected in queries
+**Cause:** Collection not reindexed after markdown changes
+**Solution:** Run `make index-framework` to rebuild
+
+### **Lost patterns after reindexing**
+
+**Issue:** Stored patterns disappeared after running `make index`
+**Cause:** Accidentally wrote to framework collection before hooks were enforced
+**Solution:**
+- Ensure hooks are installed (`make setup-hooks`)
+- Restore from backup if available
+- Re-extract patterns from implementation and re-store to `cross_project_intelligence`
+
+### **Hook not enforcing protection**
+
+**Issue:** Agent can write to framework collections
+**Cause:** Hooks not properly installed
+**Solution:**
+```bash
+make setup-hooks
+cat ~/.cursor/hooks.json  # Verify beforeMCPExecution is configured
+ls -la ~/.cursor/hooks/protect_framework_collection  # Verify hook exists
+```
+
+---
+
+## 📖 Related Documentation
+
+- **Pattern Storage:** `templates/pattern-taxonomy-guide.md`
+- **Synopsis Generation:** `templates/file-synopsis-workflows.md`
+- **Hook Implementation:** `.cursor/hooks/protect_framework_collection`
+- **Setup Instructions:** `docs/setup/getting-started.md`
+
+---
+
+**Last Updated:** 2025-10-10

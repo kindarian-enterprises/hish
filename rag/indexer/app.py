@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Tuple
 
 import numpy as np
+import torch
 from fastembed import TextEmbedding
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import (
@@ -352,9 +353,19 @@ def ensure_collection(client: QdrantClient, name: str, dim: int, model_name: str
 
 def embedder(model_name: str):
     logger.info(f"Loading embedding model: {model_name}")
-    # FastEmbed API
-    model = TextEmbedding(model_name=model_name)
-    logger.info(f"Embedding model '{model_name}' loaded successfully")
+
+    # Check GPU availability and configure FastEmbed
+    if torch.cuda.is_available():
+        logger.info(
+            f"🚀 GPU detected: {torch.cuda.get_device_name(0)} - Enabling CUDA acceleration"
+        )
+        model = TextEmbedding(model_name=model_name, cuda=True, lazy_load=False)
+        logger.info(f"Embedding model '{model_name}' loaded successfully on GPU")
+    else:
+        logger.info("Using CPU (no GPU detected)")
+        model = TextEmbedding(model_name=model_name)
+        logger.info(f"Embedding model '{model_name}' loaded successfully on CPU")
+
     return model
 
 

@@ -9,3 +9,4 @@ tiktoken>=0.7.0
 rich>=13.7.1
 pathspec>=0.12.1
 fastembed==0.7.1
+onnxruntime-gpu>=1.23.0  # GPU support for FastEmbed (don't install onnxruntime CPU version)
