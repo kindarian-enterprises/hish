@@ -2,6 +2,31 @@
 
 This directory contains Cursor hooks that enhance agent behavior with local Qdrant knowledge collections.
 
+## Cursor Prompt Commands
+
+### `/verbalized-sampling` (Prompt Command)
+**Location**: `prompts/verbalized_sampling.md`
+**Purpose**: Generate diverse, creative responses by sampling from tail of probability distribution
+
+**Usage**: Simply type `/verbalized-sampling` in Cursor to load the prompt template
+
+**Research**: Based on [Zhang et al. (2025)](https://www.verbalized-sampling.com/) - "Verbalized Sampling: How to Mitigate Mode Collapse and Unlock LLM Diversity" ([arXiv:2510.01171](https://arxiv.org/abs/2510.01171))
+
+**What it does:**
+- Instructs model to generate 5 responses with explicit probabilities
+- Forces tail sampling (probability < 0.10 per response)
+- Unlocks creative diversity (1.6-2.1× increase)
+- No sacrifice in factual accuracy or safety
+
+**When to use:**
+- ✅ Creative writing, brainstorming, code exploration
+- ✅ When you want multiple diverse approaches
+- ❌ Factual queries, debugging, precise calculations (use normal mode)
+
+**Philosophy**: Aligned models give you the "best" (mode) response by default. Use `/verbalized-sampling` when you want creative diversity from the tail of the distribution instead.
+
+---
+
 ## Active Hooks
 
 ### `prioritize_local_data` (beforeSubmitPrompt)
@@ -62,6 +87,8 @@ Agent calls qdrant-store
 [beforeMCPExecution] protect_framework_collection
     ↓ (validates write target)
 MCP call allowed/denied
+
+Separate: /verbalized-sampling command loads prompt template for tail sampling
 ```
 
 ## Installation
@@ -97,7 +124,7 @@ make setup-hooks  # Copies hooks to ~/.cursor/hooks/ and generates hooks.json
 - `HISH_QDRANT_TIMEOUT` - Collection detection timeout (default: `2` seconds)
 
 ### Debug Logging
-Both hooks write debug logs to:
+All hooks write debug logs to:
 ```
 ~/.cursor/hook_debug.log
 ```
@@ -107,7 +134,31 @@ View logs:
 tail -f ~/.cursor/hook_debug.log
 ```
 
+Hook-specific log prefixes:
+- `[VS]` - verbalized_sampling
+- `(no prefix)` - prioritize_local_data
+- `[PROTECT]` - protect_framework_collection
+
 ## Testing
+
+### Test Verbalized Sampling Hook
+```bash
+# Test with verbalized sampling enabled
+export CURSOR_VERBALIZED_SAMPLING_ENABLED=true
+echo '{"messages": [{"role": "user", "content": "Write a creative story about a robot"}]}' | \
+  python3 .cursor/hooks/verbalized_sampling
+
+# Test with custom configuration
+export CURSOR_VERBALIZED_SAMPLING_SIZE=7
+export CURSOR_VERBALIZED_SAMPLING_PROBABILITY=0.08
+echo '{"messages": [{"role": "user", "content": "Generate code examples"}]}' | \
+  python3 .cursor/hooks/verbalized_sampling
+
+# Test with verbalized sampling disabled (default)
+unset CURSOR_VERBALIZED_SAMPLING_ENABLED
+echo '{"messages": [{"role": "user", "content": "Hello"}]}' | \
+  python3 .cursor/hooks/verbalized_sampling
+```
 
 ### Test Collection Detection
 ```bash
@@ -163,6 +214,8 @@ If your collection name contains these patterns but should be writable, rename t
 - **Pattern Storage**: `templates/pattern-taxonomy-guide.md`
 - **Setup Script**: `scripts/setup-hooks.sh`
 - **Hook Specification**: https://cursor.com/docs/agent/hooks
+- **Verbalized Sampling Research**: https://www.verbalized-sampling.com/
+- **Verbalized Sampling Paper**: https://arxiv.org/abs/2510.01171
 
 ## Design Philosophy
 

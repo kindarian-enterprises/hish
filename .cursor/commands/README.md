@@ -24,12 +24,21 @@ HISH Custom Commands provide instant access to agent initialization and session 
 
 ### Available Commands
 
+### `/verbalized-sampling` - Tail Sampling for Creative Diversity
+**File**: `verbalized-sampling.md`
+**Description**: Generate 5 diverse responses by sampling from tail of probability distribution
+**Use for**: Creative writing, brainstorming, code exploration, multiple perspectives
+**Loads**: `@prompts/verbalized_sampling.md`
+
+---
+
 | Command | Description | References |
 |---------|-------------|------------|
 | `/dev` | Initialize development agent | `@prompts/dev_agent/dev_agent_init_prompt.md` |
 | `/red` | Initialize red team agent | `@prompts/red_team/red_team_agent_init_prompt.md` |
 | `/end-dev` | Close dev session properly | `@prompts/dev_agent/dev_agent_session_end_prompt.md` |
 | `/end-red` | Close red team session | `@prompts/red_team/red_team_agent_session_end_prompt.md` |
+| `/verbalized-sampling` | Generate diverse tail-sampled responses | `@prompts/verbalized_sampling.md` |
 
 ---
 
@@ -64,6 +73,7 @@ You'll see a dropdown menu showing:
 /red - Initialize Red Team Agent
 /end-dev - End Dev Session
 /end-red - End Red Team Session
+/verbalized-sampling - Tail Sampling for Creative Diversity
 ```
 
 **Step 5: Select or type command name**
@@ -136,6 +146,20 @@ Type: /end-dev [Enter]
 ```
 
 **Result:** Seamless transition between agent modes with proper session management. Works in any Cursor project!
+
+---
+
+### Example 4: Creative Brainstorming with Tail Sampling
+
+**Scenario:** You need multiple creative approaches for solving a problem.
+
+```
+Type: /verbalized-sampling [Enter]
+
+Then: "How should I architect a real-time collaboration feature?"
+```
+
+**Result:** Agent generates 5 diverse responses sampled from the tail of the probability distribution, each with explicit probability < 0.10. You get creative alternatives instead of just the "safest" aligned response.
 
 ---
 
@@ -504,9 +528,10 @@ With 10 sessions per day: **100 seconds saved daily = 7 minutes per week**
 
 - [ ] HISH folder open in Cursor
 - [ ] Typed `/` in chat panel
-- [ ] See 4 HISH commands in dropdown
+- [ ] See 5 HISH commands in dropdown
 - [ ] Tested `/dev` command
 - [ ] Agent initialized successfully
+- [ ] Tested `/verbalized-sampling` for creative queries
 - [ ] Tested `/end-dev` command
 - [ ] Reviewed this README
 - [ ] Shared commands with team
