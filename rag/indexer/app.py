@@ -194,14 +194,10 @@ def process_files_in_chunks(
 
                             # Upsert in batches
                             if len(batch) >= batch_size:
-                                logger.debug(
-                                    f"Upserting batch of {len(batch)} vectors..."
-                                )
                                 try:
                                     client.upsert(
                                         collection_name=collection, points=batch
                                     )
-                                    logger.debug("Batch upserted successfully")
                                 except Exception as e:
                                     logger.error(f"Failed to upsert batch: {e}")
                                 batch.clear()
@@ -228,12 +224,8 @@ def process_files_in_chunks(
 
             # Upsert remaining batch for this chunk
             if batch:
-                logger.info(
-                    f"Upserting final batch of {len(batch)} vectors for chunk {chunk_idx + 1}..."
-                )
                 try:
                     client.upsert(collection_name=collection, points=batch)
-                    logger.info("Chunk batch upserted successfully")
                 except Exception as e:
                     logger.error(f"Failed to upsert chunk batch: {e}")
                 batch.clear()
@@ -591,7 +583,7 @@ def index_repo(
     max_workers: int = 0,
     batch_size: int = 256,
     max_file_size_mb: int = 5,
-    repo_chunk_size: int = 100,
+    repo_chunk_size: int = 10,
     repo_size_threshold_mb: float = 50.0,
     memory_cleanup_interval: int = 50,
 ):
@@ -613,7 +605,12 @@ def index_repo(
     # Use named vector for MCP compatibility
 
     logger.info("Connecting to Qdrant...")
-    client = QdrantClient(url=qdrant_url, api_key=api_key or None)
+    client = QdrantClient(
+        url=qdrant_url,
+        api_key=api_key or None,
+        timeout=300,  # 5 minutes for large batch operations
+        prefer_grpc=True,  # Use gRPC for better performance if available
+    )
     logger.info("Qdrant connection established")
 
     dim = guess_dim(optimal_model)
@@ -722,15 +719,11 @@ def index_repo(
 
                             # Upsert in reasonable batches
                             if len(standard_batch) >= batch_size:
-                                logger.debug(
-                                    f"Upserting batch of {len(standard_batch)} vectors..."
-                                )
                                 try:
                                     client.upsert(
                                         collection_name=collection,
                                         points=standard_batch,
                                     )
-                                    logger.debug("Batch upserted successfully")
                                 except Exception as e:
                                     logger.error(f"Failed to upsert batch: {e}")
                                 standard_batch.clear()
@@ -749,10 +742,8 @@ def index_repo(
 
         # Final batch
         if standard_batch:
-            logger.info(f"Upserting final batch of {len(standard_batch)} vectors...")
             try:
                 client.upsert(collection_name=collection, points=standard_batch)
-                logger.info("Final batch upserted successfully")
             except Exception as e:
                 logger.error(f"Failed to upsert final batch: {e}")
 
@@ -820,7 +811,12 @@ def main():
         logger.info("Recreate flag detected - will drop and recreate collection")
         # For safety, require explicit flag to recreate
         logger.info("Connecting to Qdrant for collection recreation...")
-        client = QdrantClient(url=qdrant_url, api_key=api_key or None)
+        client = QdrantClient(
+            url=qdrant_url,
+            api_key=api_key or None,
+            timeout=300,  # 5 minutes for large operations
+            prefer_grpc=True,
+        )
 
         # Determine optimal model for this collection type
         optimal_model = get_optimal_model(collection, model_name)

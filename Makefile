@@ -1,7 +1,7 @@
 # Hish Cursor Context Framework - Makefile
 # Multi-project development agent framework with shared knowledge
 
-.PHONY: help health test new-context list-contexts index-repo reindex-contexts clean logs index collections setup-cursor setup-hooks quick-start backup mcp build-mcp optimize-collections index-framework setup-intelligence lint lint-fix format type-check mypy-errors pre-commit-install dev-setup
+.PHONY: help health test new-context list-contexts index-repo reindex-contexts clean logs index collections setup-cursor setup-hooks setup-commands quick-start backup mcp build-mcp optimize-collections index-framework setup-intelligence lint lint-fix format type-check mypy-errors pre-commit-install dev-setup
 
 # Default target
 help: ## Show this help message
@@ -289,7 +289,12 @@ setup-hooks: ## Install Cursor hooks (collection guidance + framework protection
 	@echo "=========================="
 	@./scripts/setup-hooks.sh
 
-setup-cursor: ## Setup Cursor MCP integration with pre-built server image + hooks
+setup-commands: ## Install Cursor custom commands (agent init + session management)
+	@echo "⚡ Installing Cursor Commands"
+	@echo "============================="
+	@./scripts/setup-commands.sh
+
+setup-cursor: ## Setup Cursor MCP integration with pre-built server image + hooks + commands
 	@echo "🔌 Cursor MCP Integration Setup - Unified MPNet Embeddings"
 	@echo "=========================================================="
 	@echo ""
@@ -300,6 +305,9 @@ setup-cursor: ## Setup Cursor MCP integration with pre-built server image + hook
 	@echo ""
 	@echo "🪝 Installing hooks..."
 	@./scripts/setup-hooks.sh
+	@echo ""
+	@echo "⚡ Installing commands..."
+	@./scripts/setup-commands.sh
 	@echo ""
 	@echo "📋 Add this to your Cursor settings.json:"
 	@echo ""
@@ -322,6 +330,12 @@ setup-cursor: ## Setup Cursor MCP integration with pre-built server image + hook
 	@echo "  • Documentation/patterns: qdrant-find with collections (MPNet embeddings)"
 	@echo "  • Code symbols/implementation: Cursor's native codebase_search"
 	@echo "  • BEST RESULTS: Use both tools strategically for comprehensive understanding"
+	@echo ""
+	@echo "⚡ Custom Commands (Auto-Installed):"
+	@echo "  • Type '/dev' → Initialize Dev Agent"
+	@echo "  • Type '/red' → Initialize Red Team"
+	@echo "  • Type '/end-dev' → Close dev session"
+	@echo "  • See all: .cursor/commands/README.md"
 	@echo ""
 	@echo "📖 Detailed guide: docs/setup/getting-started.md"
 	@echo "🧪 Test framework: qdrant-find \"test query\" hish_framework_mpnet"

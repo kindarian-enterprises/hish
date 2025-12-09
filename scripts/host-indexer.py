@@ -83,8 +83,12 @@ def index_directory(work_dir: Path,
             from qdrant_client import QdrantClient
             from qdrant_client.http.models import VectorParams, Distance
 
-            client = QdrantClient(url=env_vars.get("QDRANT_URL", "http://localhost:6333"),
-                                  api_key=env_vars.get("QDRANT_API_KEY", ""))
+            client = QdrantClient(
+                url=env_vars.get("QDRANT_URL", "http://localhost:6333"),
+                api_key=env_vars.get("QDRANT_API_KEY", ""),
+                timeout=300,  # 5 minutes for large batch operations
+                prefer_grpc=True,  # Use gRPC for better performance if available
+            )
 
             # Get embedding dimension from model name
             model_name = env_vars.get(
@@ -131,7 +135,7 @@ def index_directory(work_dir: Path,
             max_workers=int(env_vars.get("MAX_WORKERS", "0")),
             batch_size=int(env_vars.get("BATCH_SIZE", "256")),
             max_file_size_mb=int(env_vars.get("MAX_FILE_SIZE_MB", "5")),
-            repo_chunk_size=int(env_vars.get("REPO_CHUNK_SIZE", "100")),
+            repo_chunk_size=int(env_vars.get("REPO_CHUNK_SIZE", "10")),
             repo_size_threshold_mb=float(
                 env_vars.get("REPO_SIZE_THRESHOLD_MB", "50.0")),
             memory_cleanup_interval=int(

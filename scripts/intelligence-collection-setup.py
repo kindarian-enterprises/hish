@@ -49,7 +49,11 @@ def setup_intelligence_collection():
     try:
         # Initialize Qdrant client
         client = QdrantClient(
-            url=qdrant_url, api_key=api_key if api_key else None)
+            url=qdrant_url,
+            api_key=api_key if api_key else None,
+            timeout=300,  # 5 minutes for large operations
+            prefer_grpc=True,
+        )
 
         # Get embedding dimension from model
         model = SentenceTransformer(model_name)
