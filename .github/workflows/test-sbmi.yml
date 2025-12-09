@@ -1,0 +1,129 @@
+name: SBMI Compiler Tests
+
+on:
+  push:
+    branches: [ main, develop, feature/sbmi-* ]
+    paths:
+      - 'sbmi/**'
+      - 'config/sbmi-compression.yaml'
+      - 'scripts/compile-indexes.py'
+      - '.github/workflows/test-sbmi.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'sbmi/**'
+      - 'config/sbmi-compression.yaml'
+      - 'scripts/compile-indexes.py'
+      - '.github/workflows/test-sbmi.yml'
+
+jobs:
+  test-sbmi:
+    name: Test SBMI Compiler
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-sbmi-${{ hashFiles('sbmi/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-sbmi-
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r sbmi/requirements.txt
+          pip install -r sbmi/requirements-test.txt
+
+      - name: Run SBMI tests
+        run: |
+          cd sbmi
+          python -m pytest tests/ -v --cov=sbmi --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./sbmi/coverage.xml
+          flags: sbmi
+          name: sbmi-${{ matrix.python-version }}
+          fail_ci_if_error: false
+
+      - name: Test compilation script
+        run: |
+          python scripts/compile-indexes.py
+
+      - name: Verify compiled files are valid
+        run: |
+          # Check that .compact files were created
+          test -f local/workflow-indexes/framework-command-index.compact
+          test -f local/workflow-indexes/framework-file-index.compact
+          test -f local/workflow-indexes/framework-repository-index.compact
+          test -f local/workflow-indexes/session-workflow-enforcement.compact
+
+          # Check that essential commands are preserved
+          grep -q "make install" local/workflow-indexes/framework-command-index.compact || exit 1
+          grep -q "make index" local/workflow-indexes/framework-command-index.compact || exit 1
+
+          echo "✅ Compiled files verified - essential commands preserved"
+
+      - name: Check for information loss
+        run: |
+          # Ensure critical file paths are preserved
+          grep -q "Makefile" local/workflow-indexes/framework-command-index.compact || exit 1
+          grep -q "dev_agent" local/workflow-indexes/framework-command-index.compact || exit 1
+
+          echo "✅ No critical information loss detected"
+
+  lint-sbmi:
+    name: Lint SBMI Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install linting tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff black isort mypy
+          pip install -r sbmi/requirements.txt
+
+      - name: Run ruff
+        run: |
+          cd sbmi
+          ruff check . --output-format=github
+
+      - name: Run black
+        run: |
+          cd sbmi
+          black --check --diff .
+
+      - name: Run isort
+        run: |
+          cd sbmi
+          isort --check-only --diff .
+
+      - name: Run mypy
+        run: |
+          cd sbmi
+          mypy compiler/ --ignore-missing-imports
+        continue-on-error: true

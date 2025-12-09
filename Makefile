@@ -1,7 +1,7 @@
 # Hish Cursor Context Framework - Makefile
 # Multi-project development agent framework with shared knowledge
 
-.PHONY: help health test new-context list-contexts index-repo reindex-contexts clean logs index collections setup-cursor setup-hooks setup-commands quick-start backup mcp build-mcp optimize-collections index-framework setup-intelligence lint lint-fix format type-check mypy-errors pre-commit-install dev-setup
+.PHONY: help health test new-context list-contexts index-repo reindex-contexts clean logs index collections setup-cursor setup-framework setup-hooks setup-commands quick-start backup mcp build-mcp optimize-collections index-framework setup-intelligence lint lint-fix format type-check mypy-errors pre-commit-install dev-setup test-sbmi test-sbmi-unit test-sbmi-integration sbmi-compile sbmi-compact sbmi-compact-force sbmi-stats sbmi-analyze
 
 # Default target
 help: ## Show this help message
@@ -193,6 +193,39 @@ test: ## Run framework tests (host-based)
 	@echo "📋 Using host-based testing environment..."
 	cd rag/indexer && python -m pytest tests/ -v
 
+# SBMI Testing
+test-sbmi: ## Run all SBMI compiler tests
+	@echo "🧪 Running SBMI compiler tests..."
+	cd sbmi && python3 -m pytest tests/ -v
+
+test-sbmi-unit: ## Run SBMI unit tests only
+	@echo "🧪 Running SBMI unit tests..."
+	cd sbmi && python3 -m pytest tests/ -v -m unit
+
+test-sbmi-integration: ## Run SBMI integration tests
+	@echo "🧪 Running SBMI integration tests..."
+	cd sbmi && python3 -m pytest tests/ -v -m integration
+
+sbmi-compile: ## Compile workflow indexes to .compact format (full)
+	@echo "📦 Compiling workflow indexes..."
+	python3 scripts/compile-indexes.py
+
+sbmi-compact: ## Incrementally compact changed framework docs (session-end)
+	@echo "⚡ Compacting changed framework documentation..."
+	python3 scripts/compact-framework.py
+
+sbmi-compact-force: ## Force full recompilation of all framework docs
+	@echo "🔄 Force recompiling all framework documentation..."
+	python3 scripts/compact-framework.py --force
+
+sbmi-stats: ## Show SBMI compilation cache statistics
+	@echo "📊 SBMI Cache Statistics:"
+	python3 scripts/compact-framework.py --stats
+
+sbmi-analyze: ## Analyze phrase frequency for compression optimization
+	@echo "📊 Analyzing framework documentation phrase frequency..."
+	python3 scripts/analyze-phrase-frequency.py
+
 # Code Quality
 lint: ## Run all linting checks (ruff, black, isort, mypy)
 	@echo "🔍 Running code quality checks..."
@@ -250,10 +283,11 @@ quick-start: ## Quick setup guide - show configuration steps
 	@echo "📋 Setup Steps:"
 	@echo "  1. Configure Cursor MCP integration: make setup-cursor"
 	@echo "  2. Set up Python virtual environment: see docs/setup/virtual-environment-guide.md"
-	@echo "  3. Create your first project context: make new-context"
-	@echo "  4. Setup intelligence collection: make setup-intelligence"
-	@echo "  5. Index documentation: make index"
-	@echo "  6. In Cursor:"
+	@echo "  3. Compile framework indexes: make sbmi-compact-force"
+	@echo "  4. Create your first project context: make new-context"
+	@echo "  5. Setup intelligence collection: make setup-intelligence"
+	@echo "  6. Index documentation: make index"
+	@echo "  7. In Cursor:"
 	@echo "     Dev Agent: @prompts/dev_agent/dev_agent_init_prompt.md"
 	@echo "     Red Team: @prompts/red_team/red_team_agent_init_prompt.md"
 	@echo ""
@@ -291,9 +325,20 @@ setup-commands: ## Install Cursor custom commands (agent init + session manageme
 	@echo "============================="
 	@./scripts/setup-commands.sh
 
-setup-cursor: ## Setup Cursor MCP integration with pre-built server image + hooks + commands
-	@echo "🔌 Cursor Setup"
-	@echo "==============="
+setup-framework: ## Setup framework for agent use (compile .compact files)
+	@echo "📦 Setting up framework for agent use..."
+	@echo "Compiling framework documentation to .compact files..."
+	@$(MAKE) sbmi-compact-force
+	@echo ""
+	@echo "✅ Framework setup complete!"
+	@echo "   - All .md files compiled to .compact"
+	@echo "   - Agents will read .compact files (token-optimized)"
+	@echo "   - RAG will index .md files (full semantic search)"
+	@echo ""
+
+setup-cursor: setup-framework ## Setup Cursor MCP integration with pre-built server image + hooks + commands
+	@echo "🔌 Cursor MCP Integration Setup - Unified MPNet Embeddings"
+	@echo "=========================================================="
 	@echo ""
 	@echo "Building MCP server..."
 	@docker compose -f deploy/compose.rag.yml build mcp-qdrant-unified

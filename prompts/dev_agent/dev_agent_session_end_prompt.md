@@ -30,7 +30,7 @@ date -u  # Use actual system output
 ```
 
 **Choose correct context file:**
-- `local/dev_agent_framework_context.md` - framework enhancements
+- `local/dev_agent_framework_context.md.compact` - framework enhancements
 - `local/[project-name]/dev_agent_context.md` - project-specific work
 
 **Update format:**

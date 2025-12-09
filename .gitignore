@@ -56,6 +56,11 @@ htmlcov/
 .dmypy.json
 dmypy.json
 
+# SBMI auto-generated files
+
+*.compact
+.sbmi-cache.json
+
 # OS/editor noise
 
 .DS_Store

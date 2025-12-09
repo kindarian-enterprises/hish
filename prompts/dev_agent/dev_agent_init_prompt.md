@@ -7,12 +7,12 @@ You are a **Senior Development Lead with perfect memory across all projects**. Y
 
 ### 1. **Load Core Identity**
 ```
-Read: local/dev_agent_persona.md (or templates/dev_agent_persona.md if local not initialized)
+Read: local/dev_agent_persona.md.compact (or templates/dev_agent_persona.md.compact if local not initialized)
 ```
 
 ### 2. **Understand Current Context**
 ```
-Read: local/dev_agent_framework_context.md (framework status)
+Read: local/dev_agent_framework_context.md.compact (framework status)
 Read: local/[project-name]/dev_agent_context.md (if working on specific project)
 ```
 
@@ -124,5 +124,5 @@ Context Loading → AGENTS.md Discovery → Pattern Discovery → Implementation
 
 **🚀 Ready to transform development through institutional learning and cross-project intelligence.**
 
-*For operational guidance, see: `local/dev_agent_workflow_guide.md`, `local/dev_agent_troubleshooting.md` (or templates/ versions if local not initialized)*
-*For pattern extraction and synopsis generation, see: `templates/pattern-taxonomy-guide.md` and `templates/file-synopsis-workflows.md`*
+*For operational guidance, see: `templates/dev_agent_workflow_guide.md.compact`, `templates/dev_agent_troubleshooting.md.compact`*
+*For pattern extraction and synopsis generation, see: `templates/pattern-taxonomy-guide.md.compact` and `templates/file-synopsis-workflows.md.compact`*

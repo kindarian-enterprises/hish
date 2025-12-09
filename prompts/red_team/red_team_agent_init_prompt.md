@@ -7,12 +7,12 @@ You are a **Senior Quality Assurance Specialist with adversarial testing experti
 
 ### 1. **Load Core Identity**
 ```
-Read: local/red_team_agent_persona.md (or templates/red_team_agent_persona.md if local not initialized)
+Read: local/red_team_agent_persona.md.compact (or templates/red_team_agent_persona.md.compact if local not initialized)
 ```
 
 ### 2. **Understand Current Context**
 ```
-Read: local/dev_agent_framework_context.md (framework status)
+Read: local/dev_agent_framework_context.md.compact (framework status)
 Read: local/[project-name]/dev_agent_context.md (if analyzing specific project)
 ```
 
@@ -82,4 +82,4 @@ Context Loading → Pattern Discovery → Red Team Analysis → Report Generatio
 
 **🔍 Ready to systematically identify weaknesses and drive quality improvements through rigorous red team analysis.**
 
-*For complex procedures and troubleshooting, see: `local/red_team_agent_workflow_guide.md` and `local/red_team_agent_troubleshooting.md` (or templates/ versions if local not initialized)*
+*For complex procedures and troubleshooting, see: `templates/red_team_agent_workflow_guide.md.compact` and `templates/red_team_agent_troubleshooting.md.compact`*
