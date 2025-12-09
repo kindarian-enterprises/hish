@@ -217,10 +217,10 @@ make test-sbmi
 ## Integration Points
 
 ### Cursor Commands (`.cursor/commands/`)
-- `dev.md` → `dev_agent_init_prompt.md.compact`
-- `end-dev.md` → `dev_agent_session_end_prompt.md.compact`
-- `red.md` → `red_team_agent_init_prompt.md.compact`
-- `end-red.md` → `red_team_agent_session_end_prompt.md.compact`
+- `dev.md` → `dev_agent_init_prompt.L2.compact`
+- `end-dev.md` → `dev_agent_session_end_prompt.L2.compact`
+- `red.md` → `red_team_agent_init_prompt.L1.compact`
+- `end-red.md` → `red_team_agent_session_end_prompt.L2.compact`
 
 Uses `{{HISH_ROOT}}` placeholder, replaced during `make setup-cursor`.
 
@@ -268,9 +268,9 @@ Uses `{{HISH_ROOT}}` placeholder, replaced during `make setup-cursor`.
 - **CI:** `.github/workflows/test-sbmi.yml`
 
 ### Agent Context
-- **Framework index:** `local/workflow-indexes/framework-repository-index.md.compact`
-- **Command index:** `local/workflow-indexes/framework-command-index.md.compact`
-- **Session enforcement:** `local/workflow-indexes/session-workflow-enforcement.md.compact`
+- **Framework index:** `local/workflow-indexes/framework-repository-index.L2.compact`
+- **Command index:** `local/workflow-indexes/framework-command-index.L1.compact`
+- **Session enforcement:** `local/workflow-indexes/session-workflow-enforcement.L1.compact`
 
 ## Documentation
 

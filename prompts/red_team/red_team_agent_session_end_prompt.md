@@ -185,4 +185,4 @@ REPORT LOCATION:
 
 **🔍 Red Team Analysis Complete - Quality improvements identified and documented for systematic implementation.**
 
-*For complex analysis procedures and troubleshooting, see: `templates/red_team_agent_workflow_guide.md.compact` and `templates/red_team_agent_troubleshooting.md.compact`*
+*For complex analysis procedures and troubleshooting, see: `templates/red_team_agent_workflow_guide.L2.compact` and `templates/red_team_agent_troubleshooting.L2.compact`*

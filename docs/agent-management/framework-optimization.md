@@ -294,10 +294,10 @@ Shows:
 ### Agent shortcuts automatically use `.compact` files:
 
 ```bash
-/dev        # Loads: prompts/dev_agent/dev_agent_init_prompt.md.compact
-/end-dev    # Loads: prompts/dev_agent/dev_agent_session_end_prompt.md.compact
-/red        # Loads: prompts/red_team/red_team_agent_init_prompt.md.compact
-/end-red    # Loads: prompts/red_team/red_team_agent_session_end_prompt.md.compact
+/dev        # Loads: prompts/dev_agent/dev_agent_init_prompt.L2.compact
+/end-dev    # Loads: prompts/dev_agent/dev_agent_session_end_prompt.L2.compact
+/red        # Loads: prompts/red_team/red_team_agent_init_prompt.L1.compact
+/end-red    # Loads: prompts/red_team/red_team_agent_session_end_prompt.L2.compact
 ```
 
 This is configured in `.cursor/commands/*.md` and happens automatically.
