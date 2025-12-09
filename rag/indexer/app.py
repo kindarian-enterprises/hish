@@ -200,7 +200,6 @@ def process_files_in_chunks(
                                     )
                                 except Exception as e:
                                     logger.error(f"Failed to upsert batch: {e}")
-                                    raise
                                 batch.clear()
 
                         total_files += 1
@@ -229,7 +228,6 @@ def process_files_in_chunks(
                     client.upsert(collection_name=collection, points=batch)
                 except Exception as e:
                     logger.error(f"Failed to upsert chunk batch: {e}")
-                    raise
                 batch.clear()
 
             # Force garbage collection between chunks
@@ -728,7 +726,6 @@ def index_repo(
                                     )
                                 except Exception as e:
                                     logger.error(f"Failed to upsert batch: {e}")
-                                    raise
                                 standard_batch.clear()
 
                         total_files += 1
@@ -749,7 +746,6 @@ def index_repo(
                 client.upsert(collection_name=collection, points=standard_batch)
             except Exception as e:
                 logger.error(f"Failed to upsert final batch: {e}")
-                raise
 
     logger.info("Indexing complete!")
     print(
