@@ -1,0 +1,27 @@
+---
+description: Framework files weighted by size for efficient token use. Start light, expand when needed.
+alwaysApply: true
+---
+# SBMI Weight-Based Navigation
+Files weighted by line count → .L1.compact (lightest) → .L4.compact (heaviest)
+## Weights
+.L1 → 0-150 lines (quick ref)
+.L2 → 151-300 lines (moderate detail)
+.L3 → 301-500 lines (comprehensive)
+.L4 → 501+ lines (deep dive)
+## Strategy
+Start light:
+- Simple reference
+- Quick command lookup
+- Basic overview
+Go heavier:
+- Comprehensive understanding
+- Architecture/design
+- Debug/troubleshoot
+- Complete implementation
+You decide - lighter suffices or need full weight. Consider cost vs value.
+## Examples
+framework-command-index.L1.compact → Quick command ref
+sbmi-system-index.L2.compact → System overview
+expansion-protocol.L3.compact → Detailed protocol
+symbolic-budget-design.L4.compact → Complete design

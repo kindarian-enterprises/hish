@@ -90,10 +90,10 @@ make list-contexts - List all contexts
 
         result = compiler.compress_index(excluded_file, level="level2")
 
-        # Should create .compact file
-        expected_output = excluded_file.with_suffix('.md.compact')
-        assert result == expected_output
+        # Should create .L{weight}.compact file (weight determined by size)
         assert result.exists()
+        assert result.name.endswith('.compact')
+        assert '.L' in result.name  # Has weight indicator
 
         # File should be in excluded set
         assert excluded_file in compiler.excluded_files
@@ -470,9 +470,10 @@ You are a focused, methodical development agent.
 
         output_file = compiler.compress_index(persona_file, level="level2")
 
-        # Should create .compact file
-        assert output_file.name == "dev_agent_persona.md.compact"
+        # Should create .L{weight}.compact file
         assert output_file.exists()
+        assert output_file.name.startswith("dev_agent_persona.L")
+        assert output_file.name.endswith(".compact")
 
         # Read compact content
         compact_content = output_file.read_text()

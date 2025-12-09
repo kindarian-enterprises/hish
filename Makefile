@@ -226,6 +226,14 @@ sbmi-analyze: ## Analyze phrase frequency for compression optimization
 	@echo "📊 Analyzing framework documentation phrase frequency..."
 	python3 scripts/analyze-phrase-frequency.py
 
+sbmi-validate: ## Validate SBMI expansion graph balance
+	@echo "🔍 Validating SBMI expansion graph..."
+	python3 scripts/validate-expansion-graph.py
+
+sbmi-validate-verbose: ## Validate SBMI graph with verbose output
+	@echo "🔍 Validating SBMI expansion graph (verbose)..."
+	python3 scripts/validate-expansion-graph.py --verbose --check-balance
+
 # Code Quality
 lint: ## Run all linting checks (ruff, black, isort, mypy)
 	@echo "🔍 Running code quality checks..."

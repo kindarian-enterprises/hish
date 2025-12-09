@@ -119,7 +119,6 @@ class IndexCompiler:
         """
         if self.is_excluded(source_file):
             # Copy excluded files verbatim with .compact extension
-            output_file = source_file.with_suffix('.md.compact')
             content = source_file.read_text()
 
             # Add header noting this is a verbatim copy
@@ -134,7 +133,15 @@ class IndexCompiler:
 #
 
 """
-            output_file.write_text(header + content)
+            full_content = header + content
+            line_count = len(full_content.split('\n'))
+
+            # Determine weight level for excluded file
+            weight_level = self.config.get_weight_level(line_count)
+
+            # Create output path with weight level
+            output_file = source_file.parent / f"{source_file.stem}.L{weight_level}.compact"
+            output_file.write_text(full_content)
 
             # Track as excluded but processed
             self.excluded_files.add(source_file)
@@ -147,14 +154,15 @@ class IndexCompiler:
                 'compressed_chars': len(content),
                 'reduction_pct': 0.0,
                 'level': 'excluded',
-                'strategy': 'verbatim_copy'
+                'strategy': 'verbatim_copy',
+                'weight_level': weight_level
             }
 
             # Update cache
             if self.cache:
                 self.cache.mark_compiled(source_file, output_file, 0.0)
 
-            print(f"  ≡ {source_file.name} → {output_file.name} (VERBATIM - behavioral)")
+            print(f"  ≡ {source_file.name} → {output_file.name} (VERBATIM L{weight_level})")
 
             return output_file
 
@@ -193,15 +201,18 @@ class IndexCompiler:
 """
         compressed = header + compressed
 
-        # Determine output filename
-        output_name = self._get_output_name(source_file.stem, level)
-        output_file = source_file.parent / output_name
-        output_file.write_text(compressed)
-
-        # Track results
+        # Calculate size stats before writing
         compressed_lines = len(compressed.split('\n'))
         compressed_chars = len(compressed)
         reduction_pct = ((original_chars - compressed_chars) / original_chars) * 100
+
+        # Determine weight level based on output size
+        weight_level = self.config.get_weight_level(compressed_lines)
+
+        # Determine output filename with weight level
+        output_name = self._get_output_name(source_file.stem, level, weight_level)
+        output_file = source_file.parent / output_name
+        output_file.write_text(compressed)
 
         self.processed_files[source_file.name] = {
             'source': source_file,
@@ -346,7 +357,7 @@ class IndexCompiler:
 
     def compile_all_indexes(self, level: str = "level2") -> Dict[str, dict]:
         """
-        Compile all workflow index files in workflow-indexes/.
+        Compile all framework documentation files using config-driven scanning.
 
         Args:
             level: Compression level to use
@@ -355,29 +366,28 @@ class IndexCompiler:
             Dict of compilation results
         """
         print("\n" + "=" * 70)
-        print("SBMI PHASE 1 - INDEX COMPILATION")
+        print("SBMI FRAMEWORK COMPILATION")
         print("=" * 70)
-        print(f"\nWorkflow indexes: {self.workflow_indexes}")
+        print(f"\nScan directories: {', '.join(str(d) for d in self.scan_dirs)}")
         print(f"Config: {self.config.config_path}")
         print(f"Level: {level}")
         print()
 
-        # Find all .md files in workflow-indexes/
-        index_files = list(self.workflow_indexes.glob("*.md"))
+        # Find all .md files using config-driven scanning
+        index_files = self._find_all_markdown_files()
 
-        # Filter out already compressed files and exclusions
+        # Filter out already compressed files
         index_files = [
             f for f in index_files
             if not f.stem.endswith(('-level1', '-level2'))
             and not f.name.endswith('.compact')
-            and not self.is_excluded(f)
         ]
 
         if not index_files:
-            print("No index files found to compile.")
+            print("No framework files found to compile.")
             return {}
 
-        print(f"Found {len(index_files)} index files to compile:\n")
+        print(f"Found {len(index_files)} framework files to compile:\n")
 
         # Compile each index
         for index_file in sorted(index_files):
@@ -395,12 +405,19 @@ class IndexCompiler:
             return level_config.get('target_reduction', 'N/A')
         return 'N/A'
 
-    def _get_output_name(self, stem: str, level: str) -> str:
-        """Determine output filename based on level."""
-        if level == "level1":
-            return f"{stem}-level1.compact"
-        else:
-            return f"{stem}.compact"
+    def _get_output_name(self, stem: str, level: str, weight_level: int) -> str:
+        """
+        Determine output filename based on weight level.
+
+        Args:
+            stem: Base filename without extension
+            level: Compression level (e.g., 'level2') - currently unused
+            weight_level: Weight level based on output size (1, 2, 3, etc.)
+
+        Returns:
+            Output filename with .L{weight}.compact extension
+        """
+        return f"{stem}.L{weight_level}.compact"
 
     def _print_incremental_summary(self, total_files: int, changed_files: int) -> None:
         """Print incremental compilation summary."""

@@ -93,6 +93,35 @@ class CompressionConfig:
         """Get raw configuration dict."""
         return self._config.copy()
 
+    @property
+    def weight_level_boundaries(self) -> List[int]:
+        """
+        Get weight level boundaries (line count thresholds).
+
+        Returns:
+            List of line count boundaries. Files are assigned to L1, L2, L3, etc.
+            based on which boundary they fall under.
+        """
+        weight_config = self._config.get('weight_levels', {})
+        return weight_config.get('boundaries', [150, 300, 500])
+
+    def get_weight_level(self, line_count: int) -> int:
+        """
+        Determine weight level based on line count.
+
+        Args:
+            line_count: Number of lines in the file
+
+        Returns:
+            Weight level (1, 2, 3, etc.)
+        """
+        boundaries = self.weight_level_boundaries
+        for level, boundary in enumerate(boundaries, start=1):
+            if line_count <= boundary:
+                return level
+        # If exceeds all boundaries, return level after last boundary
+        return len(boundaries) + 1
+
     def reload(self) -> None:
         """Reload configuration from file."""
         self._load()

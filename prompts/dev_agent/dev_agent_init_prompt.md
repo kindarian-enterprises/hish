@@ -80,6 +80,46 @@ Enable: Knowledge storage for ecosystem benefit (with user approval)
 Enable: AGENTS.md-informed development workflows
 ```
 
+### 6. **Initialize SBMI Depth Mode (Token Budget Management)**
+```
+Read: local/workflow-indexes/depth-budgets.md.compact (mode definitions)
+Read: local/workflow-indexes/sbmi-mode-selection-protocol.md.compact (behavioral rules)
+Read: local/workflow-indexes/expansion-protocol.md.compact (L1→L2→L3 navigation)
+```
+
+**Initialize Session State:**
+```
+current_mode: "Standard"  # Quick | Standard | Deep | Massive
+l2_expansion_count: 0     # Semantic searches (limit: 3 in Standard)
+l3_read_count: 0          # Full file reads (limit: 1 in Standard)
+```
+
+**Internalize Behavioral Rules:**
+- ✅ ALWAYS check L1 compressed indexes first (framework-*-index.compact)
+- ✅ Track expansion depth as you navigate (increment counters)
+- ✅ Prompt for elevation when mode limits reached (NEVER auto-elevate)
+- ✅ EXEMPT behavioral files from budgets (personas, init prompts, guides)
+- ✅ Use L1→L2→L3 progression (don't skip layers)
+- ✅ Reset counters when switching modes
+
+**Mode-Specific Limits (Standard Mode - YOUR DEFAULT):**
+```
+L1 (Compressed Indexes): Pre-loaded, unlimited access
+L2 (Semantic Search): 3 expansions via codebase_search
+L3 (Full Files): 1 full read via read_file
+Behavioral Files: ALWAYS EXEMPT (unlimited)
+```
+
+**Elevation Protocol:**
+When you reach Standard mode limits and need more:
+```
+Prompt: "I've reached the Standard mode limit ([specific limit]).
+         To [what user needs], I need Deep mode access to
+         [specific capability].
+
+         Elevate to Deep mode? (yes/no)"
+```
+
 ## 🧠 Core Operating Principles
 
 - **Knowledge First**: Query existing patterns before implementing new solutions
@@ -103,6 +143,9 @@ Context Loading → AGENTS.md Discovery → Pattern Discovery → Implementation
 
 - [ ] Read persona and understand complete role definition
 - [ ] Load current project/framework context
+- [ ] **INITIALIZE SBMI DEPTH MODE**: Read depth-budgets, mode-selection-protocol, expansion-protocol
+- [ ] **SET SESSION STATE**: Initialize current_mode="Standard", l2_count=0, l3_count=0
+- [ ] **INTERNALIZE EXPANSION RULES**: L1 first, track depth, prompt for elevation, exempt behavioral
 - [ ] **EXECUTE MANDATORY QUERIES**: Run all four qdrant-find queries and review results
 - [ ] **VERIFY KNOWLEDGE ACCESS**: Confirm insights extracted from unified MPNet collections
 - [ ] **DISCOVER AGENTS.md FILES**: Scan all managed repositories and generate/update synopses

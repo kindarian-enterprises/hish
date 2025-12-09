@@ -39,10 +39,26 @@ class CompressionStrategy(ABC):
 # ============================================================================
 
 class RemoveFormattingMarkersPass(CompressionStrategy):
-    """Remove emoji and formatting markers (🚨, ⚠️, 🔒, etc.) but preserve text."""
+    """Remove emoji and formatting markers but preserve text."""
 
-    # List of emojis to strip from lines
-    EMOJIS = ['🚨', '⚠️', '🔒', '📋', '⚡', '⚙', '✨', '✅', '❌', '🔧', '🛡️', '📝', '💡', '🎯']
+    # Comprehensive emoji regex pattern covering all Unicode emoji ranges
+    EMOJI_PATTERN = re.compile(
+        "["
+        "\U0001F1E0-\U0001F1FF"  # flags (iOS)
+        "\U0001F300-\U0001F5FF"  # symbols & pictographs
+        "\U0001F600-\U0001F64F"  # emoticons
+        "\U0001F680-\U0001F6FF"  # transport & map symbols
+        "\U0001F700-\U0001F77F"  # alchemical symbols
+        "\U0001F780-\U0001F7FF"  # Geometric Shapes Extended
+        "\U0001F800-\U0001F8FF"  # Supplemental Arrows-C
+        "\U0001F900-\U0001F9FF"  # Supplemental Symbols and Pictographs
+        "\U0001FA00-\U0001FA6F"  # Chess Symbols
+        "\U0001FA70-\U0001FAFF"  # Symbols and Pictographs Extended-A
+        "\U00002702-\U000027B0"  # Dingbats
+        "\U000024C2-\U0001F251"
+        "]+",
+        flags=re.UNICODE
+    )
 
     @property
     def name(self) -> str:
@@ -55,13 +71,13 @@ class RemoveFormattingMarkersPass(CompressionStrategy):
             if re.match(r'^[\-=]{3,}$', line.strip()):
                 continue
 
-            # Strip emojis from line but keep the text
-            cleaned_line = line
-            for emoji in self.EMOJIS:
-                cleaned_line = cleaned_line.replace(emoji, '')
+            # Strip all emojis from line but keep the text
+            cleaned_line = self.EMOJI_PATTERN.sub('', line)
+
+            # Remove extra spaces left after emoji removal
+            cleaned_line = re.sub(r'\s+', ' ', cleaned_line).strip()
 
             # Only skip line if it becomes empty after emoji removal
-            cleaned_line = cleaned_line.strip()
             if cleaned_line:
                 lines.append(cleaned_line)
             elif not line.strip():

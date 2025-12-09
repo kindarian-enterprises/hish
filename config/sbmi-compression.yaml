@@ -16,6 +16,16 @@ excluded_directories:
   - "**/node_modules"
   - "**/.git"
 
+# Weight levels based on output file size (line count)
+# Compiled files get .L1, .L2, .L3, etc. suffix based on which boundary they fall into
+# This allows agents to choose lighter files first, expanding to heavier only when needed
+weight_levels:
+  boundaries:  # Line count thresholds (inclusive upper bound)
+    - 150      # L1: 0-150 lines (lightest - quick reference)
+    - 300      # L2: 151-300 lines (medium - moderate detail)
+    - 500      # L3: 301-500 lines (heavy - comprehensive)
+    # L4: 501+ lines (anything above last boundary - very heavy)
+
 # Files/patterns that should NEVER be compressed (behavioral layer)
 exclusion_patterns:
   # Agent personas
@@ -43,7 +53,6 @@ exclusion_patterns:
   - "**/dev_agent_framework_context.md"
   - "**/dev_agent_context.md"
   - "**/style-and-philosophy/**"
-  - "**/workflows-and-processes/**"
 
   # Exclusion rules itself (meta)
   - "**/compression-exclusion-rules.md"

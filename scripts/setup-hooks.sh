@@ -40,6 +40,9 @@ cp "$HOOKS_SOURCE_DIR/protect_framework_collection" "$HOOKS_INSTALL_DIR/protect_
 chmod +x "$HOOKS_INSTALL_DIR/prioritize_local_data"
 chmod +x "$HOOKS_INSTALL_DIR/protect_framework_collection"
 
+# Copy Cursor rules (project rules are auto-loaded from .cursor/rules, no install needed)
+echo "📋 Project rules configured in .cursor/rules/"
+
 # Generate hooks.json
 echo "⚙️  Generating hooks.json..."
 cat > "$HOME/.cursor/hooks.json" <<EOF
@@ -63,6 +66,9 @@ EOF
 echo "✅ Hooks installed"
 echo "  • protect_framework_collection - Blocks writes to framework collections (read-only)"
 echo ""
+echo "Project rules (.cursor/rules/*.mdc):"
+echo "  • sbmi-weight-navigation.mdc - Framework file weight system (auto-loaded by Cursor)"
+echo ""
 
 echo "🔌 MCP Architecture:"
 echo "  • qdrant-unified server: Documentation/framework collections (MPNet embeddings)"
@@ -71,7 +77,7 @@ echo "  • cross_project_intelligence is WRITABLE (agent-curated patterns with 
 echo ""
 echo "To verify installation:"
 echo "  ls -la $HOOKS_INSTALL_DIR/"
-echo "  ls -la $HOME/.cursor/rules/"
+echo "  ls -la .cursor/rules/  # Project rules (auto-loaded)"
 echo "  cat $HOME/.cursor/hooks.json"
 echo ""
 echo "Debug logs will be written to: $HOME/.cursor/hook_debug.log"
