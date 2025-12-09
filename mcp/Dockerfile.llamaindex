@@ -13,8 +13,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && pip install --no-cache-dir uv \
     && uv tool install qdrant-llamaindex-mcp-server==0.1.2 \
+        --with pydantic==2.12.3 \
+        --with pydantic-core==2.41.4 \
+        --with fastmcp==2.12.5 \
     && uv pip install --system --no-cache fastembed \
-    && uv pip install --system --no-cache --upgrade pydantic==2.12.3 pydantic-core==2.41.4 fastmcp==2.12.5 \
     && python3 -c "from fastembed import TextEmbedding; print('Pre-warming MPNet embedding model with fastembed...'); model = TextEmbedding('sentence-transformers/paraphrase-multilingual-mpnet-base-v2'); print('MPNet model ready!')"
 
 # Default command - use uv to invoke tool with correct venv

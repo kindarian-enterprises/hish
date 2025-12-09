@@ -46,15 +46,34 @@ fastmcp 2.13+ changed how it handles function parameter type hints, specifically
 **Resolution:**
 Pin to `fastmcp==2.12.5` which is the last known stable version.
 
-### UV Tool Wrapper Required
+## Installation Approach
 
-**Problem:** Direct command `qdrant-llamaindex-mcp-server` doesn't always use the correct virtual environment with pinned dependencies.
+**Current:** uv tool install + uv pip install system-wide dependencies + uv tool run invocation
 
-**Solution:** Use `uv tool run qdrant-llamaindex-mcp-server` wrapper which ensures the correct venv is activated.
+**Why:**
+- `uv tool install` creates the qdrant-llamaindex-mcp-server tool
+- `uv pip install --system` installs pinned dependencies (fastmcp, pydantic) system-wide
+- The tool must be invoked via `uv tool run` (not direct binary) to ensure correct environment
+- Container CMD and compose command both use `uv tool run` to ensure proper execution
+
+**Critical:** Running `qdrant-llamaindex-mcp-server` directly will use PATH resolution and may bypass pinned dependencies. Always invoke via `uv tool run`.
 
 **Implementation:**
 - Dockerfile CMD: `["uv", "tool", "run", "qdrant-llamaindex-mcp-server", "--transport", "stdio"]`
 - compose.rag.yml command: `["uv", "tool", "run", "qdrant-llamaindex-mcp-server", "--transport", "stdio"]`
+
+## Testing Version Pins
+
+**Verify installed versions:**
+```bash
+# Check installed versions in tool venv
+docker run --rm hish-mcp-unified:latest \
+  /root/.local/share/uv/tools/qdrant-llamaindex-mcp-server/bin/python -m pip list | \
+  grep -E 'qdrant|fastmcp|pydantic'
+
+# Test MCP server starts via uv tool run
+docker compose -f deploy/compose.rag.yml run --rm mcp-qdrant-unified
+```
 
 ## Testing New Versions
 
