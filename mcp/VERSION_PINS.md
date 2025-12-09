@@ -7,10 +7,13 @@ The MCP server Docker image uses pinned versions to prevent breaking changes fro
 ## Pinned Versions (as of 2024-12-17)
 
 ### Core Dependencies
-- `qdrant-llamaindex-mcp-server==0.1.2` - MCP server implementation
-- `pydantic==2.12.3` - Data validation (fastmcp dependency)
-- `pydantic-core==2.41.4` - Pydantic core library
-- `fastmcp==2.12.5` - **CRITICAL PIN** - fastmcp 2.13+ has breaking changes
+
+| Package | Version | Reason |
+|---------|---------|--------|
+| `qdrant-llamaindex-mcp-server` | 0.1.2 | Base MCP server |
+| `fastmcp` | 2.12.5 | **CRITICAL** - Breaking changes in 2.13+ cause `KeyError: 'ctx'` on Mac |
+| `pydantic` | 2.12.3 | Compatibility with fastmcp 2.12.5 |
+| `pydantic-core` | 2.41.4 | Compatibility with pydantic 2.12.3 |
 
 ### Embedding Model
 - `fastembed` - Latest compatible version (installed system-wide)
@@ -18,17 +21,33 @@ The MCP server Docker image uses pinned versions to prevent breaking changes fro
 
 ## Known Issues
 
-### fastmcp 2.13+ Breaking Changes
-**Problem:** fastmcp versions 2.13 and newer introduce breaking API changes that cause MCP server initialization failures.
+### fastmcp >= 2.13.0 Breaking Changes
 
-**Solution:** Pin to `fastmcp==2.12.5` which is the last known stable version.
+**Error:**
+```
+KeyError: 'ctx'
+  File "fastmcp/tools/tool.py", line 463, in from_function
+  File "pydantic/_internal/_generate_schema.py", line 1986, in _arguments_schema
+    annotation = type_hints[name]
+```
+
+**Root Cause:**
+fastmcp 2.13+ changed how it handles function parameter type hints, specifically around context (`ctx`) parameters. This breaks compatibility with the current qdrant-llamaindex-mcp-server implementation.
+
+**Platform Impact:**
+- **Linux (working)**: Local build with fastmcp 2.12.5
+- **macOS (failing)**: Fresh installs pull fastmcp >= 2.13.0
 
 **Symptoms if unpinned:**
 - MCP server fails to start with JSON-RPC protocol errors
 - Cursor shows "MCP server failed to initialize" errors
 - Users with fresh clones cannot use `qdrant-find` tool
 
+**Resolution:**
+Pin to `fastmcp==2.12.5` which is the last known stable version.
+
 ### UV Tool Wrapper Required
+
 **Problem:** Direct command `qdrant-llamaindex-mcp-server` doesn't always use the correct virtual environment with pinned dependencies.
 
 **Solution:** Use `uv tool run qdrant-llamaindex-mcp-server` wrapper which ensures the correct venv is activated.
@@ -62,14 +81,31 @@ Before upgrading any pinned version:
    - Run `qdrant-find "test query" hish_framework_mpnet`
    - Verify results return successfully
 
+5. **Test on both platforms:**
+   - Linux (current dev environment)
+   - macOS (user's Mac)
+
 ## Updating Pins
 
 If you need to update versions:
 
-1. Update `mcp/Dockerfile.llamaindex` with new versions
-2. Update this file with rationale and date
-3. Test thoroughly using steps above
-4. Document any new known issues
+1. Check upstream issues:
+   - https://github.com/qdrant/qdrant-llamaindex-mcp-server
+   - https://github.com/jlowin/fastmcp
+
+2. Update `mcp/Dockerfile.llamaindex` with new versions
+
+3. Test in isolated environment:
+   ```bash
+   docker build -t test-mcp -f mcp/Dockerfile.llamaindex .
+   docker run --rm test-mcp qdrant-llamaindex-mcp-server --version
+   ```
+
+4. Test thoroughly using steps above
+
+5. Update this file with rationale and date
+
+6. Document any new known issues
 
 ## History
 
