@@ -5,14 +5,19 @@ WORKDIR /app
 ENV PATH="/root/.local/bin:$PATH"
 
 # Install everything in a single optimized layer
+# Version pins from working Linux build (2024-10-22)
+# DO NOT UPGRADE without testing - fastmcp 2.13+ has breaking changes
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
     && rm -rf /var/lib/apt/lists/* \
     && pip install --no-cache-dir uv \
-    && uv tool install qdrant-llamaindex-mcp-server \
+    && uv tool install qdrant-llamaindex-mcp-server==0.1.2 \
+        --with pydantic==2.12.3 \
+        --with pydantic-core==2.41.4 \
+        --with fastmcp==2.12.5 \
     && uv pip install --system --no-cache fastembed \
     && python3 -c "from fastembed import TextEmbedding; print('Pre-warming MPNet embedding model with fastembed...'); model = TextEmbedding('sentence-transformers/paraphrase-multilingual-mpnet-base-v2'); print('MPNet model ready!')"
 
-# Default command
-CMD ["qdrant-llamaindex-mcp-server", "--transport", "stdio"]
+# Default command - use uv to invoke tool with correct venv
+CMD ["uv", "tool", "run", "qdrant-llamaindex-mcp-server", "--transport", "stdio"]

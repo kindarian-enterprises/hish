@@ -32,7 +32,7 @@ services:
       - ../config/env.mcp.unified
     environment:
       - QDRANT_READ_ONLY=false
-    command: ["qdrant-llamaindex-mcp-server", "--transport", "stdio"]
+    command: ["uv", "tool", "run", "qdrant-llamaindex-mcp-server", "--transport", "stdio"]
     profiles: ["stdio"]  # invoked interactively
 
 
