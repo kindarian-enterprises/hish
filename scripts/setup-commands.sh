@@ -9,11 +9,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HISH_ROOT="$(dirname "$SCRIPT_DIR")"
 COMMANDS_SOURCE_DIR="$HISH_ROOT/.cursor/commands"
 
-echo "⚡ HISH Cursor Commands Setup"
-echo "============================="
-echo "HISH Root: $HISH_ROOT"
-echo "Commands Source: $COMMANDS_SOURCE_DIR"
-echo ""
+echo "Installing commands..."
 
 # Verify source directory exists
 if [ ! -d "$COMMANDS_SOURCE_DIR" ]; then
@@ -91,21 +87,4 @@ echo "  2. Open chat panel"
 echo "  3. Type '/' to see all commands"
 echo "  4. Select HISH command or type name"
 echo "  5. Press Enter to execute"
-echo ""
-
-echo "🔄 To Update Commands:"
-echo "  cd $HISH_ROOT"
-echo "  git pull"
-echo "  make setup-cursor"
-echo ""
-
-echo "⚠️  IMPORTANT:"
-echo "  • Commands are GLOBALLY available in all Cursor projects"
-echo "  • Installed to: ~/.cursor/commands/ (per Cursor documentation)"
-echo "  • Commands reference HISH prompts using absolute paths"
-echo "  • Updates require re-running this script"
-echo "  • Custom commands should be in separate files (not hish commands)"
-echo ""
-
-echo "📚 Documentation: $HISH_ROOT/.cursor/commands/README.md"
-echo "📖 Cursor Docs: https://cursor.com/docs/chat/custom-commands"
+echo "✅ Commands installed to ~/.cursor/commands/"

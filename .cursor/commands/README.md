@@ -46,28 +46,17 @@ HISH Custom Commands provide instant access to agent initialization and session 
 
 ### How to Use Commands
 
-**Step 1: Ensure commands are installed**
+**Step 1: Install commands**
 ```bash
 cd /path/to/hish
-make setup-cursor  # Installs commands globally
+make setup-cursor  # Installs globally to ~/.cursor/commands/
 ```
 
-**Step 2: Open any project in Cursor**
-```bash
-cd /path/to/any/project
-cursor .
-```
+**Step 2: Restart Cursor**
 
-**Step 3: Open chat panel**
-- Click the chat icon in Cursor's sidebar
-- Or press the chat keyboard shortcut
+**Step 3: Open Cursor chat (any project)**
 
 **Step 4: Type `/` to see commands**
-```
-Type: /
-```
-
-You'll see a dropdown menu showing:
 ```
 /dev - Initialize Dev Agent
 /red - Initialize Red Team Agent
@@ -76,24 +65,12 @@ You'll see a dropdown menu showing:
 /verbalized-sampling - Tail Sampling for Creative Diversity
 ```
 
-**Step 5: Select or type command name**
+**Step 5: Use a command**
 ```
-Type: /dev
-Press: Enter
-```
-
-The command expands to reference the agent initialization prompt:
-```
-@prompts/dev_agent/dev_agent_init_prompt.md
+Type: /dev [Enter]
 ```
 
-**Step 6: Agent processes the prompt**
-- Command references HISH prompt using absolute path
-- HISH hooks inject collection guidance automatically
-- Agent loads full context and framework knowledge
-- Agent is ready for development work
-
-**Note:** Commands work from **any project** - you don't need to have HISH folder open!
+Commands reference HISH prompts using absolute paths, so they work from any project.
 
 ---
 
@@ -496,45 +473,39 @@ With 10 sessions per day: **100 seconds saved daily = 7 minutes per week**
 
 ### Q: Do I need to install anything?
 
-**A:** No! Commands auto-detect when you open the HISH folder in Cursor. Just `git pull` to get updates.
+**A:** Yes. Run `make setup-cursor` once to install commands globally. Then `git pull` + `make setup-cursor` to get updates.
 
 ### Q: Can I create my own commands?
 
-**A:** Yes! Create a `.md` file in `.cursor/commands/` with proper frontmatter. See "Adding New Commands" section.
+**A:** For personal use, add `.md` files to `~/.cursor/commands/` (Cursor's user directory). To contribute commands to Hish, open a PR. Don't edit framework files directly.
 
 ### Q: Do commands work outside HISH folder?
 
-**A:** Yes! Commands are **globally installed** and work in any Cursor project. This is the key benefit over project-scoped commands.
+**A:** Yes! Commands install to `~/.cursor/commands/` and work in any Cursor project.
 
 ### Q: What if I typo a command name?
 
-**A:** Use the `/` autocomplete menu - it shows all commands with descriptions. No need to memorize exact names.
+**A:** Use the `/` autocomplete menu - it shows all commands with descriptions.
 
-### Q: Can I use commands in the editor?
+### Q: How do I customize framework behavior?
 
-**A:** No. Custom commands work only in Cursor's chat panel (which is the right place for agent session management).
-
-### Q: How do I remove a command?
-
-**A:** Delete the `.md` file from `.cursor/commands/`. Command disappears from `/` menu immediately.
+**A:** Agent state goes in `local/` (gitignored). Framework changes require PRs. Don't modify framework files directly.
 
 ### Q: Do commands interfere with HISH hooks?
 
-**A:** No. Commands and hooks work together seamlessly. Commands provide UI convenience, hooks provide runtime behavior.
+**A:** No. Commands and hooks work together. Commands provide UI convenience, hooks provide runtime behavior.
 
 ---
 
-## 🎉 Quick Start Checklist
+## Quick Start Checklist
 
-- [ ] HISH folder open in Cursor
+- [ ] Ran `make setup-cursor` in hish directory
+- [ ] Restarted Cursor
 - [ ] Typed `/` in chat panel
 - [ ] See 5 HISH commands in dropdown
 - [ ] Tested `/dev` command
 - [ ] Agent initialized successfully
-- [ ] Tested `/verbalized-sampling` for creative queries
 - [ ] Tested `/end-dev` command
-- [ ] Reviewed this README
-- [ ] Shared commands with team
 
 ---
 

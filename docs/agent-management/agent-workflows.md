@@ -11,19 +11,24 @@ This document describes common workflows for managing development agents within 
 make new-context
 ```
 
-### 2. Customize the Context
-The script creates a project context in `local/your-project-name/` with:
+### 2. Understand the Structure
+The script creates:
+
+**Project context** in `local/your-project-name/`:
 - `dev_agent_context.md` - Project state and history
+- `repo_path.txt` - Path to your code repository
 - `README.md` - Project documentation
 
-**Note**: The following files are now universal and shared across all projects:
-- **`dev_agent_persona.md`** - Universal dev agent persona (top-level)
-- **`prompts/dev_agent/dev_agent_init_prompt.md`** - Universal initialization protocol
-- **`prompts/dev_agent/dev_agent_session_end_prompt.md`** - Universal session end protocol
-- **`prompts/qa/qa_agent_init_prompt.md`** - QA agent initialization protocol
-- **`prompts/qa/qa_agent_session_end_prompt.md`** - QA agent session end protocol
-- **`prompts/red_team/red_team_agent_init_prompt.md`** - Red team agent initialization protocol
-- **`prompts/red_team/red_team_agent_session_end_prompt.md`** - Red team agent session end protocol
+**Shared files** in `local/` (one-time setup):
+- `dev_agent_persona.md` - Agent behavior (copied from templates)
+- `dev_agent_workflow_guide.md` - Workflow patterns
+- `dev_agent_troubleshooting.md` - Common issues
+
+**Customization:**
+- Project contexts are safe to customize (gitignored)
+- Core behavioral files (personas, prompts) can be edited but may break framework
+- Don't modify framework originals in `templates/` or `prompts/` - open PRs for those
+- Framework updates pull cleanly, your `local/` stays untouched
 
 ### 3. Let Agents Manage Context
 **Important**: Context files in `local/` are managed by agents. Direct editing can disrupt framework behavior. Instead, use agent workflows to update project context through proper protocols.

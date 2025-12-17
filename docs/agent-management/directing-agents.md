@@ -4,7 +4,7 @@
 
 Working effectively with AI agents is a skill. This guide covers the nuanced art of agent management - when to guide, when to correct, when to step back, and how to get the best results from Cursor + Hish.
 
-**Important**: Files in `local/` are managed by agents. Manual editing can disrupt framework behavior and break context tracking. Use agent workflows and prompts to manage project state.
+**Important**: `local/` is your workspace - customize project contexts safely. Core behavioral files (personas, prompts) can be edited but may break framework behavior. Don't modify framework originals in `templates/` or `prompts/` - open PRs for those.
 
 ## The Art of Agent Management
 
@@ -143,17 +143,12 @@ You: "Good. Research failure modes before we proceed."
 
 **Always initialize properly**:
 ```
-@prompts/dev_agent/dev_agent_init_prompt.md
-```
-
-**For QA analysis**:
-```
-@prompts/qa/qa_agent_init_prompt.md
+/dev
 ```
 
 **For security analysis**:
 ```
-@prompts/red_team/red_team_agent_init_prompt.md
+/red
 ```
 
 **Set session expectations**:
@@ -182,17 +177,12 @@ You: "Good. Research failure modes before we proceed."
 
 **Use the session end prompt**:
 ```
-@prompts/dev_agent/dev_agent_session_end_prompt.md
-```
-
-**For QA session closure**:
-```
-@prompts/qa/qa_agent_session_end_prompt.md
+/end-dev
 ```
 
 **For red team session closure**:
 ```
-@prompts/red_team/red_team_agent_session_end_prompt.md
+/end-red
 ```
 
 ## When Things Go Wrong
@@ -203,7 +193,7 @@ You: "Good. Research failure modes before we proceed."
 
 **Agent overcomplicates**: "That might work, but our team knows [simpler approach]. Research our existing patterns instead."
 
-**Context gets muddled**: Start fresh with `@prompts/dev_agent/dev_agent_init_prompt.md`, `@prompts/qa/qa_agent_init_prompt.md`, or `@prompts/red_team/red_team_agent_init_prompt.md`
+**Context gets muddled**: Start fresh with `/dev` or `/red`
 
 ## Building Agent Intelligence
 
