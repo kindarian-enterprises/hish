@@ -1,22 +1,23 @@
 # Documentation
 
 ## Setup
-- [Getting Started](setup/getting-started.md) - Complete setup guide
-- [Virtual Environment Guide](setup/virtual-environment-guide.md) - Performance optimization
+- [Getting Started](setup/getting-started.md) - Installation and configuration
+- [Virtual Environment Guide](setup/virtual-environment-guide.md) - Python environment setup
 
 ## Usage
-- [Agent Management](agent-management/directing-agents.md) - Directing AI agents
-- [Collection Governance](collection-governance.md) - Collection lifecycle and governance
+- [Directing Agents](agent-management/directing-agents.md) - How to work with AI agents
+- [Custom Commands](../.cursor/commands/README.md) - Slash command reference
+- [Collection Governance](collection-governance.md) - Managing indexed knowledge
 
-## Development
-- [Code Quality](development/code-quality.md) - Linting, formatting, and pre-commit hooks
+## Agent Prompts
+- [Dev Agent Init](../prompts/dev_agent/dev_agent_init_prompt.md) - Development agent initialization
+- [Red Team Init](../prompts/red_team/red_team_agent_init_prompt.md) - Security agent initialization
+- [All Prompts](../prompts/) - Session management prompts
 
-## Agent Templates & Directives
-- [Dev Agent Persona](../templates/dev_agent_persona.md) - Pattern-driven development
-- [Red Team Agent Persona](../templates/red_team_agent_persona.md) - Security analysis
-- [Pattern Taxonomy Guide](../templates/pattern-taxonomy-guide.md) - Pattern extraction and storage
-- [File Synopsis Workflows](../templates/file-synopsis-workflows.md) - AGENTS.md discovery and documentation
-- [All Templates](../templates/) - Persona files, workflows, troubleshooting guides
+## Templates
+- [Dev Agent Persona](../templates/dev_agent_persona.md) - Development agent behavior
+- [Red Team Persona](../templates/red_team_agent_persona.md) - Security agent behavior
+- [All Templates](../templates/) - Workflow guides and troubleshooting
 
 ## Technical
-- [Architecture Overview](integration/rag-mcp-setup-guide.md) - Technology choices
+- [Architecture](integration/rag-mcp-setup-guide.md) - RAG + MCP implementation

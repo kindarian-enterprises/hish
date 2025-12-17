@@ -28,32 +28,25 @@ make index
 ```
 
 **What this creates:**
-- `local/project-name/` - Agent-managed project context (gitignored)
-- Vector index of your code and documentation
+- `local/project-name/` - Project context (gitignored, safe to customize)
+- Vector index of your documentation
 - MCP connection between Cursor and knowledge base
 
 ## Using Hish
 
-**Development Agent:**
+**In Cursor chat:**
 ```
-@prompts/dev_agent/dev_agent_init_prompt.md
-```
-
-**QA Agent:**
-```
-@prompts/qa/qa_agent_init_prompt.md
+/dev     # Development agent
+/red     # Security analysis agent
 ```
 
-**Red Team Agent:**
-```
-@prompts/red_team/red_team_agent_init_prompt.md
-```
+Agents load project context and indexed knowledge automatically. Work naturally - they'll research patterns, propose solutions, and store learnings.
 
-This loads the appropriate agent with your project context and cross-project knowledge. From there, work naturally - agents automatically research patterns, propose solutions, and store learnings.
+**Key directories:**
+- `local/` - Project contexts (gitignored)
+- `.data/` - Vector database storage (gitignored)
 
-**Key files (agent-managed):**
-- Agent contexts in `local/` - Don't edit manually
-- See [Agent Management](../agent-management/) for interaction patterns
+See [Directing Agents](../agent-management/directing-agents.md) for usage patterns.
 
 ## Troubleshooting
 
@@ -73,4 +66,4 @@ This loads the appropriate agent with your project context and cross-project kno
 - `make collections` - List indexed collections
 - `make logs` - View framework logs
 
-**Documentation:** [Agent management](../agent-management/), [Technical architecture](../integration/)
+**More help:** [Directing Agents](../agent-management/directing-agents.md), [Custom Commands](../../.cursor/commands/README.md), [Architecture](../integration/rag-mcp-setup-guide.md)

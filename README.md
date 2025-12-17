@@ -1,77 +1,62 @@
 # Hish
 
-Context management framework that gives Cursor AI agents persistent memory and cross-project knowledge through **enriched documentation and pattern taxonomy**. Instead of starting every conversation from zero, agents discover architectural patterns, design decisions, and curated learnings from all your projects.
+Cursor is a powerful AI-assisted development tool that brings LLM capabilities directly into your editor. But when using third-party models, each session begins anew—fresh context, clean slate. Unlike human developers who accumulate institutional knowledge, learn from past decisions, and build on previous work, raw agents lack the ability to persist learnings across sessions or discover patterns across projects.
 
-**Two-part approach**:
-1. **Enriched documentation** indexes markdown/docs into searchable patterns and knowledge
-2. **Structured prompts** transform any LLM into a disciplined engineering agent
+**Hish provides that missing layer.**
 
-**Complements Cursor**: Cursor handles code search natively. Hish focuses on documentation patterns, file synopses, architectural decisions, and cross-project intelligence.
+It indexes your documentation into searchable knowledge that agents query automatically. When implementing authentication in Project B, the agent discovers your JWT patterns from Project A. Database designs become institutional knowledge instead of lost conversation history. Architectural decisions persist and compound across work instead of requiring re-explanation each session.
 
-**Works with any model** - Claude, GPT-4, Gemini. The behavioral patterns are encoded in prompts, not dependent on model training.
+The implementation is straightforward: vector search for semantic queries, MCP protocol for tool integration, structured prompts for behavioral discipline. Your documentation becomes agent memory. Your patterns become discoverable context. Your solutions inform future work without manual intervention.
+
+Compatible with Claude, GPT-4, and Gemini. Integrates with Cursor's native code search. Runs locally with no external dependencies.
 
 ## How It Works
 
-### Indexing Your Documentation
-
-The framework scans your repositories and creates enriched documentation knowledge:
+**Indexing:**
+- Scans markdown files in your repositories
+- Chunks content with overlap for context preservation
+- Creates vector embeddings using MPNet model
+- Stores in Qdrant vector database
 
 **What gets indexed:**
-- Markdown documentation and README files
-- AGENTS.md file synopses (automated extraction)
-- Architectural decisions and design rationale
-- Project contexts and patterns
-- Cross-project learnings (with approval)
+- Markdown documentation
+- README files
+- Design decisions
+- Project contexts
 
-**What's NOT indexed:**
-- Source code (Cursor handles this natively via `codebase_search`)
-- Implementation details (available through Cursor)
+**What doesn't get indexed:**
+- Source code (use Cursor's `codebase_search`)
+- Binary files
+- Generated files
 
-**Chunking strategy**: Markdown files broken into overlapping chunks with metadata (repository, file path, context).
+**Agent Prompts:**
+- Structured initialization prompts load project context
+- Agents query indexed docs via `qdrant-find` MCP tool
+- Agents store learnings via `qdrant-store` MCP tool
+- Session end prompts capture knowledge for reuse
 
-**Vector embeddings**: Creates semantic embeddings so architectural patterns, design decisions, and learnings cluster together in vector space, discoverable through natural language queries.
-
-### Agent Intelligence
-
-Once indexed, your documentation becomes searchable agent memory that works through structured behavioral prompts:
-
+**Architecture:**
 ```
-Your Docs → Vector Index → Prompt-Guided Agent → Disciplined Output
-     +                          +
- Cursor Code Search      Pattern Discovery
+Markdown Docs → Python Indexer → Qdrant Vector DB
+                                       ↓
+                                   MCP Server
+                                       ↓
+                    Cursor ← Agent Prompts → Your Code
 ```
-
-**Prompt engineering system**: Instead of hoping LLMs follow good practices, Hish embeds engineering discipline directly into agent instructions through layered prompt structures:
-
-- **Context injection**: Agents must load project state before starting work
-- **Protocol enforcement**: Specific workflows for research → implementation → quality assurance
-- **Knowledge integration**: Mandatory patterns for querying existing solutions and storing new ones
-- **Quality standards**: Built-in coding practices, anti-patterns, and engineering discipline
-
-**Behavioral transformation**: Raw LLMs are unfocused and inconsistent. Hish prompts create agents that automatically query existing patterns, propose evidence-based solutions, implement with quality standards, and store results for team reuse.
-
-**Technical architecture**: Qdrant vector database + MCP protocol bridge + automated indexing + structured prompt engineering. Standard RAG enhanced with behavioral discipline.
 
 ## Agent Personas
 
-Hish provides two specialized agent personas, each optimized for different aspects of software development:
+**Development Agent** (`/dev`)
+- Pattern-driven implementation
+- Queries docs for existing solutions
+- Stores learnings for reuse
+- Uses `qdrant-find` for docs, `codebase_search` for code
 
-### 🔧 **Development Agent**
-**Role**: Pattern-driven implementation and knowledge curation
-- **Focus**: Pattern extraction, file synopses, architectural decisions, cross-project intelligence
-- **Strengths**: Discover patterns from docs, propose evidence-based solutions, curate learnings
-- **Use when**: Building features, extracting patterns, documenting decisions, cross-project learning
-- **Tool separation**: Uses `qdrant-find` for docs/patterns, `codebase_search` for code
-
-### 🛡️ **Red Team Agent**
-**Role**: Security pattern analysis and vulnerability taxonomy
-- **Focus**: Security patterns, vulnerability taxonomies, threat assessment, remediation guidance
-- **Strengths**: Security pattern recognition, vulnerability reporting, cross-project security intelligence
-- **Use when**: Security audits, vulnerability assessment, pattern-based threat analysis
-
-**Quality Assurance**: Handled by CI/CD pipelines. Hish focuses on knowledge curation, not test execution.
-
-**All agents share**: Cross-project intelligence, pattern taxonomy, and institutional memory capabilities.
+**Red Team Agent** (`/red`)
+- Security analysis
+- Vulnerability assessment
+- Threat modeling
+- Security pattern extraction
 
 ---
 
@@ -94,42 +79,17 @@ Hish provides two specialized agent personas, each optimized for different aspec
   ```
 
 ### Python Environment
-- **Python**: 3.8+ (3.12+ recommended for indexing performance)
-- **Virtual Environment**: Required for indexing
+- **Python 3.8+** (3.12+ recommended)
+- **Virtual environment required**
 
-**Option 1: Using virtualenvwrapper (Recommended)**
 ```bash
-# Install virtualenvwrapper (if not already installed)
-pip install virtualenvwrapper
-
-# Add to your shell profile (.bashrc, .zshrc, etc.)
-export WORKON_HOME=$HOME/.virtualenvs
-source /usr/local/bin/virtualenvwrapper.sh
-
-# Create and activate virtual environment
-mkvirtualenv hish-indexing
-workon hish-indexing
-
-# Install dependencies manually in your virtual environment
-pip install -r rag/indexer/requirements.txt
-```
-
-**Option 2: Using standard venv**
-```bash
-# Create virtual environment
+# Create venv
 python3 -m venv .venv
-
-# Activate (Linux/macOS)
 source .venv/bin/activate
 
-# Activate (Windows)
-.venv\Scripts\activate
-
-# Install dependencies manually in your virtual environment
+# Install dependencies
 pip install -r rag/indexer/requirements.txt
 ```
-
-Install dependencies: `pip install -r rag/indexer/requirements.txt`
 
 ### **Network Requirements**
 - **Internet Access**: Required for Docker image pulls and dependencies
@@ -143,83 +103,73 @@ Install dependencies: `pip install -r rag/indexer/requirements.txt`
 
 
 
-## Setup (5 minutes)
+## Setup
 
 ```bash
 # 1. Clone
 git clone https://github.com/kindarian-enterprises/hish.git
 cd hish
 
-# 2. Add to Cursor settings.json (builds MCP server, restart Cursor after)
+# 2. Setup Cursor integration
 make setup-cursor
+# Builds MCP server, installs custom commands
+# Follow prompts to add config to Cursor settings.json
+# Restart Cursor
 
 # 3. Create project context
 make new-context
+# Interactive: provide project name and repo path
+# Creates local/project-name/ (gitignored)
 
-# 4. Index your code (requires Python 3.8+)
+# 4. Index documentation
 pip install -r rag/indexer/requirements.txt
 make index
 
-# 5. Test in Cursor
-# @prompts/dev_agent/dev_agent_init_prompt.md
-# qdrant-find "your search terms"
+# 5. Use in Cursor
+# Type /dev in chat to initialize agent
 ```
 
-**What actually happens:**
-- Step 2: Adds MCP server config to Cursor
-- Step 3: Creates `local/project-name/` (gitignored)
-- Step 4: Builds vector index of your code + docs
-- Step 5: AI agents can now query/store knowledge
+**What this creates:**
+- MCP server connection to Qdrant
+- Custom `/dev`, `/red`, `/end-dev`, `/end-red` commands
+- Vector index of your documentation
+- Project context in `local/` (gitignored)
 
-## Agent Workflow
+## Usage
 
-### Session Initialization
+**Start session:**
 ```
-@prompts/dev_agent/dev_agent_init_prompt.md
-```
-Agent loads project context, discovers AGENTS.md file synopses, extracts patterns from documentation, and prepares for knowledge-driven development with pattern extraction and cross-project intelligence.
-
-
-### Red Team Agent Initialization
-```
-@prompts/red_team/red_team_agent_init_prompt.md
-```
-Red team agent loads security context, analyzes vulnerability landscapes, and prepares for comprehensive security analysis and threat assessment.
-
-### Actual Usage Pattern
-
-```
-You: "I need to implement JWT authentication for this Node.js API"
-
-Agent (with Hish):
-- Automatically queries existing auth patterns from documentation
-- Finds Redis blacklist pattern from ProjectA docs, refresh token design decisions from ProjectB
-- Proposes solution: "I found proven JWT patterns in your documented architecture..."
-- Implements code using Cursor's code search + documented patterns
-- Stores new pattern in cross_project_intelligence_mpnet for team reuse (after your approval)
-
-You: Just tell the agent what you want. It handles the knowledge discovery.
+Type /dev in Cursor chat
 ```
 
-**Behind the scenes**: Agent uses `qdrant-find` to research documented patterns, `codebase_search` for code, `qdrant-store` to save validated learnings. You don't type these commands - the prompts make agents do it automatically.
-
-### Session End
+**Work normally:**
 ```
-@prompts/dev_agent/dev_agent_session_end_prompt.md
+You: "Implement JWT auth for this API"
+
+Agent:
+- Queries indexed docs for auth patterns
+- Finds existing JWT implementations
+- Proposes solution based on your patterns
+- Implements using Cursor's code tools
 ```
-Agent captures learnings, updates project context, stores successful patterns, and ensures knowledge transfers to future sessions and other team members.
 
-
-### Red Team Session End
+**End session:**
 ```
-@prompts/red_team/red_team_agent_session_end_prompt.md
+Type /end-dev in Cursor chat
 ```
-Red team agent captures security analysis achievements, vulnerability discoveries, and threat assessment learnings to ensure seamless continuity between security sessions.
 
-## Team Collaboration
+**Commands available:**
+- `/dev` - Initialize development agent
+- `/red` - Initialize red team agent
+- `/end-dev` - Close dev session
+- `/end-red` - Close red team session
+- `/verbalized-sampling` - Creative brainstorming mode
 
-Details: [Upstream + Main Workflow](docs/setup/upstream-main-workflow.md) - Simple workflow where everyone clones the main repo, customizations go in `local/` and data goes in `.data/` (both gitignored), no merge conflicts.
+## Documentation
 
-**Important**: Files in `local/` are managed by agents. Manual editing can disrupt the framework's behavior and break agent context tracking. For proper agent interaction patterns, see [Agent Management](docs/agent-management/).
+- [Getting Started](docs/setup/getting-started.md) - Complete setup guide
+- [Directing Agents](docs/agent-management/directing-agents.md) - How to work with agents
+- [Collection Governance](docs/collection-governance.md) - Managing indexed knowledge
+- [Custom Commands](. cursor/commands/README.md) - Slash command reference
 
-**Documentation**: [Setup guides](docs/setup/), [Integration help](docs/integration/), [Collection Governance](docs/collection-governance.md)
+**Note:** `local/` is for customizations (gitignored). Editing core behavioral files may break framework. Framework changes need PRs.

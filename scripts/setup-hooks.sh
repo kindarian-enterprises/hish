@@ -10,13 +10,7 @@ CONFIG_DIR="$HISH_ROOT/config"
 HOOKS_SOURCE_DIR="$HISH_ROOT/.cursor/hooks"
 HOOKS_INSTALL_DIR="$HOME/.cursor/hooks"
 
-echo "🔧 HISH Cursor Hooks Setup"
-echo "=========================="
-echo "HISH Root: $HISH_ROOT"
-echo "Config Dir: $CONFIG_DIR"
-echo "Hooks Source: $HOOKS_SOURCE_DIR"
-echo "Install Target: $HOOKS_INSTALL_DIR"
-echo ""
+echo "Installing hooks..."
 
 # Verify config directory exists
 if [ ! -d "$CONFIG_DIR" ]; then
@@ -66,18 +60,7 @@ cat > "$HOME/.cursor/hooks.json" <<EOF
 }
 EOF
 
-echo "✅ hooks.json generated"
-echo ""
-
-# Display generated hooks.json
-echo "📄 Generated hooks.json:"
-cat "$HOME/.cursor/hooks.json"
-echo ""
-
-echo "✅ Hooks setup complete!"
-echo ""
-echo "Installed hooks:"
-echo "  • prioritize_local_data - Instructs agent to use local Qdrant collections"
+echo "✅ Hooks installed"
 echo "  • protect_framework_collection - Blocks writes to framework collections (read-only)"
 echo ""
 

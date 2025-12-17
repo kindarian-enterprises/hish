@@ -26,8 +26,7 @@ logs: ## Show framework logs
 
 # Project Management
 new-context: ## Create a new project context (interactive)
-	@echo "📝 Creating new project context..."
-	./scripts/new-project-context.sh
+	@./scripts/new-project-context.sh
 
 list-contexts: ## List all project contexts
 	@echo "📁 Project Contexts:"
@@ -47,33 +46,31 @@ list-contexts: ## List all project contexts
 
 # Knowledge Management
 index: ## Index framework docs and all project documentation (host-based) - Markdown/docs only, NO code
-	@echo "📚 Host-based documentation indexing with MPNet embeddings..."
-	@echo "🎯 Focus: Markdown, AGENTS.md, docs only - Cursor handles code natively"
+	@echo "📚 Indexing Documentation"
+	@echo "========================="
 	@echo ""
-	@echo "📖 Indexing framework documentation (recreating collection)..."
+	@echo "Framework docs..."
 	@python3 scripts/host-indexer.py --work-dir "$(PWD)" --env-file config/env.mpnet --collection hish_framework_mpnet --recreate
 	@echo ""
-	@echo "🔍 Discovering and indexing project documentation..."
+	@echo "Project docs..."
 	@if [ -d "local" ]; then \
 		for context_dir in local/*/; do \
 			if [ -d "$$context_dir" ] && [ -f "$$context_dir/repo_path.txt" ]; then \
 				repo_path=$$(cat "$$context_dir/repo_path.txt" | tr -d '\n'); \
 				context_name=$$(basename "$$context_dir"); \
 				if [ -d "$$repo_path" ]; then \
-					echo "📁 Indexing $$context_name documentation: $$repo_path"; \
-					echo "   → Collection: $${context_name}_docs_mpnet (markdown/docs only)"; \
+					echo "  $$context_name: $$repo_path"; \
 					python3 scripts/host-indexer.py --work-dir "$$repo_path" --env-file config/env.mpnet --collection "$${context_name}_docs_mpnet" --recreate; \
 				else \
-					echo "⚠️  Repo path not found for $$context_name: $$repo_path"; \
+					echo "  ⚠️  Not found: $$context_name"; \
 				fi; \
 			fi; \
 		done; \
 	else \
-		echo "ℹ️  No local contexts found. Create one with make new-context"; \
+		echo "  No projects. Run: make new-context"; \
 	fi
 	@echo ""
-	@echo "✅ Documentation indexing complete! All collections ready for qdrant-find."
-	@echo "💡 Tip: Use Cursor's codebase_search for code symbols/implementations"
+	@echo "✅ Done"
 
 index-framework: ## Index framework docs only with MPNet embeddings - ONLY vectorized documentation, NOT learnings - RECREATES collection
 	@echo "📚 Indexing framework documentation with MPNet embeddings..."
@@ -295,21 +292,19 @@ setup-commands: ## Install Cursor custom commands (agent init + session manageme
 	@./scripts/setup-commands.sh
 
 setup-cursor: ## Setup Cursor MCP integration with pre-built server image + hooks + commands
-	@echo "🔌 Cursor MCP Integration Setup - Unified MPNet Embeddings"
-	@echo "=========================================================="
+	@echo "🔌 Cursor Setup"
+	@echo "==============="
 	@echo ""
-	@echo "🔧 Building MCP server image with pre-downloaded model..."
+	@echo "Building MCP server..."
 	@docker compose -f deploy/compose.rag.yml build mcp-qdrant-unified
 	@echo ""
-	@echo "✅ MCP server image built with pre-warmed MPNet model!"
-	@echo ""
-	@echo "🪝 Installing hooks..."
 	@./scripts/setup-hooks.sh
 	@echo ""
-	@echo "⚡ Installing commands..."
 	@./scripts/setup-commands.sh
 	@echo ""
-	@echo "📋 Add this to your Cursor settings.json:"
+	@echo "✅ Setup complete!"
+	@echo ""
+	@echo "Add to Cursor settings.json:"
 	@echo ""
 	@echo '{'
 	@echo '  "mcpServers": {'
@@ -324,22 +319,10 @@ setup-cursor: ## Setup Cursor MCP integration with pre-built server image + hook
 	@echo '  }'
 	@echo '}'
 	@echo ""
-	@echo "⚠️  IMPORTANT: Restart Cursor after adding MCP config!"
-	@echo ""
-	@echo "🔍 Search Strategy:"
-	@echo "  • Documentation/patterns: qdrant-find with collections (MPNet embeddings)"
-	@echo "  • Code symbols/implementation: Cursor's native codebase_search"
-	@echo "  • BEST RESULTS: Use both tools strategically for comprehensive understanding"
-	@echo ""
-	@echo "⚡ Custom Commands (Auto-Installed):"
-	@echo "  • Type '/dev' → Initialize Dev Agent"
-	@echo "  • Type '/red' → Initialize Red Team"
-	@echo "  • Type '/end-dev' → Close dev session"
-	@echo "  • See all: .cursor/commands/README.md"
-	@echo ""
-	@echo "📖 Detailed guide: docs/setup/getting-started.md"
-	@echo "🧪 Test framework: qdrant-find \"test query\" hish_framework_mpnet"
-	@echo "🧪 Test project docs: qdrant-find \"architecture overview\" project_docs_mpnet"
+	@echo "Restart Cursor, then:"
+	@echo "  • Type /dev to start"
+	@echo "  • Use qdrant-find for docs"
+	@echo "  • Use codebase_search for code"
 
 
 

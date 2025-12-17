@@ -41,11 +41,9 @@ if [[ ! -d "local/workflows-and-processes" ]]; then
 
 This directory contains workflows and processes specific to your development ecosystem.
 
-## 🚀 **How to Use This Directory**
+## How to Use
 
-**⚠️ IMPORTANT: Do NOT manually create or edit workflow files!**
-
-Instead, ask your development agent to:
+Files here are yours - customize as needed. Agents can help:
 - Record new workflows as you work
 - Update existing workflows based on new learnings
 - Document process improvements and best practices
@@ -411,26 +409,14 @@ echo
 print_status "Context Location: $CONTEXT_DIR"
 echo
 print_status "Next steps:"
-echo "  1. Update $CONTEXT_DIR/dev_agent_context.md with current project state"
-echo "  2. In Cursor (with hish open): @prompts/dev_agent/dev_agent_init_prompt.md"
-echo "  3. Start using cross-project knowledge queries:"
-echo "     - qdrant-find \"authentication patterns\""
-echo "     - qdrant-find \"testing strategies\""
-echo "     - qdrant-store \"your solutions for future projects\""
+echo "  1. In Cursor: Type /dev to start"
+echo "  2. Query docs: qdrant-find \"your search\""
+echo "  3. Index completes: make index"
 echo
-print_status "The universal agent personas and protocols are now available:"
-echo "  - @local/dev_agent_persona.md - Universal dev agent persona"
-echo "  - @prompts/dev_agent/dev_agent_init_prompt.md - Dev agent initialization protocol"
-echo "  - @prompts/dev_agent/dev_agent_session_end_prompt.md - Dev agent session end protocol"
-echo "  - @local/qa_agent_persona.md - QA agent persona for quality analysis"
-echo "  - @prompts/qa/qa_agent_init_prompt.md - QA agent initialization protocol"
-echo "  - @prompts/qa/qa_agent_session_end_prompt.md - QA agent session end protocol"
-echo "  - @local/red_team_agent_persona.md - Red team agent persona for security analysis"
-echo "  - @prompts/red_team/red_team_agent_init_prompt.md - Red team agent initialization protocol"
-echo "  - @prompts/red_team/red_team_agent_session_end_prompt.md - Red team agent session end protocol"
 echo
-print_status "Your project will now benefit from and contribute to the shared knowledge ecosystem!"
-echo
-print_status "Note: This context is in the 'local/' directory (gitignored) so you can make local changes"
-echo "while still consuming framework updates from the main repository."
+print_status "📝 Customization:"
+echo "  • Project contexts are safe to customize (gitignored)"
+echo "  • Core behavioral files can be edited but may break framework"
+echo "  • Don't modify templates/ or prompts/ originals - open PRs"
+echo "  • Framework updates pull cleanly, your local/ stays untouched"
 echo
