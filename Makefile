@@ -1,7 +1,7 @@
 # Hish Cursor Context Framework - Makefile
 # Multi-project development agent framework with shared knowledge
 
-.PHONY: help health test new-context list-contexts index-repo reindex-contexts clean logs index collections setup-cursor setup-framework setup-hooks setup-commands quick-start backup mcp build-mcp optimize-collections index-framework setup-intelligence lint lint-fix format type-check mypy-errors pre-commit-install dev-setup test-sbmi test-sbmi-unit test-sbmi-integration sbmi-compile sbmi-compact sbmi-compact-force sbmi-stats sbmi-analyze
+.PHONY: help health test new-context list-contexts index-repo reindex-contexts clean logs index collections setup-cursor setup-framework setup-hooks setup-commands quick-start backup mcp build-mcp optimize-collections index-framework setup-intelligence lint lint-fix format type-check mypy-errors pre-commit-install dev-setup test-sbmi test-sbmi-unit test-sbmi-integration sbmi-compile sbmi-compact sbmi-compact-force sbmi-stats sbmi-analyze context-init-portable context-link-remote context-link-local context-push context-pull context-status
 
 # Default target
 help: ## Show this help message
@@ -30,6 +30,10 @@ new-context: ## Create a new project context (interactive)
 
 list-contexts: ## List all project contexts
 	@echo "📁 Project Contexts:"
+	@if [ -L "local" ]; then \
+		echo "🔗 Portable context enabled: local -> $$(readlink local)"; \
+		echo ""; \
+	fi
 	@echo "Local contexts (gitignored):"
 	@find local -maxdepth 1 -type d -not -path local 2>/dev/null | sort | while read dir; do \
 		echo "  🎯 $$(basename $$dir) - $$dir"; \
@@ -387,3 +391,51 @@ build-mcp: ## Build MCP server image with pre-warmed MPNet model
 mcp: ## Start MCP server for development
 	@echo "🔌 Starting MCP server (stdio mode)..."
 	docker compose -f ./deploy/compose.rag.yml run --rm -i mcp-qdrant-unified
+
+# Portable Context Management
+context-init-portable: ## Initialize portable context repository (OPTIONAL - for multi-environment sync)
+	@echo "🔗 Initializing portable context..."
+	@echo "⚠️  This is OPTIONAL. Only use if you work across multiple machines."
+	@./scripts/context-init-portable.sh
+
+context-link-remote: ## Link existing remote portable context (Usage: make context-link-remote REPO=<git-url>)
+	@if [ -z "$(REPO)" ]; then \
+		echo "❌ Usage: make context-link-remote REPO=<git-url>"; \
+		echo "Example: make context-link-remote REPO=git@github.com:user/hish-context.git"; \
+		exit 1; \
+	fi
+	@./scripts/context-link-remote.sh "$(REPO)"
+
+context-link-local: ## Link existing local portable context (Usage: make context-link-local CONTEXT_PATH=<path>)
+	@if [ -z "$(CONTEXT_PATH)" ]; then \
+		echo "❌ Usage: make context-link-local CONTEXT_PATH=<path>"; \
+		echo "Example: make context-link-local CONTEXT_PATH=~/Dropbox/hish-context"; \
+		exit 1; \
+	fi
+	@./scripts/context-link-local.sh "$(CONTEXT_PATH)"
+
+context-push: ## Commit and push context changes to portable repository
+	@if [ ! -L "local" ]; then \
+		echo "❌ Portable context not configured. Run 'make context-init-portable' first."; \
+		exit 1; \
+	fi
+	@./scripts/context-sync.sh push
+
+context-pull: ## Pull context changes from portable repository
+	@if [ ! -L "local" ]; then \
+		echo "❌ Portable context not configured. Run 'make context-init-portable' first."; \
+		exit 1; \
+	fi
+	@./scripts/context-sync.sh pull
+
+context-status: ## Show portable context git status
+	@if [ ! -L "local" ]; then \
+		echo "❌ Portable context not configured."; \
+		echo ""; \
+		echo "To set up portable context:"; \
+		echo "  make context-init-portable    # Initialize new portable context"; \
+		echo "  make context-link-remote      # Link existing remote context"; \
+		echo "  make context-link-local       # Link existing local context"; \
+		exit 1; \
+	fi
+	@./scripts/context-sync.sh status

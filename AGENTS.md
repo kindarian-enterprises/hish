@@ -31,10 +31,10 @@ Context management framework providing AI agents with persistent memory and cros
 ### Key Directories
 - `config/` - Compression config, env templates
 - `docs/` - User-facing documentation (NOT compressed)
-- `local/` - User-specific contexts + framework meta-docs
+- `local/` - User-specific contexts + framework meta-docs (can be symlinked for portable context)
 - `prompts/` - Agent initialization and session prompts
 - `sbmi/` - Python package for framework compilation
-- `scripts/` - Automation scripts (indexing, setup, analysis)
+- `scripts/` - Automation scripts (indexing, setup, analysis, context sync)
 - `templates/` - Agent personas, workflows, patterns
 
 ## Data Flow
@@ -113,6 +113,26 @@ make index-framework       # Index framework docs to Qdrant
 make test-sbmi             # Run SBMI tests
 make dev-setup             # Install dev dependencies
 ```
+
+### Portable Context (OPTIONAL - Multi-Environment Sync)
+```bash
+# Initialize portable context (symlink local/ to separate git repo)
+make context-init-portable          # Interactive setup
+
+# Link existing portable context
+make context-link-remote REPO=<url> # From remote git repository
+make context-link-local CONTEXT_PATH=<path>  # From local path
+
+# Sync context across machines
+make context-status        # Show git status
+make context-pull          # Pull updates from remote
+make context-push          # Commit and push changes
+```
+
+**Pattern:** `local/` becomes symlink → separate git repo (e.g., `~/.hish-context`)
+**Security:** Context repo has `.gitignore` protecting secrets (`**/secrets/`, `**/*_token.txt`, etc.)
+**Use case:** Work across multiple machines with synchronized context
+**Documentation:** `PORTABLE_CONTEXT.md` (quick ref), `docs/setup/portable-context.md` (full guide)
 
 ## File Conventions
 

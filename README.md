@@ -55,6 +55,20 @@ Markdown Docs → Python Indexer → Qdrant Vector DB
 
 **Technical architecture**: Qdrant vector database + MCP protocol bridge + automated indexing + structured prompt engineering. Standard RAG enhanced with behavioral discipline.
 
+## Portable Context (Optional)
+
+**Work across multiple machines?** Enable portable context to sync your `local/` directory via git.
+
+```bash
+make context-init-portable   # Interactive setup
+make context-pull            # Pull latest changes
+make context-push            # Commit and push your changes
+```
+
+**How it works:** `local/` → symlink → separate git repo (never tracked by main Hish repo)
+**Security:** Secrets protected by context repo `.gitignore`
+**Details:** See `PORTABLE_CONTEXT.md` or `docs/setup/portable-context.md`
+
 ## Framework Optimization (SBMI)
 
 Agents read token-optimized `.compact` files, you edit normal `.md` files, RAG indexes full `.md` content.

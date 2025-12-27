@@ -204,7 +204,7 @@ class IndexCompiler:
         # Calculate size stats before writing
         compressed_lines = len(compressed.split('\n'))
         compressed_chars = len(compressed)
-        reduction_pct = ((original_chars - compressed_chars) / original_chars) * 100
+        reduction_pct = ((original_chars - compressed_chars) / original_chars) * 100 if original_chars > 0 else 0
 
         # Determine weight level based on output size
         weight_level = self.config.get_weight_level(compressed_lines)

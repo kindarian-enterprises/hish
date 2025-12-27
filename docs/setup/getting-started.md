@@ -32,6 +32,18 @@ make index
 - Vector index of your documentation
 - MCP connection between Cursor and knowledge base
 
+### Optional: Enable Portable Context
+
+**Work across multiple machines?** Enable portable context to sync your `local/` directory:
+
+```bash
+make context-init-portable   # Interactive setup
+```
+
+This converts `local/` into a symlink pointing to a separate git repository, enabling cross-environment synchronization while maintaining security.
+
+**See:** `PORTABLE_CONTEXT.md` for quick reference or `docs/setup/portable-context.md` for full guide.
+
 ## Using Hish
 
 **In Cursor chat:**

@@ -1,5 +1,6 @@
 # Local-only overrides & temp (existing dirs only; do not add if not present)
 
+local
 local/
 overrides/
 private/
