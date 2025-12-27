@@ -70,6 +70,7 @@ print_success "Cloned: $REMOTE_URL -> $CONTEXT_REPO"
 # Create symlink
 print_info "Creating symlink: local -> $CONTEXT_REPO"
 ln -sf "$CONTEXT_REPO" local
+echo "$CONTEXT_REPO" > .hish-portable-context
 print_success "Symlink created"
 
 # Verify

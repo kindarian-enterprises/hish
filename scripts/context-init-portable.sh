@@ -223,6 +223,7 @@ fi
 print_info "Replacing local/ directory with symlink..."
 rm -rf local
 ln -sf "$CONTEXT_REPO" local
+echo "$CONTEXT_REPO" > .hish-portable-context
 print_success "Created symlink: local -> $CONTEXT_REPO"
 
 # Verify

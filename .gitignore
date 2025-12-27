@@ -2,6 +2,7 @@
 
 local
 local/
+.hish-portable-context
 overrides/
 private/
 tmp/

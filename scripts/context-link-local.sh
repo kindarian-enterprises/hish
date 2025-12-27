@@ -66,6 +66,7 @@ fi
 # Create symlink
 print_info "Creating symlink: local -> $CONTEXT_PATH"
 ln -sf "$CONTEXT_PATH" local
+echo "$CONTEXT_PATH" > .hish-portable-context
 print_success "Symlink created"
 
 # Verify
