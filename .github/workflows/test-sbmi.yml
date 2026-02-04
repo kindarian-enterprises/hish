@@ -62,6 +62,11 @@ jobs:
           name: sbmi-${{ matrix.python-version }}
           fail_ci_if_error: false
 
+      - name: Prepare local workflow-indexes for CI
+        run: |
+          mkdir -p local/workflow-indexes
+          cp templates/workflow-indexes/*.md local/workflow-indexes/
+
       - name: Test compilation script
         run: |
           python scripts/compile-indexes.py

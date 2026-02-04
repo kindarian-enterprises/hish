@@ -12,11 +12,8 @@ import pytest
 from sbmi.compiler.strategies import (
     RemoveFormattingMarkersPass,
     RemoveCodeBlockMarkersPass,
-    RemoveVerbosePrefixesPass,
     StripDescriptionsPass,
     RemoveCommentsPass,
-    RemoveEmptyLinesPass,
-    CompactWhitespacePass,
     ReplacePhrasesPass,
     CompactSyntaxPass,
     StructuralCompressionStrategy,

@@ -52,6 +52,7 @@ __pycache__/
 *.so
 .pytest_cache/
 .coverage
+coverage.xml
 htmlcov/
 .tox/
 .mypy_cache/

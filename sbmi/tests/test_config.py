@@ -1,7 +1,6 @@
 """Test configuration loading and management."""
 
 import pytest
-from pathlib import Path
 from sbmi.compiler.config import CompressionConfig
 
 

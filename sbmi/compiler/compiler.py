@@ -314,14 +314,14 @@ class IndexCompiler:
         print("SBMI INCREMENTAL COMPILATION (Session End)")
         print("=" * 70)
         print(f"\nFramework root: {self.hish_root}")
-        print(f"Scan dirs: templates/, prompts/, local/")
-        print(f"Excluded: docs/, personas, style-and-philosophy/")
+        print("Scan dirs: templates/, prompts/, local/")
+        print("Excluded: docs/, personas, style-and-philosophy/")
         print(f"Config: {self.config.config_path}")
         print(f"Level: {level}")
 
         # Get cache stats
         stats = self.cache.get_stats()
-        print(f"\nCache stats:")
+        print("\nCache stats:")
         print(f"  Total previously compiled: {stats['total_compiled']}")
         print(f"  Avg reduction: {stats['avg_reduction']:.1f}%")
         if stats['last_compiled']:
