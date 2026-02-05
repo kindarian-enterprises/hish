@@ -1,0 +1,5 @@
+# Pinned lint tools so CI and local produce identical formatting
+black==24.10.0
+isort==5.13.2
+ruff>=0.8.0,<0.9
+mypy>=1.13.0,<2

@@ -126,7 +126,7 @@ INDEX_EXCLUDE=**/.git/**,**/.data/**,**/node_modules/**,**/.terraform/**,**/.ven
 
 ### Standard Collection Names
 - **`hish_framework_mpnet`** - Framework documentation and context files
-- **`{project-name}_docs_mpnet`** - Project documentation (e.g., `mayr_docs_mpnet`)
+- **`{project-name}_docs_mpnet`** - Project documentation (e.g., `myproject_docs_mpnet`)
 
 ### Vector Configuration
 - **Model**: `BAAI/bge-small-en-v1.5`

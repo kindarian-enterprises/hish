@@ -32,6 +32,30 @@ This directory contains Cursor hooks that enhance agent behavior with local Qdra
 ### `prioritize_local_data` (beforeSubmitPrompt)
 **Purpose**: Injects marketing pitch for local Qdrant collections into every agent prompt
 
+### `sbmi_expansion_reminder` (beforeSubmitPrompt)
+**Purpose**: Injects SBMI expansion cost awareness for queries likely to need documentation depth
+
+**What it does:**
+- Detects queries asking for explanations, architecture, or debugging help
+- Skips injection for simple lookups ("what command", "where is")
+- Injects brief cost reminder about L1/L2/L3 expansion layers
+- Empowers agent to make cost-aware decisions (not enforcing rules)
+
+**Example injection:**
+```
+💡 SBMI Navigation Layers (choose based on query depth):
+• L1 (Compressed indexes *.compact): Already loaded - reference freely
+• L2 (Semantic search): ~500 tokens per search - for targeted details
+• L3 (Full files): 1-5k tokens per file - for comprehensive study
+
+Strategy: Check L1 first (free), expand when value justifies cost.
+```
+
+**Philosophy:** Cost awareness, not rule enforcement. Agent decides expansion based on query needs.
+
+### `prioritize_local_data` (beforeSubmitPrompt)
+**Purpose**: Injects marketing pitch for local Qdrant collections into every agent prompt
+
 **What it does:**
 - Detects available Qdrant collections (framework, intelligence, project docs)
 - Injects assertive, positive instructions about using `qdrant-find`
@@ -80,6 +104,8 @@ User Query → Cursor
     ↓
 [beforeSubmitPrompt] prioritize_local_data
     ↓ (injects collection marketing)
+[beforeSubmitPrompt] sbmi_expansion_reminder
+    ↓ (injects cost awareness for expansion-likely queries)
 Agent receives enhanced prompt
     ↓
 Agent calls qdrant-store
@@ -106,6 +132,9 @@ make setup-hooks  # Copies hooks to ~/.cursor/hooks/ and generates hooks.json
     "beforeSubmitPrompt": [
       {
         "command": "~/.cursor/hooks/.venv/bin/python3 ~/.cursor/hooks/prioritize_local_data"
+      },
+      {
+        "command": "~/.cursor/hooks/.venv/bin/python3 ~/.cursor/hooks/sbmi_expansion_reminder"
       }
     ],
     "beforeMCPExecution": [
@@ -163,6 +192,17 @@ echo '{"messages": [{"role": "user", "content": "Hello"}]}' | \
 ### Test Collection Detection
 ```bash
 python3 .cursor/hooks/prioritize_local_data < test_event.json
+```
+
+### Test SBMI Expansion Reminder
+```bash
+# Test expansion-likely query (should inject)
+echo '{"messages": [{"role": "user", "content": "How does the SBMI compilation work?"}]}' | \
+  python3 .cursor/hooks/sbmi_expansion_reminder
+
+# Test simple query (should skip injection)
+echo '{"messages": [{"role": "user", "content": "What command lists contexts?"}]}' | \
+  python3 .cursor/hooks/sbmi_expansion_reminder
 ```
 
 ### Test Protection Hook

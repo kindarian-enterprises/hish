@@ -44,6 +44,55 @@ Markdown Docs → Python Indexer → Qdrant Vector DB
                     Cursor ← Agent Prompts → Your Code
 ```
 
+**Prompt engineering system**: Instead of hoping LLMs follow good practices, Hish embeds engineering discipline directly into agent instructions through layered prompt structures:
+
+- **Context injection**: Agents must load project state before starting work
+- **Protocol enforcement**: Specific workflows for research → implementation → quality assurance
+- **Knowledge integration**: Mandatory patterns for querying existing solutions and storing new ones
+- **Quality standards**: Built-in coding practices, anti-patterns, and engineering discipline
+
+**Behavioral transformation**: Raw LLMs are unfocused and inconsistent. Hish prompts create agents that automatically query existing patterns, propose evidence-based solutions, implement with quality standards, and store results for team reuse.
+
+**Technical architecture**: Qdrant vector database + MCP protocol bridge + automated indexing + structured prompt engineering. Standard RAG enhanced with behavioral discipline.
+
+## Portable Context (Optional)
+
+**Work across multiple machines?** Enable portable context to sync your `local/` directory via git.
+
+```bash
+make context-init-portable   # Interactive setup
+make context-pull            # Pull latest changes
+make context-push            # Commit and push your changes
+```
+
+**How it works:** `local/` → symlink → separate git repo (never tracked by main Hish repo)
+**Security:** Secrets protected by context repo `.gitignore`
+**Details:** See `PORTABLE_CONTEXT.md` or `docs/setup/portable-context.md`
+
+## Framework Optimization (SBMI)
+
+Agents read token-optimized `.compact` files, you edit normal `.md` files, RAG indexes full `.md` content.
+
+**System maintains two versions:**
+- **`.md` files** - Full markdown (you edit, git tracks, RAG indexes)
+- **`.compact` files** - Optimized (agents read, auto-generated, gitignored)
+
+**Session workflow:**
+1. Agent session modifies framework `.md` files
+2. At session end: `make sbmi-compact` (recompiles only changed files)
+3. Next agent loads updated `.compact` files
+
+**What gets optimized:** Workflow indexes, templates, design docs
+**What stays full:** Personas, init prompts, behavioral directives (verbatim copy)
+
+**Hash-based incremental compilation:** Only changed files recompile (sub-second typical session-end).
+
+**Documentation:**
+- User guide: `docs/agent-management/framework-optimization.md`
+- Developer docs: `sbmi/README.md`
+- Technical details: `local/workflow-indexes/sbmi-system-index.md`
+- Workflows: `local/workflows-and-processes/sbmi-session-workflow.md`
+
 ## Agent Personas
 
 **Development Agent** (`/dev`)
@@ -110,7 +159,7 @@ pip install -r rag/indexer/requirements.txt
 git clone https://github.com/kindarian-enterprises/hish.git
 cd hish
 
-# 2. Setup Cursor integration
+# 2. Add to Cursor settings.json (builds MCP server, compiles framework, restart Cursor after)
 make setup-cursor
 # Builds MCP server, installs custom commands
 # Follow prompts to add config to Cursor settings.json
@@ -129,11 +178,11 @@ make index
 # Type /dev in chat to initialize agent
 ```
 
-**What this creates:**
-- MCP server connection to Qdrant
-- Custom `/dev`, `/red`, `/end-dev`, `/end-red` commands
-- Vector index of your documentation
-- Project context in `local/` (gitignored)
+**What actually happens:**
+- Step 2: Adds MCP server config to Cursor, compiles framework to `.compact` files
+- Step 3: Creates `local/project-name/` (gitignored)
+- Step 4: Builds vector index of your code + docs
+- Step 5: AI agents can now query/store knowledge
 
 ## Usage
 
@@ -157,6 +206,8 @@ Agent:
 ```
 Type /end-dev in Cursor chat
 ```
+
+**After session:** `make sbmi-compact` to sync framework `.compact` files (agents remind you).
 
 **Commands available:**
 - `/dev` - Initialize development agent

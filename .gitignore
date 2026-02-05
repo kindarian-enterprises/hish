@@ -1,6 +1,8 @@
 # Local-only overrides & temp (existing dirs only; do not add if not present)
 
+local
 local/
+.hish-portable-context
 overrides/
 private/
 tmp/
@@ -50,11 +52,17 @@ __pycache__/
 *.so
 .pytest_cache/
 .coverage
+coverage.xml
 htmlcov/
 .tox/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# SBMI auto-generated files
+
+*.compact
+.sbmi-cache.json
 
 # OS/editor noise
 

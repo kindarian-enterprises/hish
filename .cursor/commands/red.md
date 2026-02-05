@@ -5,4 +5,4 @@ description: Start security analysis session with adversarial thinking and threa
 
 # Red Team Agent Initialization
 
-@{{HISH_ROOT}}/prompts/red_team/red_team_agent_init_prompt.md
+@{{HISH_ROOT}}/prompts/red_team/red_team_agent_init_prompt.L1.compact

@@ -250,7 +250,7 @@ class TestModelHelperFunctions:
         """Test is_code_collection - unified MPNet means all return False."""
         # All collections use unified MPNet now
         assert not is_code_collection("project_docs_mpnet")
-        assert not is_code_collection("mayr_docs_mpnet")
+        assert not is_code_collection("myproject_docs_mpnet")
         assert not is_code_collection("hish_framework_mpnet")
         assert not is_code_collection("cross_project_intelligence_mpnet")
         assert not is_code_collection("documentation")

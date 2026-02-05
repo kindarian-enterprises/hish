@@ -1,7 +1,10 @@
 # Hish Cursor Context Framework - Makefile
 # Multi-project development agent framework with shared knowledge
 
-.PHONY: help health test new-context list-contexts index-repo reindex-contexts clean logs index collections setup-cursor setup-hooks setup-commands quick-start backup mcp build-mcp optimize-collections index-framework setup-intelligence lint lint-fix format type-check mypy-errors pre-commit-install dev-setup
+# Ruff output: concise (default) or github (for CI annotations)
+LINT_FORMAT ?= concise
+
+.PHONY: help health test new-context list-contexts index-repo reindex-contexts clean logs index collections setup-cursor setup-framework setup-hooks setup-commands quick-start backup mcp build-mcp optimize-collections index-framework setup-intelligence lint lint-rag lint-sbmi lint-fix format format-rag format-sbmi type-check mypy-errors pre-commit-install dev-setup check test-sbmi test-sbmi-coverage test-sbmi-unit test-sbmi-integration sbmi-compile sbmi-compile-ci sbmi-verify sbmi-compact sbmi-compact-force sbmi-stats sbmi-analyze install-deps-sbmi install-deps-sbmi-lint context-init-portable context-link-remote context-link-local context-push context-pull context-status
 
 # Default target
 help: ## Show this help message
@@ -30,6 +33,10 @@ new-context: ## Create a new project context (interactive)
 
 list-contexts: ## List all project contexts
 	@echo "📁 Project Contexts:"
+	@if [ -L "local" ]; then \
+		echo "🔗 Portable context enabled: local -> $$(readlink local)"; \
+		echo ""; \
+	fi
 	@echo "Local contexts (gitignored):"
 	@find local -maxdepth 1 -type d -not -path local 2>/dev/null | sort | while read dir; do \
 		echo "  🎯 $$(basename $$dir) - $$dir"; \
@@ -193,33 +200,129 @@ test: ## Run framework tests (host-based)
 	@echo "📋 Using host-based testing environment..."
 	cd rag/indexer && python -m pytest tests/ -v
 
+# SBMI Testing
+test-sbmi: ## Run all SBMI compiler tests
+	@echo "🧪 Running SBMI compiler tests..."
+	cd sbmi && python3 -m pytest tests/ -v
+
+test-sbmi-coverage: ## Run SBMI tests with coverage (CI)
+	@echo "🧪 Running SBMI compiler tests with coverage..."
+	cd sbmi && python3 -m pytest tests/ -v --cov=sbmi --cov-report=xml --cov-report=term-missing
+
+test-sbmi-unit: ## Run SBMI unit tests only
+	@echo "🧪 Running SBMI unit tests..."
+	cd sbmi && python3 -m pytest tests/ -v -m unit
+
+test-sbmi-integration: ## Run SBMI integration tests
+	@echo "🧪 Running SBMI integration tests..."
+	cd sbmi && python3 -m pytest tests/ -v -m integration
+
+sbmi-compile: ## Compile workflow indexes to .compact format (full)
+	@echo "📦 Compiling workflow indexes..."
+	python3 scripts/compile-indexes.py
+
+sbmi-compile-ci: ## Prepare local/workflow-indexes and compile (CI; no local/ required)
+	@echo "📦 Preparing workflow-indexes and compiling (CI)..."
+	mkdir -p local/workflow-indexes
+	cp templates/workflow-indexes/*.md local/workflow-indexes/
+	$(MAKE) sbmi-compile
+
+sbmi-verify: ## Verify compiled .compact files exist and preserve essential content
+	@echo "🔍 Verifying compiled files..."
+	@if ! ls local/workflow-indexes/*.L*.compact 1>/dev/null 2>&1; then \
+		echo "No .compact files found; running sbmi-compile-ci first..."; \
+		$(MAKE) sbmi-compile-ci; \
+	fi
+	@for stem in framework-command-index framework-file-index framework-repository-index session-workflow-enforcement; do \
+		found=0; \
+		for f in local/workflow-indexes/$$stem.L*.compact; do \
+			[ -f "$$f" ] && found=1 && break; \
+		done; \
+		[ $$found -eq 1 ] || { echo "Missing $$stem .compact"; exit 1; }; \
+	done
+	@cmd_idx=$$(ls local/workflow-indexes/framework-command-index.L*.compact 2>/dev/null | head -1); \
+	[ -n "$$cmd_idx" ] || { echo "Missing framework-command-index .compact"; exit 1; }; \
+	grep -q "make index" "$$cmd_idx" && grep -q "Makefile" "$$cmd_idx" && grep -q "dev_agent" "$$cmd_idx" && grep -q "make quick-start" "$$cmd_idx" || { echo "Essential content missing in $$cmd_idx"; exit 1; }
+	@echo "✅ Compiled files verified - essential commands preserved"
+
+sbmi-compact: ## Incrementally compact changed framework docs (session-end)
+	@echo "⚡ Compacting changed framework documentation..."
+	python3 scripts/compact-framework.py
+
+sbmi-compact-force: ## Force full recompilation of all framework docs
+	@echo "🔄 Force recompiling all framework documentation..."
+	python3 scripts/compact-framework.py --force
+
+sbmi-stats: ## Show SBMI compilation cache statistics
+	@echo "📊 SBMI Cache Statistics:"
+	python3 scripts/compact-framework.py --stats
+
+sbmi-analyze: ## Analyze phrase frequency for compression optimization
+	@echo "📊 Analyzing framework documentation phrase frequency..."
+	python3 scripts/analyze-phrase-frequency.py
+
+sbmi-validate: ## Validate SBMI expansion graph balance
+	@echo "🔍 Validating SBMI expansion graph..."
+	python3 scripts/validate-expansion-graph.py
+
+sbmi-validate-verbose: ## Validate SBMI graph with verbose output
+	@echo "🔍 Validating SBMI expansion graph (verbose)..."
+	python3 scripts/validate-expansion-graph.py --verbose --check-balance
+
 # Code Quality
-lint: ## Run all linting checks (ruff, black, isort, mypy)
-	@echo "🔍 Running code quality checks..."
-	@echo "📁 Checking rag/indexer/..."
+lint: lint-rag lint-sbmi ## Run all linting checks (rag + sbmi)
+
+lint-rag: ## Lint rag/indexer (ruff, black, isort, mypy)
+	@echo "🔍 Linting rag/indexer/..."
 	cd rag/indexer && ruff check . --output-format=concise
 	cd rag/indexer && black --check --diff .
 	cd rag/indexer && isort --check-only --diff .
 	cd rag/indexer && mypy . --ignore-missing-imports || echo "⚠️ Type checking found issues (non-blocking)"
-	@echo "✅ Linting complete!"
+	@echo "✅ rag/indexer lint complete!"
 
-lint-fix: ## Fix auto-fixable linting issues
+lint-sbmi: ## Lint sbmi/ (ruff, black, isort, mypy). Set LINT_FORMAT=github for CI.
+	@echo "🔍 Linting sbmi/..."
+	cd sbmi && ruff check . --output-format=$(LINT_FORMAT)
+	cd sbmi && black --check --diff .
+	cd sbmi && isort --check-only --diff .
+	cd sbmi && mypy compiler/ --ignore-missing-imports || true
+	@echo "✅ sbmi lint complete!"
+
+lint-fix: ## Fix auto-fixable linting issues (rag + sbmi)
 	@echo "🔧 Fixing linting issues..."
-	cd rag/indexer && ruff check . --fix
-	cd rag/indexer && black .
-	cd rag/indexer && isort .
+	cd rag/indexer && ruff check . --fix && black . && isort .
+	cd sbmi && ruff check . --fix && black . && isort .
 	@echo "✅ Auto-fixes applied!"
 
-format: ## Format code with black and isort
-	@echo "🎨 Formatting code..."
-	cd rag/indexer && black .
-	cd rag/indexer && isort .
-	@echo "✅ Code formatted!"
+format: format-rag format-sbmi ## Format all code (rag + sbmi)
 
-type-check: ## Run type checking with mypy
+format-rag: ## Format rag/indexer
+	@echo "🎨 Formatting rag/indexer/..."
+	cd rag/indexer && black . && isort .
+	@echo "✅ rag/indexer formatted!"
+
+format-sbmi: ## Format sbmi/
+	@echo "🎨 Formatting sbmi/..."
+	cd sbmi && black . && isort .
+	@echo "✅ sbmi formatted!"
+
+check: lint test test-sbmi ## Run all checks (lint + tests)
+
+type-check: ## Run type checking with mypy (rag only)
 	@echo "🔍 Running type checks..."
 	cd rag/indexer && mypy . --ignore-missing-imports
 	@echo "✅ Type checking complete!"
+
+# CI / one-off installs (no venv required; use in CI or with system python)
+install-deps-sbmi: ## Install SBMI runtime + test deps (for CI)
+	python3 -m pip install --upgrade pip
+	pip install -r sbmi/requirements.txt
+	pip install -r sbmi/requirements-test.txt
+
+install-deps-sbmi-lint: ## Install SBMI + lint tools (for CI lint job)
+	python3 -m pip install --upgrade pip
+	pip install -r sbmi/requirements-lint.txt
+	pip install -r sbmi/requirements.txt
 
 mypy-errors: ## Show mypy errors in detail
 	@echo "🔍 Detailed mypy error analysis..."
@@ -250,10 +353,11 @@ quick-start: ## Quick setup guide - show configuration steps
 	@echo "📋 Setup Steps:"
 	@echo "  1. Configure Cursor MCP integration: make setup-cursor"
 	@echo "  2. Set up Python virtual environment: see docs/setup/virtual-environment-guide.md"
-	@echo "  3. Create your first project context: make new-context"
-	@echo "  4. Setup intelligence collection: make setup-intelligence"
-	@echo "  5. Index documentation: make index"
-	@echo "  6. In Cursor:"
+	@echo "  3. Compile framework indexes: make sbmi-compact-force"
+	@echo "  4. Create your first project context: make new-context"
+	@echo "  5. Setup intelligence collection: make setup-intelligence"
+	@echo "  6. Index documentation: make index"
+	@echo "  7. In Cursor:"
 	@echo "     Dev Agent: @prompts/dev_agent/dev_agent_init_prompt.md"
 	@echo "     Red Team: @prompts/red_team/red_team_agent_init_prompt.md"
 	@echo ""
@@ -291,9 +395,20 @@ setup-commands: ## Install Cursor custom commands (agent init + session manageme
 	@echo "============================="
 	@./scripts/setup-commands.sh
 
-setup-cursor: ## Setup Cursor MCP integration with pre-built server image + hooks + commands
-	@echo "🔌 Cursor Setup"
-	@echo "==============="
+setup-framework: ## Setup framework for agent use (compile .compact files)
+	@echo "📦 Setting up framework for agent use..."
+	@echo "Compiling framework documentation to .compact files..."
+	@$(MAKE) sbmi-compact-force
+	@echo ""
+	@echo "✅ Framework setup complete!"
+	@echo "   - All .md files compiled to .compact"
+	@echo "   - Agents will read .compact files (token-optimized)"
+	@echo "   - RAG will index .md files (full semantic search)"
+	@echo ""
+
+setup-cursor: setup-framework ## Setup Cursor MCP integration with pre-built server image + hooks + commands
+	@echo "🔌 Cursor MCP Integration Setup - Unified MPNet Embeddings"
+	@echo "=========================================================="
 	@echo ""
 	@echo "Building MCP server..."
 	@docker compose -f deploy/compose.rag.yml build mcp-qdrant-unified
@@ -334,3 +449,51 @@ build-mcp: ## Build MCP server image with pre-warmed MPNet model
 mcp: ## Start MCP server for development
 	@echo "🔌 Starting MCP server (stdio mode)..."
 	docker compose -f ./deploy/compose.rag.yml run --rm -i mcp-qdrant-unified
+
+# Portable Context Management
+context-init-portable: ## Initialize portable context repository (OPTIONAL - for multi-environment sync)
+	@echo "🔗 Initializing portable context..."
+	@echo "⚠️  This is OPTIONAL. Only use if you work across multiple machines."
+	@./scripts/context-init-portable.sh
+
+context-link-remote: ## Link existing remote portable context (Usage: make context-link-remote REPO=<git-url>)
+	@if [ -z "$(REPO)" ]; then \
+		echo "❌ Usage: make context-link-remote REPO=<git-url>"; \
+		echo "Example: make context-link-remote REPO=git@github.com:user/hish-context.git"; \
+		exit 1; \
+	fi
+	@./scripts/context-link-remote.sh "$(REPO)"
+
+context-link-local: ## Link existing local portable context (Usage: make context-link-local CONTEXT_PATH=<path>)
+	@if [ -z "$(CONTEXT_PATH)" ]; then \
+		echo "❌ Usage: make context-link-local CONTEXT_PATH=<path>"; \
+		echo "Example: make context-link-local CONTEXT_PATH=~/Dropbox/hish-context"; \
+		exit 1; \
+	fi
+	@./scripts/context-link-local.sh "$(CONTEXT_PATH)"
+
+context-push: ## Commit and push context changes to portable repository
+	@if [ ! -L "local" ]; then \
+		echo "❌ Portable context not configured. Run 'make context-init-portable' first."; \
+		exit 1; \
+	fi
+	@./scripts/context-sync.sh push
+
+context-pull: ## Pull context changes from portable repository
+	@if [ ! -L "local" ]; then \
+		echo "❌ Portable context not configured. Run 'make context-init-portable' first."; \
+		exit 1; \
+	fi
+	@./scripts/context-sync.sh pull
+
+context-status: ## Show portable context git status
+	@if [ ! -L "local" ]; then \
+		echo "❌ Portable context not configured."; \
+		echo ""; \
+		echo "To set up portable context:"; \
+		echo "  make context-init-portable    # Initialize new portable context"; \
+		echo "  make context-link-remote      # Link existing remote context"; \
+		echo "  make context-link-local       # Link existing local context"; \
+		exit 1; \
+	fi
+	@./scripts/context-sync.sh status
