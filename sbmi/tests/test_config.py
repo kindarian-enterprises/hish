@@ -1,6 +1,7 @@
 """Test configuration loading and management."""
 
 import pytest
+
 from sbmi.compiler.config import CompressionConfig
 
 
@@ -20,9 +21,9 @@ class TestCompressionConfig:
         patterns = config.exclusion_patterns
 
         # Critical behavioral files must be excluded
-        assert any('dev_agent_persona.md' in p for p in patterns)
-        assert any('dev_agent_init_prompt.md' in p for p in patterns)
-        assert any('dev_agent_context.md' in p for p in patterns)
+        assert any("dev_agent_persona.md" in p for p in patterns)
+        assert any("dev_agent_init_prompt.md" in p for p in patterns)
+        assert any("dev_agent_context.md" in p for p in patterns)
 
     def test_phrase_mappings_loaded(self):
         """Test that phrase mappings are loaded."""
@@ -36,19 +37,19 @@ class TestCompressionConfig:
         """Test retrieving level-specific configuration."""
         config = CompressionConfig()
 
-        level1 = config.get_level_config('level1')
-        level2 = config.get_level_config('level2')
+        level1 = config.get_level_config("level1")
+        level2 = config.get_level_config("level2")
 
         assert level1 is not None
         assert level2 is not None
-        assert 'strategies' in level1
-        assert 'strategies' in level2
+        assert "strategies" in level1
+        assert "strategies" in level2
 
     def test_level_strategies_retrieval(self):
         """Test retrieving strategy list for a level."""
         config = CompressionConfig()
 
-        strategies = config.get_level_strategies('level2')
+        strategies = config.get_level_strategies("level2")
 
         assert isinstance(strategies, list)
         assert len(strategies) > 0
@@ -59,8 +60,8 @@ class TestCompressionConfig:
         config_dict = config.as_dict()
 
         assert isinstance(config_dict, dict)
-        assert 'exclusion_patterns' in config_dict
-        assert 'phrase_mappings' in config_dict
+        assert "exclusion_patterns" in config_dict
+        assert "phrase_mappings" in config_dict
 
 
 if __name__ == "__main__":

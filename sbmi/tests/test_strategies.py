@@ -9,16 +9,17 @@ Critical Requirements:
 """
 
 import pytest
+
 from sbmi.compiler.strategies import (
-    RemoveFormattingMarkersPass,
-    RemoveCodeBlockMarkersPass,
-    StripDescriptionsPass,
-    RemoveCommentsPass,
-    ReplacePhrasesPass,
-    CompactSyntaxPass,
-    StructuralCompressionStrategy,
-    PhraseCompressionStrategy,
     CombinedCompressionStrategy,
+    CompactSyntaxPass,
+    PhraseCompressionStrategy,
+    RemoveCodeBlockMarkersPass,
+    RemoveCommentsPass,
+    RemoveFormattingMarkersPass,
+    ReplacePhrasesPass,
+    StripDescriptionsPass,
+    StructuralCompressionStrategy,
 )
 
 
@@ -63,12 +64,12 @@ class TestRemoveFormattingMarkersPass:
         result = strategy.compress(content, {})
 
         # Emojis should be removed but text preserved
-        assert '✅' not in result
-        assert '❌' not in result
-        assert 'DO:' in result
+        assert "✅" not in result
+        assert "❌" not in result
+        assert "DO:" in result
         assert "DON'T:" in result
-        assert 'Make all changes' in result
-        assert 'Skip validation' in result
+        assert "Make all changes" in result
+        assert "Skip validation" in result
 
 
 class TestRemoveCodeBlockMarkersPass:
@@ -141,9 +142,9 @@ class TestReplacePhrasesPass:
     def test_replaces_configured_phrases(self):
         strategy = ReplacePhrasesPass()
         config = {
-            'phrase_mappings': {
-                'make new-context': 'newctx',
-                'framework': 'fw',
+            "phrase_mappings": {
+                "make new-context": "newctx",
+                "framework": "fw",
             }
         }
         content = "make new-context\nframework documentation"
@@ -154,8 +155,8 @@ class TestReplacePhrasesPass:
     def test_word_boundary_replacement(self):
         strategy = ReplacePhrasesPass()
         config = {
-            'phrase_mappings': {
-                'context': 'ctx',
+            "phrase_mappings": {
+                "context": "ctx",
             }
         }
         content = "new-context\ncontextual"
@@ -165,7 +166,7 @@ class TestReplacePhrasesPass:
 
     def test_preserves_file_paths(self):
         strategy = ReplacePhrasesPass()
-        config = {'phrase_mappings': {'index': 'idx'}}
+        config = {"phrase_mappings": {"index": "idx"}}
         content = "/path/to/index.md"
         result = strategy.compress(content, config)
         # Ensure path structure maintained
@@ -243,9 +244,9 @@ class TestPhraseCompressionStrategy:
     def test_applies_phrase_mappings(self):
         strategy = PhraseCompressionStrategy()
         config = {
-            'phrase_mappings': {
-                'framework': 'fw',
-                'collection': 'coll',
+            "phrase_mappings": {
+                "framework": "fw",
+                "collection": "coll",
             }
         }
         content = "framework collection management"
@@ -255,7 +256,7 @@ class TestPhraseCompressionStrategy:
 
     def test_compacts_syntax(self):
         strategy = PhraseCompressionStrategy()
-        config = {'phrase_mappings': {}}
+        config = {"phrase_mappings": {}}
         content = "input -> output"
         result = strategy.compress(content, config)
         assert "→" in result
@@ -284,9 +285,9 @@ make new-context
 ```"""
 
         config = {
-            'phrase_mappings': {
-                'make new-context': 'newctx',
-                'framework': 'fw',
+            "phrase_mappings": {
+                "make new-context": "newctx",
+                "framework": "fw",
             }
         }
 
@@ -306,13 +307,13 @@ make new-context
         phrase = PhraseCompressionStrategy()
         strategy = CombinedCompressionStrategy([structural, phrase])
 
-        content = '''# Commands
+        content = """# Commands
 
 # Generate UUID for storage
 python3 -c "import uuid; print(uuid.uuid4())"
 
 # Index repository with path
-make index-repo REPO_PATH=/path/to/repo COLLECTION_NAME=my_collection'''
+make index-repo REPO_PATH=/path/to/repo COLLECTION_NAME=my_collection"""
 
         result = strategy.compress(content, {})
 
@@ -354,10 +355,10 @@ class TestEssentialContextPreservation:
         strategy = StructuralCompressionStrategy()
         content = 'text.store "content" collection_name [UUID]'
         result = strategy.compress(content, {})
-        assert 'text.store' in result
+        assert "text.store" in result
         assert '"content"' in result
-        assert 'collection_name' in result
-        assert '[UUID]' in result
+        assert "collection_name" in result
+        assert "[UUID]" in result
 
     def test_makefile_targets_preserved(self):
         strategy = StructuralCompressionStrategy()

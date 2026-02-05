@@ -485,7 +485,10 @@ def process_single_file(
 
     # Normalize embeddings for DOT distance (equivalent to COSINE but faster)
     try:
-        embeddings = normalize_vectors(embeddings)
+        vectors_list: List[List[float]] = [
+            emb.tolist() if hasattr(emb, "tolist") else list(emb) for emb in embeddings
+        ]
+        normalized_vectors: List[List[float]] = normalize_vectors(vectors_list)
     except Exception as e:
         logger.error(f"Failed to normalize embeddings for {rel}: {e}")
         return rel, [], 0
@@ -534,7 +537,7 @@ def process_single_file(
 
     # Create points for this file
     points = []
-    for chunk, vec in zip(pieces, embeddings):
+    for chunk, vec in zip(pieces, normalized_vectors):
         file_title = os.path.basename(rel)
 
         # Create context header for better semantic search

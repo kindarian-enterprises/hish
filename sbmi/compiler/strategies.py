@@ -7,7 +7,7 @@ Each strategy does ONE thing well, then they're composed together.
 
 import re
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import Dict, List, Type, cast
 
 
 class CompressionStrategy(ABC):
@@ -38,26 +38,27 @@ class CompressionStrategy(ABC):
 # SIMPLE PASS STRATEGIES - Each does ONE thing
 # ============================================================================
 
+
 class RemoveFormattingMarkersPass(CompressionStrategy):
     """Remove emoji and formatting markers but preserve text."""
 
     # Comprehensive emoji regex pattern covering all Unicode emoji ranges
     EMOJI_PATTERN = re.compile(
         "["
-        "\U0001F1E0-\U0001F1FF"  # flags (iOS)
-        "\U0001F300-\U0001F5FF"  # symbols & pictographs
-        "\U0001F600-\U0001F64F"  # emoticons
-        "\U0001F680-\U0001F6FF"  # transport & map symbols
-        "\U0001F700-\U0001F77F"  # alchemical symbols
-        "\U0001F780-\U0001F7FF"  # Geometric Shapes Extended
-        "\U0001F800-\U0001F8FF"  # Supplemental Arrows-C
-        "\U0001F900-\U0001F9FF"  # Supplemental Symbols and Pictographs
-        "\U0001FA00-\U0001FA6F"  # Chess Symbols
-        "\U0001FA70-\U0001FAFF"  # Symbols and Pictographs Extended-A
-        "\U00002702-\U000027B0"  # Dingbats
-        "\U000024C2-\U0001F251"
+        "\U0001f1e0-\U0001f1ff"  # flags (iOS)
+        "\U0001f300-\U0001f5ff"  # symbols & pictographs
+        "\U0001f600-\U0001f64f"  # emoticons
+        "\U0001f680-\U0001f6ff"  # transport & map symbols
+        "\U0001f700-\U0001f77f"  # alchemical symbols
+        "\U0001f780-\U0001f7ff"  # Geometric Shapes Extended
+        "\U0001f800-\U0001f8ff"  # Supplemental Arrows-C
+        "\U0001f900-\U0001f9ff"  # Supplemental Symbols and Pictographs
+        "\U0001fa00-\U0001fa6f"  # Chess Symbols
+        "\U0001fa70-\U0001faff"  # Symbols and Pictographs Extended-A
+        "\U00002702-\U000027b0"  # Dingbats
+        "\U000024c2-\U0001f251"
         "]+",
-        flags=re.UNICODE
+        flags=re.UNICODE,
     )
 
     @property
@@ -66,25 +67,25 @@ class RemoveFormattingMarkersPass(CompressionStrategy):
 
     def compress(self, content: str, config: Dict) -> str:
         lines = []
-        for line in content.split('\n'):
+        for line in content.split("\n"):
             # Skip separator lines
-            if re.match(r'^[\-=]{3,}$', line.strip()):
+            if re.match(r"^[\-=]{3,}$", line.strip()):
                 continue
 
             # Strip all emojis from line but keep the text
-            cleaned_line = self.EMOJI_PATTERN.sub('', line)
+            cleaned_line = self.EMOJI_PATTERN.sub("", line)
 
             # Remove extra spaces left after emoji removal
-            cleaned_line = re.sub(r'\s+', ' ', cleaned_line).strip()
+            cleaned_line = re.sub(r"\s+", " ", cleaned_line).strip()
 
             # Only skip line if it becomes empty after emoji removal
             if cleaned_line:
                 lines.append(cleaned_line)
             elif not line.strip():
                 # Preserve intentional empty lines
-                lines.append('')
+                lines.append("")
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
 
 class RemoveCodeBlockMarkersPass(CompressionStrategy):
@@ -96,11 +97,11 @@ class RemoveCodeBlockMarkersPass(CompressionStrategy):
 
     def compress(self, content: str, config: Dict) -> str:
         lines = []
-        for line in content.split('\n'):
-            if re.match(r'^```\w*$', line.strip()):
+        for line in content.split("\n"):
+            if re.match(r"^```\w*$", line.strip()):
                 continue
             lines.append(line)
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
 
 class RemoveVerbosePrefixesPass(CompressionStrategy):
@@ -112,20 +113,30 @@ class RemoveVerbosePrefixesPass(CompressionStrategy):
 
     def compress(self, content: str, config: Dict) -> str:
         prefixes = [
-            'Description:', 'Purpose:', 'Location:', 'Use:', 'Note:',
-            'Example:', 'Format:', 'Usage:', 'Rationale:', 'Context:',
-            'Prerequisites:', 'Requires:', 'Depends on:'
+            "Description:",
+            "Purpose:",
+            "Location:",
+            "Use:",
+            "Note:",
+            "Example:",
+            "Format:",
+            "Usage:",
+            "Rationale:",
+            "Context:",
+            "Prerequisites:",
+            "Requires:",
+            "Depends on:",
         ]
 
         lines = []
-        for line in content.split('\n'):
+        for line in content.split("\n"):
             cleaned = line
             for prefix in prefixes:
                 if cleaned.strip().startswith(prefix):
-                    cleaned = cleaned.replace(prefix, '', 1).strip()
+                    cleaned = cleaned.replace(prefix, "", 1).strip()
                     break
             lines.append(cleaned)
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
 
 class RemoveEmptyLinesPass(CompressionStrategy):
@@ -139,9 +150,9 @@ class RemoveEmptyLinesPass(CompressionStrategy):
         lines = []
         prev_empty = False
 
-        for line in content.split('\n'):
+        for line in content.split("\n"):
             # Keep headers even if separated
-            if line.strip().startswith('#'):
+            if line.strip().startswith("#"):
                 lines.append(line)
                 prev_empty = False
                 continue
@@ -155,7 +166,7 @@ class RemoveEmptyLinesPass(CompressionStrategy):
             lines.append(line)
             prev_empty = False
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
 
 class CompactWhitespacePass(CompressionStrategy):
@@ -167,9 +178,9 @@ class CompactWhitespacePass(CompressionStrategy):
 
     def compress(self, content: str, config: Dict) -> str:
         # Multiple spaces to single space
-        result = re.sub(r' {2,}', ' ', content)
+        result = re.sub(r" {2,}", " ", content)
         # Multiple newlines to double newline max
-        result = re.sub(r'\n{3,}', '\n\n', result)
+        result = re.sub(r"\n{3,}", "\n\n", result)
         return result
 
 
@@ -182,20 +193,15 @@ class ReplacePhrasesPass(CompressionStrategy):
 
     def compress(self, content: str, config: Dict) -> str:
         result = content
-        phrase_mappings = config.get('phrase_mappings', {})
+        phrase_mappings = config.get("phrase_mappings", {})
 
         # Sort by length (longest first) to avoid partial matches
         for phrase, abbrev in sorted(
-            phrase_mappings.items(),
-            key=lambda x: len(x[0]),
-            reverse=True
+            phrase_mappings.items(), key=lambda x: len(x[0]), reverse=True
         ):
             # Word boundary replacement
             result = re.sub(
-                r'\b' + re.escape(phrase) + r'\b',
-                abbrev,
-                result,
-                flags=re.IGNORECASE
+                r"\b" + re.escape(phrase) + r"\b", abbrev, result, flags=re.IGNORECASE
             )
 
         return result
@@ -211,11 +217,11 @@ class CompactSyntaxPass(CompressionStrategy):
     def compress(self, content: str, config: Dict) -> str:
         result = content
         # -> to →
-        result = re.sub(r'\s*->\s*', '→', result)
+        result = re.sub(r"\s*->\s*", "→", result)
         # Compact colons
-        result = re.sub(r'\s*:\s*', ':', result)
+        result = re.sub(r"\s*:\s*", ":", result)
         # Compact assignment-like patterns
-        result = re.sub(r'\s*=\s*', '=', result)
+        result = re.sub(r"\s*=\s*", "=", result)
         return result
 
 
@@ -228,21 +234,21 @@ class RemoveCommentsPass(CompressionStrategy):
 
     def compress(self, content: str, config: Dict) -> str:
         lines = []
-        for line in content.split('\n'):
+        for line in content.split("\n"):
             # Keep markdown headers
-            if line.strip().startswith('#') and not line.strip().startswith('# '):
+            if line.strip().startswith("#") and not line.strip().startswith("# "):
                 lines.append(line)
                 continue
 
             # Remove shell/markdown comment lines (start with "# ")
-            if line.strip().startswith('# '):
+            if line.strip().startswith("# "):
                 continue
 
             # Keep the line as-is (don't remove code parentheses)
             if line.strip():
                 lines.append(line)
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
 
 class StripDescriptionsPass(CompressionStrategy):
@@ -254,27 +260,28 @@ class StripDescriptionsPass(CompressionStrategy):
 
     def compress(self, content: str, config: Dict) -> str:
         lines = []
-        for line in content.split('\n'):
+        for line in content.split("\n"):
             # Keep headers
-            if line.strip().startswith('#'):
+            if line.strip().startswith("#"):
                 lines.append(line)
                 continue
 
             # For command lines with " - " explanations, keep only the command
-            if ' - ' in line and not line.strip().startswith('-'):
-                command_part = line.split(' - ')[0].strip()
+            if " - " in line and not line.strip().startswith("-"):
+                command_part = line.split(" - ")[0].strip()
                 if command_part:
                     lines.append(command_part)
                 continue
 
             lines.append(line)
 
-        return '\n'.join(lines)
+        return "\n".join(lines)
 
 
 # ============================================================================
 # COMPOSED STRATEGIES - Built from simple passes
 # ============================================================================
+
 
 class StructuralCompressionStrategy(CompressionStrategy):
     """
@@ -371,24 +378,24 @@ class CombinedCompressionStrategy(CompressionStrategy):
 # FACTORY - Create strategies by name
 # ============================================================================
 
+
 class CompressionStrategyFactory:
     """Factory for creating compression strategies and passes."""
 
-    _STRATEGIES = {
+    _STRATEGIES: Dict[str, Type[CompressionStrategy]] = {
         # Composed strategies
-        'structural': StructuralCompressionStrategy,
-        'phrase': PhraseCompressionStrategy,
-
+        "structural": StructuralCompressionStrategy,
+        "phrase": PhraseCompressionStrategy,
         # Individual passes (for fine-grained control)
-        'remove_markers': RemoveFormattingMarkersPass,
-        'remove_codeblocks': RemoveCodeBlockMarkersPass,
-        'remove_prefixes': RemoveVerbosePrefixesPass,
-        'strip_descriptions': StripDescriptionsPass,
-        'remove_empty': RemoveEmptyLinesPass,
-        'remove_comments': RemoveCommentsPass,
-        'compact_whitespace': CompactWhitespacePass,
-        'replace_phrases': ReplacePhrasesPass,
-        'compact_syntax': CompactSyntaxPass,
+        "remove_markers": RemoveFormattingMarkersPass,
+        "remove_codeblocks": RemoveCodeBlockMarkersPass,
+        "remove_prefixes": RemoveVerbosePrefixesPass,
+        "strip_descriptions": StripDescriptionsPass,
+        "remove_empty": RemoveEmptyLinesPass,
+        "remove_comments": RemoveCommentsPass,
+        "compact_whitespace": CompactWhitespacePass,
+        "replace_phrases": ReplacePhrasesPass,
+        "compact_syntax": CompactSyntaxPass,
     }
 
     @classmethod
@@ -405,12 +412,14 @@ class CompressionStrategyFactory:
         Raises:
             ValueError: If strategy name not recognized
         """
-        if strategy_name == 'combined':
+        if strategy_name == "combined":
             # Default combined strategy: structural + phrase
-            return CombinedCompressionStrategy([
-                cls._STRATEGIES['structural'](),
-                cls._STRATEGIES['phrase'](),
-            ])
+            return CombinedCompressionStrategy(
+                [
+                    cast(CompressionStrategy, cls._STRATEGIES["structural"]()),
+                    cast(CompressionStrategy, cls._STRATEGIES["phrase"]()),
+                ]
+            )
 
         if strategy_name not in cls._STRATEGIES:
             raise ValueError(
@@ -418,7 +427,7 @@ class CompressionStrategyFactory:
                 f"Available: {list(cls._STRATEGIES.keys()) + ['combined']}"
             )
 
-        return cls._STRATEGIES[strategy_name]()
+        return cast(CompressionStrategy, cls._STRATEGIES[strategy_name]())
 
     @classmethod
     def create_from_list(cls, strategy_names: List[str]) -> CompressionStrategy:
@@ -439,9 +448,7 @@ class CompressionStrategyFactory:
 
     @classmethod
     def register_strategy(
-        cls,
-        name: str,
-        strategy_class: type
+        cls, name: str, strategy_class: Type[CompressionStrategy]
     ) -> None:
         """
         Register a custom compression strategy or pass.

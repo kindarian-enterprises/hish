@@ -6,9 +6,9 @@ for optimal compression mapping generation.
 """
 
 import re
-from pathlib import Path
 from collections import Counter
-from typing import List, Dict, Tuple, Optional
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
 
 
 class PhraseFrequencyAnalyzer:
@@ -16,10 +16,46 @@ class PhraseFrequencyAnalyzer:
 
     # Common stop words to filter out
     STOP_WORDS = {
-        'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
-        'of', 'with', 'from', 'by', 'as', 'is', 'was', 'are', 'be', 'this',
-        'that', 'it', 'be', 'have', 'has', 'had', 'do', 'does', 'can', 'will',
-        'if', 'when', 'where', 'how', 'what', 'which', 'who', 'should', 'would'
+        "the",
+        "a",
+        "an",
+        "and",
+        "or",
+        "but",
+        "in",
+        "on",
+        "at",
+        "to",
+        "for",
+        "of",
+        "with",
+        "from",
+        "by",
+        "as",
+        "is",
+        "was",
+        "are",
+        "be",
+        "this",
+        "that",
+        "it",
+        "be",
+        "have",
+        "has",
+        "had",
+        "do",
+        "does",
+        "can",
+        "will",
+        "if",
+        "when",
+        "where",
+        "how",
+        "what",
+        "which",
+        "who",
+        "should",
+        "would",
     }
 
     def __init__(self, docs_dirs: List[Path]):
@@ -36,22 +72,22 @@ class PhraseFrequencyAnalyzer:
     def clean_text(text: str) -> str:
         """Clean text for analysis - preserve words and basic punctuation."""
         # Remove code blocks
-        text = re.sub(r'```[\s\S]*?```', '', text)
+        text = re.sub(r"```[\s\S]*?```", "", text)
         # Remove inline code
-        text = re.sub(r'`[^`]+`', '', text)
+        text = re.sub(r"`[^`]+`", "", text)
         # Remove URLs
-        text = re.sub(r'https?://\S+', '', text)
+        text = re.sub(r"https?://\S+", "", text)
         # Remove markdown formatting
-        text = re.sub(r'[*_#]', '', text)
+        text = re.sub(r"[*_#]", "", text)
         return text
 
     @staticmethod
     def extract_ngrams(text: str, n: int) -> List[str]:
         """Extract n-grams from text."""
-        words = re.findall(r'\b[a-z]+(?:-[a-z]+)?\b', text.lower())
+        words = re.findall(r"\b[a-z]+(?:-[a-z]+)?\b", text.lower())
         if n == 1:
             return words
-        return [' '.join(words[i:i+n]) for i in range(len(words) - n + 1)]
+        return [" ".join(words[i : i + n]) for i in range(len(words) - n + 1)]
 
     def analyze(self) -> Dict:
         """
@@ -78,11 +114,11 @@ class PhraseFrequencyAnalyzer:
         trigrams = self.extract_ngrams(all_text, 3)
 
         self.results = {
-            'unigrams': Counter(unigrams),
-            'bigrams': Counter(bigrams),
-            'trigrams': Counter(trigrams),
-            'total_words': len(unigrams),
-            'file_count': file_count
+            "unigrams": Counter(unigrams),
+            "bigrams": Counter(bigrams),
+            "trigrams": Counter(trigrams),
+            "total_words": len(unigrams),
+            "file_count": file_count,
         }
 
         return self.results
@@ -93,7 +129,8 @@ class PhraseFrequencyAnalyzer:
             raise ValueError("Must call analyze() first")
 
         filtered = [
-            (w, c) for w, c in self.results['unigrams'].items()
+            (w, c)
+            for w, c in self.results["unigrams"].items()
             if w not in self.STOP_WORDS and len(w) > 2
         ]
         return sorted(filtered, key=lambda x: x[1], reverse=True)[:limit]
@@ -104,7 +141,8 @@ class PhraseFrequencyAnalyzer:
             raise ValueError("Must call analyze() first")
 
         filtered = [
-            (p, c) for p, c in self.results['bigrams'].items()
+            (p, c)
+            for p, c in self.results["bigrams"].items()
             if not any(w in self.STOP_WORDS for w in p.split())
         ]
         return sorted(filtered, key=lambda x: x[1], reverse=True)[:limit]
@@ -115,15 +153,12 @@ class PhraseFrequencyAnalyzer:
             raise ValueError("Must call analyze() first")
 
         filtered = [
-            (p, c) for p, c in self.results['trigrams'].items()
-            if len(p.split()) == 3
+            (p, c) for p, c in self.results["trigrams"].items() if len(p.split()) == 3
         ]
         return sorted(filtered, key=lambda x: x[1], reverse=True)[:limit]
 
     def calculate_savings(
-        self,
-        phrases: List[Tuple[str, int]],
-        abbrev_length: int
+        self, phrases: List[Tuple[str, int]], abbrev_length: int
     ) -> List[Tuple[str, int, int, int]]:
         """
         Calculate potential savings for phrases.
@@ -145,10 +180,7 @@ class PhraseFrequencyAnalyzer:
         return sorted(scored, key=lambda x: x[3], reverse=True)
 
     def generate_phrase_mappings(
-        self,
-        top_n: int = 30,
-        bigram_abbrev_len: int = 4,
-        trigram_abbrev_len: int = 5
+        self, top_n: int = 30, bigram_abbrev_len: int = 4, trigram_abbrev_len: int = 5
     ) -> List[Tuple[str, str, int, int]]:
         """
         Generate optimized phrase mappings based on analysis.
@@ -172,17 +204,16 @@ class PhraseFrequencyAnalyzer:
         scored_trigrams = self.calculate_savings(trigrams, trigram_abbrev_len)
 
         # Combine and sort by score
-        all_scored = (
-            [(p, c, s, sc, 2) for p, c, s, sc in scored_bigrams] +
-            [(p, c, s, sc, 3) for p, c, s, sc in scored_trigrams]
-        )
+        all_scored = [(p, c, s, sc, 2) for p, c, s, sc in scored_bigrams] + [
+            (p, c, s, sc, 3) for p, c, s, sc in scored_trigrams
+        ]
         all_scored.sort(key=lambda x: x[3], reverse=True)
 
         # Generate mappings
         mappings = []
         for phrase, count, savings_per, score, ngram_size in all_scored[:top_n]:
             # Simple abbreviation: first 2 letters of each word
-            abbrev = ''.join(w[:2] for w in phrase.split())
+            abbrev = "".join(w[:2] for w in phrase.split())
             total_savings = count * savings_per
             mappings.append((phrase, abbrev, count, total_savings))
 

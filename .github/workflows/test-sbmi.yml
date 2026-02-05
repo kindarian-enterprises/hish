@@ -44,15 +44,10 @@ jobs:
             ${{ runner.os }}-pip-
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r sbmi/requirements.txt
-          pip install -r sbmi/requirements-test.txt
+        run: make install-deps-sbmi
 
       - name: Run SBMI tests
-        run: |
-          cd sbmi
-          python -m pytest tests/ -v --cov=sbmi --cov-report=xml --cov-report=term-missing
+        run: make test-sbmi-coverage
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -62,36 +57,11 @@ jobs:
           name: sbmi-${{ matrix.python-version }}
           fail_ci_if_error: false
 
-      - name: Prepare local workflow-indexes for CI
-        run: |
-          mkdir -p local/workflow-indexes
-          cp templates/workflow-indexes/*.md local/workflow-indexes/
+      - name: Compile workflow indexes (CI)
+        run: make sbmi-compile-ci
 
-      - name: Test compilation script
-        run: |
-          python scripts/compile-indexes.py
-
-      - name: Verify compiled files are valid
-        run: |
-          # Check that .compact files were created
-          test -f local/workflow-indexes/framework-command-index.compact
-          test -f local/workflow-indexes/framework-file-index.compact
-          test -f local/workflow-indexes/framework-repository-index.compact
-          test -f local/workflow-indexes/session-workflow-enforcement.compact
-
-          # Check that essential commands are preserved
-          grep -q "make install" local/workflow-indexes/framework-command-index.compact || exit 1
-          grep -q "make index" local/workflow-indexes/framework-command-index.compact || exit 1
-
-          echo "✅ Compiled files verified - essential commands preserved"
-
-      - name: Check for information loss
-        run: |
-          # Ensure critical file paths are preserved
-          grep -q "Makefile" local/workflow-indexes/framework-command-index.compact || exit 1
-          grep -q "dev_agent" local/workflow-indexes/framework-command-index.compact || exit 1
-
-          echo "✅ No critical information loss detected"
+      - name: Verify compiled files
+        run: make sbmi-verify
 
   lint-sbmi:
     name: Lint SBMI Code
@@ -107,28 +77,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install linting tools
-        run: |
-          python -m pip install --upgrade pip
-          pip install ruff black isort mypy
-          pip install -r sbmi/requirements.txt
+        run: make install-deps-sbmi-lint
 
-      - name: Run ruff
-        run: |
-          cd sbmi
-          ruff check . --output-format=github
-
-      - name: Run black
-        run: |
-          cd sbmi
-          black --check --diff .
-
-      - name: Run isort
-        run: |
-          cd sbmi
-          isort --check-only --diff .
-
-      - name: Run mypy
-        run: |
-          cd sbmi
-          mypy compiler/ --ignore-missing-imports
-        continue-on-error: true
+      - name: Lint SBMI code
+        run: LINT_FORMAT=github make lint-sbmi

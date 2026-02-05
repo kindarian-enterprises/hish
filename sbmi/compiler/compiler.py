@@ -4,11 +4,11 @@ Main index compiler for SBMI system.
 
 import fnmatch
 from pathlib import Path
-from typing import Dict, Set, Optional
+from typing import Dict, List, Optional, Set
 
+from sbmi.compiler.cache import CompilationCache
 from sbmi.compiler.config import CompressionConfig
 from sbmi.compiler.strategies import CompressionStrategy, CompressionStrategyFactory
-from sbmi.compiler.cache import CompilationCache
 
 
 class IndexCompiler:
@@ -18,7 +18,7 @@ class IndexCompiler:
         self,
         hish_root: Path,
         config: Optional[CompressionConfig] = None,
-        use_cache: bool = True
+        use_cache: bool = True,
     ):
         """
         Initialize compiler.
@@ -34,8 +34,7 @@ class IndexCompiler:
 
         # Build scan directories from config
         self.scan_dirs = [
-            hish_root / scan_dir
-            for scan_dir in self.config.scan_directories
+            hish_root / scan_dir for scan_dir in self.config.scan_directories
         ]
 
         self.excluded_files: Set[Path] = set()
@@ -43,11 +42,10 @@ class IndexCompiler:
 
         # Initialize cache for incremental compilation
         self.use_cache = use_cache
-        if use_cache:
-            cache_file = hish_root / "local" / ".sbmi-cache.json"
-            self.cache = CompilationCache(cache_file)
-        else:
-            self.cache = None
+        cache_file = hish_root / "local" / ".sbmi-cache.json"
+        self.cache: Optional[CompilationCache] = (
+            CompilationCache(cache_file) if use_cache else None
+        )
 
     def is_excluded(self, filepath: Path) -> bool:
         """
@@ -64,9 +62,11 @@ class IndexCompiler:
         # Check excluded directories first
         for excluded_dir in self.config.excluded_directories:
             # Handle wildcard patterns like **/node_modules
-            if excluded_dir.startswith('**/'):
+            if excluded_dir.startswith("**/"):
                 dir_name = excluded_dir[3:]
-                if f"/{dir_name}/" in filepath_str or filepath_str.endswith(f"/{dir_name}"):
+                if f"/{dir_name}/" in filepath_str or filepath_str.endswith(
+                    f"/{dir_name}"
+                ):
                     return True
             # Handle exact directory matches
             else:
@@ -82,9 +82,9 @@ class IndexCompiler:
         # Check file exclusion patterns
         for pattern in self.config.exclusion_patterns:
             # Handle directory patterns
-            if pattern.endswith('/**'):
+            if pattern.endswith("/**"):
                 dir_pattern = pattern[:-3]
-                if dir_pattern.startswith('**/'):
+                if dir_pattern.startswith("**/"):
                     dir_name = dir_pattern[3:]
                     if f"/{dir_name}/" in filepath_str:
                         return True
@@ -92,7 +92,7 @@ class IndexCompiler:
             elif fnmatch.fnmatch(filepath_str, pattern):
                 return True
             # Handle simple contains
-            elif pattern.replace('**/', '') in filepath_str:
+            elif pattern.replace("**/", "") in filepath_str:
                 return True
 
         return False
@@ -101,7 +101,7 @@ class IndexCompiler:
         self,
         source_file: Path,
         level: str = "level2",
-        strategy: Optional[CompressionStrategy] = None
+        strategy: Optional[CompressionStrategy] = None,
     ) -> Path:
         """
         Compress a workflow index file OR copy if excluded.
@@ -134,35 +134,39 @@ class IndexCompiler:
 
 """
             full_content = header + content
-            line_count = len(full_content.split('\n'))
+            line_count = len(full_content.split("\n"))
 
             # Determine weight level for excluded file
             weight_level = self.config.get_weight_level(line_count)
 
             # Create output path with weight level
-            output_file = source_file.parent / f"{source_file.stem}.L{weight_level}.compact"
+            output_file = (
+                source_file.parent / f"{source_file.stem}.L{weight_level}.compact"
+            )
             output_file.write_text(full_content)
 
             # Track as excluded but processed
             self.excluded_files.add(source_file)
             self.processed_files[source_file.name] = {
-                'source': source_file,
-                'output': output_file,
-                'original_lines': len(content.split('\n')),
-                'compressed_lines': len(content.split('\n')),
-                'original_chars': len(content),
-                'compressed_chars': len(content),
-                'reduction_pct': 0.0,
-                'level': 'excluded',
-                'strategy': 'verbatim_copy',
-                'weight_level': weight_level
+                "source": source_file,
+                "output": output_file,
+                "original_lines": len(content.split("\n")),
+                "compressed_lines": len(content.split("\n")),
+                "original_chars": len(content),
+                "compressed_chars": len(content),
+                "reduction_pct": 0.0,
+                "level": "excluded",
+                "strategy": "verbatim_copy",
+                "weight_level": weight_level,
             }
 
             # Update cache
             if self.cache:
                 self.cache.mark_compiled(source_file, output_file, 0.0)
 
-            print(f"  ≡ {source_file.name} → {output_file.name} (VERBATIM L{weight_level})")
+            print(
+                f"  ≡ {source_file.name} → {output_file.name} (VERBATIM L{weight_level})"
+            )
 
             return output_file
 
@@ -175,13 +179,11 @@ class IndexCompiler:
                     self.config.default_strategy
                 )
             else:
-                strategy = CompressionStrategyFactory.create_from_list(
-                    strategy_names
-                )
+                strategy = CompressionStrategyFactory.create_from_list(strategy_names)
 
         # Read and compress
         content = source_file.read_text()
-        original_lines = len(content.split('\n'))
+        original_lines = len(content.split("\n"))
         original_chars = len(content)
 
         compressed = strategy.compress(content, self.config.as_dict())
@@ -202,9 +204,13 @@ class IndexCompiler:
         compressed = header + compressed
 
         # Calculate size stats before writing
-        compressed_lines = len(compressed.split('\n'))
+        compressed_lines = len(compressed.split("\n"))
         compressed_chars = len(compressed)
-        reduction_pct = ((original_chars - compressed_chars) / original_chars) * 100 if original_chars > 0 else 0
+        reduction_pct = (
+            ((original_chars - compressed_chars) / original_chars) * 100
+            if original_chars > 0
+            else 0
+        )
 
         # Determine weight level based on output size
         weight_level = self.config.get_weight_level(compressed_lines)
@@ -215,15 +221,15 @@ class IndexCompiler:
         output_file.write_text(compressed)
 
         self.processed_files[source_file.name] = {
-            'source': source_file,
-            'output': output_file,
-            'original_lines': original_lines,
-            'compressed_lines': compressed_lines,
-            'original_chars': original_chars,
-            'compressed_chars': compressed_chars,
-            'reduction_pct': reduction_pct,
-            'level': level,
-            'strategy': strategy.name
+            "source": source_file,
+            "output": output_file,
+            "original_lines": original_lines,
+            "compressed_lines": compressed_lines,
+            "original_chars": original_chars,
+            "compressed_chars": compressed_chars,
+            "reduction_pct": reduction_pct,
+            "level": level,
+            "strategy": strategy.name,
         }
 
         # Update cache
@@ -231,7 +237,9 @@ class IndexCompiler:
             self.cache.mark_compiled(source_file, output_file, reduction_pct)
 
         print(f"  ✓ {source_file.name} → {output_name}")
-        print(f"    {original_lines}L → {compressed_lines}L ({reduction_pct:.1f}% char reduction)")
+        print(
+            f"    {original_lines}L → {compressed_lines}L ({reduction_pct:.1f}% char reduction)"
+        )
 
         return output_file
 
@@ -255,9 +263,9 @@ class IndexCompiler:
 
             for md_file in scan_dir.rglob("*.md"):
                 # Skip already compressed/copied files
-                if md_file.stem.endswith(('-level1', '-level2')):
+                if md_file.stem.endswith(("-level1", "-level2")):
                     continue
-                if md_file.name.endswith('.compact'):
+                if md_file.name.endswith(".compact"):
                     continue
 
                 # Skip files in excluded directories (e.g., style-and-philosophy/)
@@ -276,9 +284,11 @@ class IndexCompiler:
 
         for excluded_dir in self.config.excluded_directories:
             # Handle wildcard patterns like **/node_modules
-            if excluded_dir.startswith('**/'):
+            if excluded_dir.startswith("**/"):
                 dir_name = excluded_dir[3:]
-                if f"/{dir_name}/" in filepath_str or filepath_str.endswith(f"/{dir_name}"):
+                if f"/{dir_name}/" in filepath_str or filepath_str.endswith(
+                    f"/{dir_name}"
+                ):
                     return True
             # Handle exact directory matches
             else:
@@ -310,6 +320,7 @@ class IndexCompiler:
             print("⚠️  Cache disabled - falling back to compile_all_indexes")
             return self.compile_all_indexes(level)
 
+        assert self.cache is not None  # narrow type for mypy
         print("\n" + "=" * 70)
         print("SBMI INCREMENTAL COMPILATION (Session End)")
         print("=" * 70)
@@ -324,7 +335,7 @@ class IndexCompiler:
         print("\nCache stats:")
         print(f"  Total previously compiled: {stats['total_compiled']}")
         print(f"  Avg reduction: {stats['avg_reduction']:.1f}%")
-        if stats['last_compiled']:
+        if stats["last_compiled"]:
             print(f"  Last compiled: {stats['last_compiled']}")
         print()
 
@@ -374,13 +385,14 @@ class IndexCompiler:
         print()
 
         # Find all .md files using config-driven scanning
-        index_files = self._find_all_markdown_files()
+        all_md_files = self._find_all_markdown_files()
 
         # Filter out already compressed files
-        index_files = [
-            f for f in index_files
-            if not f.stem.endswith(('-level1', '-level2'))
-            and not f.name.endswith('.compact')
+        index_files: List[Path] = [
+            f
+            for f in all_md_files
+            if not f.stem.endswith(("-level1", "-level2"))
+            and not f.name.endswith(".compact")
         ]
 
         if not index_files:
@@ -402,8 +414,8 @@ class IndexCompiler:
         """Get target reduction percentage for level."""
         level_config = self.config.get_level_config(level)
         if level_config:
-            return level_config.get('target_reduction', 'N/A')
-        return 'N/A'
+            return level_config.get("target_reduction", "N/A")
+        return "N/A"
 
     def _get_output_name(self, stem: str, level: str, weight_level: int) -> str:
         """
@@ -433,20 +445,36 @@ class IndexCompiler:
 
         if self.processed_files:
             # Separate compressed vs verbatim
-            compressed = {k: v for k, v in self.processed_files.items() if v['strategy'] != 'verbatim_copy'}
-            verbatim = {k: v for k, v in self.processed_files.items() if v['strategy'] == 'verbatim_copy'}
+            compressed = {
+                k: v
+                for k, v in self.processed_files.items()
+                if v["strategy"] != "verbatim_copy"
+            }
+            verbatim = {
+                k: v
+                for k, v in self.processed_files.items()
+                if v["strategy"] == "verbatim_copy"
+            }
 
             if compressed:
-                total_original = sum(f['original_chars'] for f in compressed.values())
-                total_compressed_chars = sum(f['compressed_chars'] for f in compressed.values())
-                overall_reduction = ((total_original - total_compressed_chars) / total_original) * 100 if total_original > 0 else 0
+                total_original = sum(f["original_chars"] for f in compressed.values())
+                total_compressed_chars = sum(
+                    f["compressed_chars"] for f in compressed.values()
+                )
+                overall_reduction = (
+                    ((total_original - total_compressed_chars) / total_original) * 100
+                    if total_original > 0
+                    else 0
+                )
 
                 print(f"Files compressed: {len(compressed)}")
                 print(f"Overall reduction: {overall_reduction:.1f}%")
                 print()
                 print("Compressed files:")
                 for name, stats in compressed.items():
-                    print(f"  ✓ {name}: {stats['reduction_pct']:.1f}% reduction ({stats['strategy']})")
+                    print(
+                        f"  ✓ {name}: {stats['reduction_pct']:.1f}% reduction ({stats['strategy']})"
+                    )
 
             if verbatim:
                 print()
@@ -465,16 +493,24 @@ class IndexCompiler:
         print()
 
         if self.processed_files:
-            total_original = sum(f['original_chars'] for f in self.processed_files.values())
-            total_compressed = sum(f['compressed_chars'] for f in self.processed_files.values())
-            overall_reduction = ((total_original - total_compressed) / total_original) * 100
+            total_original = sum(
+                f["original_chars"] for f in self.processed_files.values()
+            )
+            total_compressed = sum(
+                f["compressed_chars"] for f in self.processed_files.values()
+            )
+            overall_reduction = (
+                (total_original - total_compressed) / total_original
+            ) * 100
 
             print(f"Files compiled: {len(self.processed_files)}")
             print(f"Overall reduction: {overall_reduction:.1f}%")
             print()
             print("Individual results:")
             for name, stats in self.processed_files.items():
-                print(f"  {name}: {stats['reduction_pct']:.1f}% reduction ({stats['strategy']})")
+                print(
+                    f"  {name}: {stats['reduction_pct']:.1f}% reduction ({stats['strategy']})"
+                )
 
         if self.excluded_files:
             print(f"\nFiles excluded (behavioral): {len(self.excluded_files)}")
@@ -484,11 +520,13 @@ class IndexCompiler:
         print("\n" + "=" * 70)
         print("NEXT STEPS")
         print("=" * 70)
-        print("""
+        print(
+            """
 1. Review compressed .compact files for correctness
 2. Test compressed indexes in agent session
 3. Verify agent can navigate using compressed indexes
 4. Confirm behavioral files still load in full
 5. Document expansion protocol (L1→L2→L3)
 6. Update init prompts to use compressed indexes
-""")
+"""
+        )

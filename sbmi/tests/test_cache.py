@@ -1,10 +1,12 @@
 """Test compilation cache functionality."""
 
-import pytest
-from pathlib import Path
-import tempfile
-import shutil
 import json
+import shutil
+import tempfile
+from pathlib import Path
+
+import pytest
+
 from sbmi.compiler.cache import CompilationCache
 
 
@@ -39,7 +41,7 @@ class TestCompilationCache:
     def test_cache_saves_to_disk(self, cache_file, test_file):
         """Test cache saves to disk correctly."""
         cache = CompilationCache(cache_file)
-        output_file = test_file.with_suffix('.compact')
+        output_file = test_file.with_suffix(".compact")
 
         cache.mark_compiled(test_file, output_file, 25.5)
 
@@ -49,19 +51,19 @@ class TestCompilationCache:
         # Should be valid JSON
         data = json.loads(cache_file.read_text())
         assert str(test_file) in data
-        assert data[str(test_file)]['reduction_pct'] == 25.5
+        assert data[str(test_file)]["reduction_pct"] == 25.5
 
     def test_cache_loads_from_disk(self, cache_file, test_file):
         """Test cache loads existing data from disk."""
         # Create cache and save data
         cache1 = CompilationCache(cache_file)
-        output_file = test_file.with_suffix('.compact')
+        output_file = test_file.with_suffix(".compact")
         cache1.mark_compiled(test_file, output_file, 30.0)
 
         # Create new cache instance - should load existing data
         cache2 = CompilationCache(cache_file)
         assert str(test_file) in cache2.cache
-        assert cache2.cache[str(test_file)]['reduction_pct'] == 30.0
+        assert cache2.cache[str(test_file)]["reduction_pct"] == 30.0
 
     def test_compute_hash_deterministic(self, test_file):
         """Test that hash computation is deterministic."""
@@ -95,7 +97,7 @@ class TestCompilationCache:
     def test_has_changed_unchanged_file(self, cache_file, test_file):
         """Test that unchanged file is not detected as changed."""
         cache = CompilationCache(cache_file)
-        output_file = test_file.with_suffix('.compact')
+        output_file = test_file.with_suffix(".compact")
 
         # Mark as compiled
         cache.mark_compiled(test_file, output_file, 25.0)
@@ -106,7 +108,7 @@ class TestCompilationCache:
     def test_has_changed_modified_file(self, cache_file, test_file):
         """Test that modified file is detected as changed."""
         cache = CompilationCache(cache_file)
-        output_file = test_file.with_suffix('.compact')
+        output_file = test_file.with_suffix(".compact")
 
         # Mark as compiled
         cache.mark_compiled(test_file, output_file, 25.0)
@@ -121,16 +123,16 @@ class TestCompilationCache:
     def test_mark_compiled_updates_cache(self, cache_file, test_file):
         """Test that mark_compiled updates cache correctly."""
         cache = CompilationCache(cache_file)
-        output_file = test_file.with_suffix('.compact')
+        output_file = test_file.with_suffix(".compact")
 
         cache.mark_compiled(test_file, output_file, 42.5)
 
         key = str(test_file)
         assert key in cache.cache
-        assert cache.cache[key]['hash'] is not None
-        assert cache.cache[key]['output'] == str(output_file)
-        assert cache.cache[key]['reduction_pct'] == 42.5
-        assert 'compiled_at' in cache.cache[key]
+        assert cache.cache[key]["hash"] is not None
+        assert cache.cache[key]["output"] == str(output_file)
+        assert cache.cache[key]["reduction_pct"] == 42.5
+        assert "compiled_at" in cache.cache[key]
 
     def test_get_changed_files(self, cache_file, temp_dir):
         """Test getting set of changed files."""
@@ -155,8 +157,8 @@ class TestCompilationCache:
         assert file3 in changed
 
         # Mark file1 and file2 as compiled
-        cache.mark_compiled(file1, file1.with_suffix('.compact'), 10.0)
-        cache.mark_compiled(file2, file2.with_suffix('.compact'), 20.0)
+        cache.mark_compiled(file1, file1.with_suffix(".compact"), 10.0)
+        cache.mark_compiled(file2, file2.with_suffix(".compact"), 20.0)
 
         # Only file3 should be changed
         changed = cache.get_changed_files(all_files)
@@ -177,9 +179,9 @@ class TestCompilationCache:
         cache = CompilationCache(cache_file)
         stats = cache.get_stats()
 
-        assert stats['total_compiled'] == 0
-        assert stats['avg_reduction'] == 0.0
-        assert stats['last_compiled'] is None
+        assert stats["total_compiled"] == 0
+        assert stats["avg_reduction"] == 0.0
+        assert stats["last_compiled"] is None
 
     def test_get_stats_with_data(self, cache_file, temp_dir):
         """Test stats with compiled files."""
@@ -189,19 +191,19 @@ class TestCompilationCache:
         file2.write_text("Content 2")
 
         cache = CompilationCache(cache_file)
-        cache.mark_compiled(file1, file1.with_suffix('.compact'), 20.0)
-        cache.mark_compiled(file2, file2.with_suffix('.compact'), 40.0)
+        cache.mark_compiled(file1, file1.with_suffix(".compact"), 20.0)
+        cache.mark_compiled(file2, file2.with_suffix(".compact"), 40.0)
 
         stats = cache.get_stats()
 
-        assert stats['total_compiled'] == 2
-        assert stats['avg_reduction'] == 30.0  # (20 + 40) / 2
-        assert stats['last_compiled'] is not None
+        assert stats["total_compiled"] == 2
+        assert stats["avg_reduction"] == 30.0  # (20 + 40) / 2
+        assert stats["last_compiled"] is not None
 
     def test_invalidate_specific_file(self, cache_file, test_file):
         """Test invalidating specific file from cache."""
         cache = CompilationCache(cache_file)
-        output_file = test_file.with_suffix('.compact')
+        output_file = test_file.with_suffix(".compact")
 
         cache.mark_compiled(test_file, output_file, 25.0)
         assert str(test_file) in cache.cache
@@ -218,8 +220,8 @@ class TestCompilationCache:
         file2.write_text("Content 2")
 
         cache = CompilationCache(cache_file)
-        cache.mark_compiled(file1, file1.with_suffix('.compact'), 20.0)
-        cache.mark_compiled(file2, file2.with_suffix('.compact'), 30.0)
+        cache.mark_compiled(file1, file1.with_suffix(".compact"), 20.0)
+        cache.mark_compiled(file2, file2.with_suffix(".compact"), 30.0)
 
         assert len(cache.cache) == 2
 
@@ -240,7 +242,7 @@ class TestCompilationCache:
         """Test cache data survives multiple load/save cycles."""
         # First cache instance
         cache1 = CompilationCache(cache_file)
-        cache1.mark_compiled(test_file, test_file.with_suffix('.compact'), 35.5)
+        cache1.mark_compiled(test_file, test_file.with_suffix(".compact"), 35.5)
 
         # Second cache instance
         cache2 = CompilationCache(cache_file)
@@ -248,12 +250,12 @@ class TestCompilationCache:
 
         # Modify and re-mark
         test_file.write_text("# New content\n")
-        cache2.mark_compiled(test_file, test_file.with_suffix('.compact'), 40.0)
+        cache2.mark_compiled(test_file, test_file.with_suffix(".compact"), 40.0)
 
         # Third cache instance
         cache3 = CompilationCache(cache_file)
         assert cache3.has_changed(test_file) is False
-        assert cache3.cache[str(test_file)]['reduction_pct'] == 40.0
+        assert cache3.cache[str(test_file)]["reduction_pct"] == 40.0
 
 
 if __name__ == "__main__":

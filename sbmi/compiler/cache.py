@@ -7,9 +7,9 @@ enabling smart recompilation of only changed/new files.
 
 import hashlib
 import json
-from pathlib import Path
-from typing import Dict, Set, Optional
 from datetime import datetime, timezone
+from pathlib import Path
+from typing import Dict, Optional, Set
 
 
 class CompilationCache:
@@ -39,9 +39,7 @@ class CompilationCache:
     def _save_cache(self):
         """Save cache to disk."""
         self.cache_file.parent.mkdir(parents=True, exist_ok=True)
-        self.cache_file.write_text(
-            json.dumps(self.cache, indent=2, sort_keys=True)
-        )
+        self.cache_file.write_text(json.dumps(self.cache, indent=2, sort_keys=True))
 
     @staticmethod
     def compute_hash(file_path: Path) -> str:
@@ -77,14 +75,9 @@ class CompilationCache:
         if key not in self.cache:
             return True  # New file
 
-        return self.cache[key].get('hash') != current_hash
+        return self.cache[key].get("hash") != current_hash
 
-    def mark_compiled(
-        self,
-        source_file: Path,
-        output_file: Path,
-        reduction_pct: float
-    ):
+    def mark_compiled(self, source_file: Path, output_file: Path, reduction_pct: float):
         """
         Mark a file as compiled and update cache.
 
@@ -95,10 +88,10 @@ class CompilationCache:
         """
         key = str(source_file)
         self.cache[key] = {
-            'hash': self.compute_hash(source_file),
-            'output': str(output_file),
-            'compiled_at': datetime.now(timezone.utc).isoformat(),
-            'reduction_pct': reduction_pct
+            "hash": self.compute_hash(source_file),
+            "output": str(output_file),
+            "compiled_at": datetime.now(timezone.utc).isoformat(),
+            "reduction_pct": reduction_pct,
         }
         self._save_cache()
 
@@ -117,27 +110,24 @@ class CompilationCache:
     def get_stats(self) -> Dict:
         """Get compilation statistics from cache."""
         if not self.cache:
-            return {
-                'total_compiled': 0,
-                'avg_reduction': 0.0,
-                'last_compiled': None
-            }
+            return {"total_compiled": 0, "avg_reduction": 0.0, "last_compiled": None}
 
         total = len(self.cache)
-        avg_reduction = sum(
-            entry.get('reduction_pct', 0)
-            for entry in self.cache.values()
-        ) / total if total > 0 else 0
+        avg_reduction = (
+            sum(entry.get("reduction_pct", 0) for entry in self.cache.values()) / total
+            if total > 0
+            else 0
+        )
 
         last_compiled = max(
-            (entry.get('compiled_at', '') for entry in self.cache.values()),
-            default=None
+            (entry.get("compiled_at", "") for entry in self.cache.values()),
+            default=None,
         )
 
         return {
-            'total_compiled': total,
-            'avg_reduction': avg_reduction,
-            'last_compiled': last_compiled
+            "total_compiled": total,
+            "avg_reduction": avg_reduction,
+            "last_compiled": last_compiled,
         }
 
     def invalidate(self, source_file: Optional[Path] = None):

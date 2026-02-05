@@ -2,9 +2,10 @@
 Configuration loading and management for SBMI compiler.
 """
 
-import yaml
 from pathlib import Path
 from typing import Dict, List, Optional
+
+import yaml
 
 
 class CompressionConfig:
@@ -29,37 +30,35 @@ class CompressionConfig:
     def _load(self) -> None:
         """Load configuration from YAML file."""
         if not self.config_path.exists():
-            raise FileNotFoundError(
-                f"Configuration file not found: {self.config_path}"
-            )
+            raise FileNotFoundError(f"Configuration file not found: {self.config_path}")
 
-        with open(self.config_path, 'r') as f:
+        with open(self.config_path, "r") as f:
             self._config = yaml.safe_load(f)
 
     @property
     def scan_directories(self) -> List[str]:
         """Get list of directories to scan for markdown files."""
-        return self._config.get('scan_directories', ['local/workflow-indexes'])
+        return self._config.get("scan_directories", ["local/workflow-indexes"])
 
     @property
     def excluded_directories(self) -> List[str]:
         """Get list of directories to exclude entirely from scanning."""
-        return self._config.get('excluded_directories', [])
+        return self._config.get("excluded_directories", [])
 
     @property
     def exclusion_patterns(self) -> List[str]:
         """Get list of file patterns to exclude from compression."""
-        return self._config.get('exclusion_patterns', [])
+        return self._config.get("exclusion_patterns", [])
 
     @property
     def phrase_mappings(self) -> Dict[str, str]:
         """Get phrase compression mappings."""
-        return self._config.get('phrase_mappings', {})
+        return self._config.get("phrase_mappings", {})
 
     @property
     def default_strategy(self) -> str:
         """Get default compression strategy name."""
-        return self._config.get('default_strategy', 'combined')
+        return self._config.get("default_strategy", "combined")
 
     def get_level_config(self, level_name: str) -> Optional[Dict]:
         """
@@ -71,7 +70,7 @@ class CompressionConfig:
         Returns:
             Level configuration dict or None if not found
         """
-        levels = self._config.get('levels', {})
+        levels = self._config.get("levels", {})
         return levels.get(level_name)
 
     def get_level_strategies(self, level_name: str) -> List[str]:
@@ -87,7 +86,7 @@ class CompressionConfig:
         level_config = self.get_level_config(level_name)
         if level_config is None:
             return []
-        return level_config.get('strategies', [])
+        return level_config.get("strategies", [])
 
     def as_dict(self) -> Dict:
         """Get raw configuration dict."""
@@ -102,8 +101,8 @@ class CompressionConfig:
             List of line count boundaries. Files are assigned to L1, L2, L3, etc.
             based on which boundary they fall under.
         """
-        weight_config = self._config.get('weight_levels', {})
-        return weight_config.get('boundaries', [150, 300, 500])
+        weight_config = self._config.get("weight_levels", {})
+        return weight_config.get("boundaries", [150, 300, 500])
 
     def get_weight_level(self, line_count: int) -> int:
         """

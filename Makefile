@@ -1,7 +1,10 @@
 # Hish Cursor Context Framework - Makefile
 # Multi-project development agent framework with shared knowledge
 
-.PHONY: help health test new-context list-contexts index-repo reindex-contexts clean logs index collections setup-cursor setup-framework setup-hooks setup-commands quick-start backup mcp build-mcp optimize-collections index-framework setup-intelligence lint lint-fix format type-check mypy-errors pre-commit-install dev-setup test-sbmi test-sbmi-unit test-sbmi-integration sbmi-compile sbmi-compact sbmi-compact-force sbmi-stats sbmi-analyze context-init-portable context-link-remote context-link-local context-push context-pull context-status
+# Ruff output: concise (default) or github (for CI annotations)
+LINT_FORMAT ?= concise
+
+.PHONY: help health test new-context list-contexts index-repo reindex-contexts clean logs index collections setup-cursor setup-framework setup-hooks setup-commands quick-start backup mcp build-mcp optimize-collections index-framework setup-intelligence lint lint-rag lint-sbmi lint-fix format format-rag format-sbmi type-check mypy-errors pre-commit-install dev-setup check test-sbmi test-sbmi-coverage test-sbmi-unit test-sbmi-integration sbmi-compile sbmi-compile-ci sbmi-verify sbmi-compact sbmi-compact-force sbmi-stats sbmi-analyze install-deps-sbmi install-deps-sbmi-lint context-init-portable context-link-remote context-link-local context-push context-pull context-status
 
 # Default target
 help: ## Show this help message
@@ -202,6 +205,10 @@ test-sbmi: ## Run all SBMI compiler tests
 	@echo "🧪 Running SBMI compiler tests..."
 	cd sbmi && python3 -m pytest tests/ -v
 
+test-sbmi-coverage: ## Run SBMI tests with coverage (CI)
+	@echo "🧪 Running SBMI compiler tests with coverage..."
+	cd sbmi && python3 -m pytest tests/ -v --cov=sbmi --cov-report=xml --cov-report=term-missing
+
 test-sbmi-unit: ## Run SBMI unit tests only
 	@echo "🧪 Running SBMI unit tests..."
 	cd sbmi && python3 -m pytest tests/ -v -m unit
@@ -213,6 +220,30 @@ test-sbmi-integration: ## Run SBMI integration tests
 sbmi-compile: ## Compile workflow indexes to .compact format (full)
 	@echo "📦 Compiling workflow indexes..."
 	python3 scripts/compile-indexes.py
+
+sbmi-compile-ci: ## Prepare local/workflow-indexes and compile (CI; no local/ required)
+	@echo "📦 Preparing workflow-indexes and compiling (CI)..."
+	mkdir -p local/workflow-indexes
+	cp templates/workflow-indexes/*.md local/workflow-indexes/
+	$(MAKE) sbmi-compile
+
+sbmi-verify: ## Verify compiled .compact files exist and preserve essential content
+	@echo "🔍 Verifying compiled files..."
+	@if ! ls local/workflow-indexes/*.L*.compact 1>/dev/null 2>&1; then \
+		echo "No .compact files found; running sbmi-compile-ci first..."; \
+		$(MAKE) sbmi-compile-ci; \
+	fi
+	@for stem in framework-command-index framework-file-index framework-repository-index session-workflow-enforcement; do \
+		found=0; \
+		for f in local/workflow-indexes/$$stem.L*.compact; do \
+			[ -f "$$f" ] && found=1 && break; \
+		done; \
+		[ $$found -eq 1 ] || { echo "Missing $$stem .compact"; exit 1; }; \
+	done
+	@cmd_idx=$$(ls local/workflow-indexes/framework-command-index.L*.compact 2>/dev/null | head -1); \
+	[ -n "$$cmd_idx" ] || { echo "Missing framework-command-index .compact"; exit 1; }; \
+	grep -q "make index" "$$cmd_idx" && grep -q "Makefile" "$$cmd_idx" && grep -q "dev_agent" "$$cmd_idx" && grep -q "make quick-start" "$$cmd_idx" || { echo "Essential content missing in $$cmd_idx"; exit 1; }
+	@echo "✅ Compiled files verified - essential commands preserved"
 
 sbmi-compact: ## Incrementally compact changed framework docs (session-end)
 	@echo "⚡ Compacting changed framework documentation..."
@@ -239,32 +270,59 @@ sbmi-validate-verbose: ## Validate SBMI graph with verbose output
 	python3 scripts/validate-expansion-graph.py --verbose --check-balance
 
 # Code Quality
-lint: ## Run all linting checks (ruff, black, isort, mypy)
-	@echo "🔍 Running code quality checks..."
-	@echo "📁 Checking rag/indexer/..."
+lint: lint-rag lint-sbmi ## Run all linting checks (rag + sbmi)
+
+lint-rag: ## Lint rag/indexer (ruff, black, isort, mypy)
+	@echo "🔍 Linting rag/indexer/..."
 	cd rag/indexer && ruff check . --output-format=concise
 	cd rag/indexer && black --check --diff .
 	cd rag/indexer && isort --check-only --diff .
 	cd rag/indexer && mypy . --ignore-missing-imports || echo "⚠️ Type checking found issues (non-blocking)"
-	@echo "✅ Linting complete!"
+	@echo "✅ rag/indexer lint complete!"
 
-lint-fix: ## Fix auto-fixable linting issues
+lint-sbmi: ## Lint sbmi/ (ruff, black, isort, mypy). Set LINT_FORMAT=github for CI.
+	@echo "🔍 Linting sbmi/..."
+	cd sbmi && ruff check . --output-format=$(LINT_FORMAT)
+	cd sbmi && black --check --diff .
+	cd sbmi && isort --check-only --diff .
+	cd sbmi && mypy compiler/ --ignore-missing-imports || true
+	@echo "✅ sbmi lint complete!"
+
+lint-fix: ## Fix auto-fixable linting issues (rag + sbmi)
 	@echo "🔧 Fixing linting issues..."
-	cd rag/indexer && ruff check . --fix
-	cd rag/indexer && black .
-	cd rag/indexer && isort .
+	cd rag/indexer && ruff check . --fix && black . && isort .
+	cd sbmi && ruff check . --fix && black . && isort .
 	@echo "✅ Auto-fixes applied!"
 
-format: ## Format code with black and isort
-	@echo "🎨 Formatting code..."
-	cd rag/indexer && black .
-	cd rag/indexer && isort .
-	@echo "✅ Code formatted!"
+format: format-rag format-sbmi ## Format all code (rag + sbmi)
 
-type-check: ## Run type checking with mypy
+format-rag: ## Format rag/indexer
+	@echo "🎨 Formatting rag/indexer/..."
+	cd rag/indexer && black . && isort .
+	@echo "✅ rag/indexer formatted!"
+
+format-sbmi: ## Format sbmi/
+	@echo "🎨 Formatting sbmi/..."
+	cd sbmi && black . && isort .
+	@echo "✅ sbmi formatted!"
+
+check: lint test test-sbmi ## Run all checks (lint + tests)
+
+type-check: ## Run type checking with mypy (rag only)
 	@echo "🔍 Running type checks..."
 	cd rag/indexer && mypy . --ignore-missing-imports
 	@echo "✅ Type checking complete!"
+
+# CI / one-off installs (no venv required; use in CI or with system python)
+install-deps-sbmi: ## Install SBMI runtime + test deps (for CI)
+	python3 -m pip install --upgrade pip
+	pip install -r sbmi/requirements.txt
+	pip install -r sbmi/requirements-test.txt
+
+install-deps-sbmi-lint: ## Install SBMI + lint tools (for CI lint job)
+	python3 -m pip install --upgrade pip
+	pip install -r sbmi/requirements-lint.txt
+	pip install -r sbmi/requirements.txt
 
 mypy-errors: ## Show mypy errors in detail
 	@echo "🔍 Detailed mypy error analysis..."
