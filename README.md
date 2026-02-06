@@ -216,11 +216,23 @@ Type /end-dev in Cursor chat
 - `/end-red` - Close red team session
 - `/verbalized-sampling` - Creative brainstorming mode
 
+### Claude Code
+
+Hish also works with **Claude Code** via an MCP bridge and `CLAUDE.md` directives:
+
+```bash
+make install-claude-code-mcp                    # Once: install MCP bridge
+make setup-claude-code PROJECT=/path/to/project # Per-project setup
+```
+
+This creates `CLAUDE.md`, `.claude/commands/dev.md` and `end-dev.md`, and `.mcp.json`. Use `/dev` and `/end-dev` in Claude Code for the same knowledge-first workflow. See [Claude Code Integration](docs/setup/claude-code-integration.md).
+
 ## Documentation
 
 - [Getting Started](docs/setup/getting-started.md) - Complete setup guide
 - [Directing Agents](docs/agent-management/directing-agents.md) - How to work with agents
 - [Collection Governance](docs/collection-governance.md) - Managing indexed knowledge
-- [Custom Commands](. cursor/commands/README.md) - Slash command reference
+- [Custom Commands](.cursor/commands/README.md) - Slash command reference
+- [Claude Code Integration](docs/setup/claude-code-integration.md) - Use Hish with Claude Code
 
 **Note:** `local/` is for customizations (gitignored). Editing core behavioral files may break framework. Framework changes need PRs.

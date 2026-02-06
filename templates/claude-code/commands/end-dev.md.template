@@ -1,0 +1,38 @@
+---
+name: end-dev
+description: End Hish development session with knowledge capture
+---
+
+# Development Session End Protocol
+
+## Knowledge Capture
+
+Review this session for reusable patterns:
+
+1. **What solutions did we create?**
+2. **Are any patterns reusable across projects?**
+3. **What decisions were made and why?**
+
+## Pattern Storage (With Approval)
+
+For each reusable pattern identified:
+
+```
+hish_store(
+  content="Pattern: [clear description of what, why, how]",
+  pattern_type="architecture|decision|learning|bugfix|anti-pattern",
+  project="{{PROJECT_NAME}}",
+  tags=["relevant", "searchable", "tags"],
+  evidence="[how was this validated]"
+)
+```
+
+⚠️ **Ask user**: "I identified [N] potentially reusable patterns. Should I store them to cross-project intelligence?"
+
+## Session Summary
+
+Provide:
+- Key accomplishments
+- Patterns discovered or created
+- Decisions made
+- Open items for next session

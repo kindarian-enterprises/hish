@@ -4,7 +4,7 @@
 # Ruff output: concise (default) or github (for CI annotations)
 LINT_FORMAT ?= concise
 
-.PHONY: help health test new-context list-contexts index-repo reindex-contexts clean logs index collections setup-cursor setup-framework setup-hooks setup-commands quick-start backup mcp build-mcp optimize-collections index-framework setup-intelligence lint lint-rag lint-sbmi lint-fix format format-rag format-sbmi type-check mypy-errors pre-commit-install dev-setup check test-sbmi test-sbmi-coverage test-sbmi-unit test-sbmi-integration sbmi-compile sbmi-compile-ci sbmi-verify sbmi-compact sbmi-compact-force sbmi-stats sbmi-analyze install-deps-sbmi install-deps-sbmi-lint context-init-portable context-link-remote context-link-local context-push context-pull context-status
+.PHONY: help health test new-context list-contexts index-repo reindex-contexts clean logs index collections setup-cursor setup-framework setup-hooks setup-commands quick-start backup mcp build-mcp optimize-collections index-framework setup-intelligence lint lint-rag lint-sbmi lint-fix format format-rag format-sbmi type-check mypy-errors pre-commit-install dev-setup check test-sbmi test-sbmi-coverage test-sbmi-unit test-sbmi-integration sbmi-compile sbmi-compile-ci sbmi-verify sbmi-compact sbmi-compact-force sbmi-stats sbmi-analyze install-deps-sbmi install-deps-sbmi-lint context-init-portable context-link-remote context-link-local context-push context-pull context-status setup-claude-code install-claude-code-mcp setup-claude-code-global
 
 # Default target
 help: ## Show this help message
@@ -449,6 +449,37 @@ build-mcp: ## Build MCP server image with pre-warmed MPNet model
 mcp: ## Start MCP server for development
 	@echo "🔌 Starting MCP server (stdio mode)..."
 	docker compose -f ./deploy/compose.rag.yml run --rm -i mcp-qdrant-unified
+
+# ============================================================================
+# CLAUDE CODE INTEGRATION
+# ============================================================================
+
+PROJECT ?= .
+setup-claude-code: ## Setup Hish for Claude Code (default: current dir; or make setup-claude-code PROJECT=/path/to/project)
+	@echo "🧠 Claude Code Integration Setup"
+	@echo "================================"
+	@./scripts/setup-claude-code.sh "$(PROJECT)"
+
+install-claude-code-mcp: ## Create venv and install Hish MCP bridge for Claude Code (venv at .venv-claude-mcp)
+	@./scripts/setup-claude-code.sh --install-only
+
+setup-claude-code-global: ## Show global Claude Code MCP config (add to Claude Code settings manually)
+	@echo "🌍 Global Claude Code MCP Setup"
+	@echo "==============================="
+	@echo "This will add Hish to your global Claude Code settings."
+	@echo ""
+	@if [ "$$(uname)" = "Darwin" ]; then \
+		CONFIG_DIR="$$HOME/Library/Application Support/Claude"; \
+	else \
+		CONFIG_DIR="$$HOME/.config/claude"; \
+	fi; \
+	echo "Config directory: $$CONFIG_DIR"; \
+	echo ""; \
+	echo "Add this to your Claude Code settings:"; \
+	echo "Use the Python from the venv created by: make install-claude-code-mcp"; \
+	echo "  command: <path-to-hish>/.venv-claude-mcp/bin/python"; \
+	echo '  args: ["-m", "hish_bridge_mcp.server"]'; \
+	echo '  env: {"QDRANT_URL": "http://localhost:6333"}'
 
 # Portable Context Management
 context-init-portable: ## Initialize portable context repository (OPTIONAL - for multi-environment sync)

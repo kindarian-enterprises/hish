@@ -13,7 +13,7 @@ def compile_globs(includes: str, excludes: str):
 
 
 def iter_files(root: str, inc_spec, exc_spec) -> Iterable[str]:
-    for dirpath, _, filenames in os.walk(root):
+    for dirpath, _, filenames in os.walk(root, followlinks=True):
         for f in filenames:
             rel = os.path.relpath(os.path.join(dirpath, f), root)
             if exc_spec.match_file(rel):

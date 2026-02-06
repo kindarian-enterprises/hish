@@ -43,6 +43,7 @@ checkpoints/
 # Python virtual environments and cache
 
 .venv/
+.venv-claude-mcp/
 venv/
 __pycache__/
 *.pyc
@@ -58,6 +59,15 @@ htmlcov/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# Python build/packaging artifacts
+
+*.egg-info/
+*.egg
+.eggs/
+dist/
+build/
+.ruff_cache/
 
 # SBMI auto-generated files
 

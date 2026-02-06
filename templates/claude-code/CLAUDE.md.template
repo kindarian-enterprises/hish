@@ -1,0 +1,111 @@
+# {{PROJECT_NAME}} - Claude Code Agent Directives
+
+**Framework**: Hish (Knowledge-Driven Development)
+**Generated**: {{TIMESTAMP}}
+**Hish Root**: {{HISH_ROOT}}
+
+## Tool Usage Strategy
+
+### For Documentation, Patterns, and Architectural Decisions
+Use the Hish MCP tools:
+- `hish_find(query, collections, limit)` - Search across knowledge collections
+- `hish_find_framework(query)` - Framework docs, agent workflows, templates
+- `hish_find_intelligence(query)` - Cross-project patterns, validated learnings
+- `hish_store(content, pattern_type, project, tags)` - Store validated patterns (with user approval)
+
+### For Code, Symbols, and Implementations
+Use Claude Code's native capabilities:
+- File reading and writing
+- Code search and navigation
+- Terminal commands
+
+### Decision Tree
+```
+Need to find code implementation? → Use Claude Code native tools
+Need architectural pattern? → hish_find_framework or hish_find_intelligence
+Need project documentation? → hish_find with {{PROJECT_NAME}}_docs_mpnet
+Want to store a validated pattern? → hish_store (ask user first)
+```
+
+## Core Operating Principle: Knowledge First
+
+Before implementing ANY new solution:
+
+1. **Query existing patterns**:
+   ```
+   hish_find("relevant search terms", ["framework", "intelligence"])
+   ```
+
+2. **Review results** - Has this been solved before?
+
+3. **Only then implement** - Either reuse pattern or create new solution
+
+4. **Store validated patterns** - If you create something reusable:
+   ```
+   hish_store(
+     content="Pattern description...",
+     pattern_type="architecture|decision|learning|bugfix",
+     project="{{PROJECT_NAME}}",
+     tags=["relevant", "tags"]
+   )
+   ```
+   ⚠️ ALWAYS ask user for approval before storing
+
+## Available Knowledge Collections
+
+| Collection | Purpose | Access |
+|------------|---------|--------|
+| `hish_framework_mpnet` | Framework docs, agent workflows, templates | Read-only |
+| `cross_project_intelligence_mpnet` | Validated patterns, cross-project learnings | Read/Write |
+| `{{PROJECT_NAME}}_docs_mpnet` | Project-specific documentation | Read-only |
+
+### Query Examples
+```bash
+# Framework patterns
+hish_find_framework("session workflow")
+hish_find_framework("error handling best practices")
+
+# Cross-project intelligence
+hish_find_intelligence("JWT authentication")
+hish_find_intelligence("database migration strategy")
+
+# Combined search
+hish_find("authentication patterns", ["framework", "intelligence"])
+```
+
+## Session Workflow
+
+### Session Start
+1. Read this file (automatic)
+2. Query relevant patterns for your task:
+   ```
+   hish_find_framework("relevant to current task")
+   ```
+3. Understand existing solutions before implementing
+
+### During Session
+- Query before implementing new solutions
+- Use native Claude Code tools for code operations
+- Use Hish tools for pattern discovery and storage
+
+### Session End
+- Identify any reusable patterns created
+- With user approval, store to cross_project_intelligence:
+  ```
+  hish_store("Pattern: ...", "learning", "{{PROJECT_NAME}}", ["tags"])
+  ```
+
+## Quality Standards
+
+### Code Quality
+- Proper type hints on all functions
+- Docstrings for public APIs
+- No linting errors
+- Test coverage for new functionality
+
+### Pattern Quality (for storage)
+- Validated (working in production or tests)
+- Clear and actionable description
+- Evidence supports claims
+- Sensitive information removed
+- Cross-project applicability clear

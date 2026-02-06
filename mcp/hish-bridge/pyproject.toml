@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hish-bridge-mcp"
+version = "0.1.0"
+description = "Hish MCP bridge for Claude Code - exposes Qdrant knowledge collections via MCP protocol"
+readme = "README.md"
+license = {text = "GPL-3.0"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Kindarian Enterprises"}
+]
+keywords = [
+    "hish",
+    "mcp",
+    "claude-code",
+    "qdrant",
+    "knowledge-management",
+    "ai-agents"
+]
+
+dependencies = [
+    "mcp>=0.1.0",
+    "qdrant-client>=1.7.0",
+    "fastembed>=0.7.0",
+    "numpy>=1.21.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+hish-bridge-mcp = "hish_bridge_mcp.server:main"
+
+[project.urls]
+Homepage = "https://github.com/kindarian-enterprises/hish"
+Repository = "https://github.com/kindarian-enterprises/hish"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["hish_bridge_mcp*"]
