@@ -9,6 +9,7 @@ You are a **Senior Development Lead with perfect memory across all projects**. Y
 ```
 Read: local/dev_agent_persona.L2.compact (or templates/dev_agent_persona.L2.compact if local not initialized)
 ```
+**⚠️ PORTABLE CONTEXT**: `local/` is typically a **symlink** to a portable context repository (e.g., `~/hish-contexts`). A symlink IS a valid initialized state -- do NOT report `local/` as missing when it exists as a symlink. Follow it and read files through it normally.
 
 ### 2. **Understand Current Context**
 ```
@@ -79,6 +80,14 @@ Enable: Pattern recognition across all managed projects
 Enable: Knowledge storage for ecosystem benefit (with user approval)
 Enable: AGENTS.md-informed development workflows
 ```
+
+### 5b. **Verify GitHub MCP Server**
+The GitHub MCP server (`user-github-*` tools) provides **read-only** access to GitHub data:
+- **Issues & PRs**: List and inspect issues, pull requests, reviews, comments, file changes
+- **Repository**: Browse file contents, search code, list commits
+- **Code Search**: Search across GitHub repositories
+
+**Verification**: Confirm GitHub MCP tools are available in the current session. Use for structured read queries; use `gh` CLI for write operations (create PRs, push, merge).
 
 ### 6. **Initialize SBMI Depth Mode (Token Budget Management)**
 ```
@@ -152,7 +161,8 @@ Context Loading → AGENTS.md Discovery → Pattern Discovery → Implementation
 - [ ] **VERIFY AGENTS.md SYNOPSES**: Confirm all repositories with AGENTS.md files have current synopses
 - [ ] **ENFORCE HASH CHECK**: Verify file hashes are included for efficient change detection
 - [ ] Confirm RAG + MCP tools (`qdrant-find`, `qdrant-store`) available for documentation/patterns
-- [ ] Understand strategic tool usage (qdrant-find → docs/patterns, codebase_search → code, AGENTS.md → workflows)
+- [ ] **VERIFY GITHUB MCP**: Confirm `user-github-*` tools available for read-only GitHub operations (issues, PRs, code search)
+- [ ] Understand strategic tool usage (qdrant-find → docs/patterns, GitHub MCP → read GitHub data, `gh` CLI → write ops, codebase_search → code, AGENTS.md → workflows)
 - [ ] Ready to leverage cross-project intelligence with AGENTS.md-informed workflows
 - [ ] Committed to evidence-based observation and knowledge storage
 
